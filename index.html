@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Meteo Nav">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#060e1a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>⚓ Meteo Pre-Partenza</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(170deg,#060e1a,#0c1e38 35%,#102840 65%,#08162a);color:#b8d0e0;font-family:system-ui,sans-serif;padding-bottom:40px}
+.hd{padding:18px 16px 12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.rw{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+h1{font-size:22px;font-weight:900;color:#e8f4ff;margin-top:2px}
+select{background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px}
+.bt{background:rgba(25,110,190,.25);color:#80c0f0;border:1px solid rgba(25,110,190,.35);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:700}
+.bt:disabled{opacity:.4}
+.st{margin:10px 16px;padding:12px 16px;border-radius:10px;font-size:13px;text-align:center}
+.vd{margin:10px 16px;padding:12px 16px;border-radius:12px}
+.vd h2{font-size:19px;font-weight:900}.vd p{font-size:12px;margin-top:1px;opacity:.85}
+.tb{display:flex;gap:2px;padding:8px 16px 0;flex-wrap:wrap}
+.t{padding:8px 14px;font-size:12px;background:0 0;border:none;cursor:pointer;border-radius:8px 8px 0 0;color:#4a7090;border-bottom:2px solid transparent;font-family:inherit;white-space:nowrap}
+.t.a{font-weight:700;color:#80c0f0;background:rgba(25,110,190,.12);border-bottom-color:#3090d0}
+@media(max-width:600px){
+  .tb{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px 8px 0}
+  .tb .t{padding:7px 4px;font-size:10px;text-align:center;border-radius:6px 6px 0 0}
+  .tb .t:nth-child(n+9){grid-column:span 2}
+}
+.cn{padding:12px 16px}
+.gr{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}
+.cd{background:rgba(255,255,255,.035);border-radius:12px;padding:14px 16px;border:1px solid rgba(255,255,255,.07)}
+.lb{font-size:10px;color:#6a8ea8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
+.vl{font-size:22px;font-weight:800;color:#e4f0fa}
+.sb{font-size:11px;color:#5a8098;margin-top:2px}
+.tg{margin-top:4px;font-size:10px;display:inline-block;padding:2px 7px;border-radius:5px}
+.bb{margin-top:5px;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.bf{height:100%;border-radius:2px;background:linear-gradient(90deg,#3080c0,#80b0d0)}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{padding:5px 3px;text-align:left;color:#4a7898;font-weight:600;font-size:8px;text-transform:uppercase;white-space:nowrap}
+td{padding:4px 3px}
+.cr{cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03)}.cr:hover{background:rgba(25,110,190,.06)}
+.hi{background:rgba(25,110,190,.08)}
+.dn{display:none}
+.rx{padding:7px;border-radius:7px;font-size:10px;line-height:1.5}
+.sg{font-size:11px;color:#90b0c8;margin-bottom:3px;padding-left:7px;border-left:2px solid rgba(255,255,255,.08)}
+.ft{text-align:center;padding:14px;font-size:9px;color:#2a4a60}
+@media(max-width:600px){.gr{grid-template-columns:1fr}}
+/* === STICKY HEADER ===
+   La classe .hd-collapsed viene applicata a <body> perché deve
+   controllare sia .hd sia #favsBar (fratello di .hd, non figlio). */
+.hd{position:sticky;top:0;z-index:100;background:linear-gradient(170deg,#060e1a,#0c1e38);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:padding .25s ease}
+h1{transition:font-size .25s ease}
+body.hd-collapsed .hd{padding:8px 16px 6px}
+body.hd-collapsed h1{font-size:15px}
+#hdBrand{transition:opacity .25s ease,max-height .25s ease;max-height:20px;overflow:hidden}
+body.hd-collapsed #hdBrand{opacity:0;max-height:0}
+#nf{transition:opacity .25s ease,max-height .25s ease;max-height:30px;overflow:hidden}
+body.hd-collapsed #nf{opacity:0;max-height:0;margin:0}
+#favsBar{transition:opacity .25s ease,max-height .25s ease;max-height:80px;overflow:hidden}
+body.hd-collapsed #favsBar{opacity:0;max-height:0;padding:0;border:none;min-height:0}
+body.hd-collapsed #vd{display:none!important}
+#hdPill{display:none;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;transition:opacity .25s ease}
+body.hd-collapsed #hdPill{display:inline-flex!important}
+</style>
+<style>
+
+.mp-status{font-size:10px;margin-top:3px;color:#5a8098}
+
+#mapContainer{width:100%;height:520px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:#060e1a;position:relative;cursor:crosshair}
+#mapContainer svg{width:100%;height:100%}
+.mp-popup{position:absolute;background:#0c1e38;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;font-family:system-ui,sans-serif;z-index:10;min-width:160px;pointer-events:all}
+.mp-popup .mp-name{font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:4px}
+.mp-popup .mp-btn{display:block;margin-top:6px;padding:5px 10px;background:rgba(25,110,190,.35);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:6px;font-size:11px;cursor:pointer;text-align:center;font-weight:700;width:100%}
+.mp-popup .mp-btn:hover{background:rgba(25,110,190,.55)}
+.mp-popup .mp-close{position:absolute;top:6px;right:8px;color:#4a7090;cursor:pointer;font-size:12px}
+.cloud-tip{position:fixed;z-index:9999;background:#0c1e38;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 14px;font-size:11px;color:#b8d0e0;max-width:240px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.cloud-tip b{color:#e8f4ff;display:block;margin-bottom:3px;font-size:12px}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+.leaflet-popup-content-wrapper{background:#0c1e38!important;color:#e8f4ff!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:10px!important;box-shadow:0 4px 20px rgba(0,0,0,.5)!important}
+.leaflet-popup-tip{background:#0c1e38!important}
+.leaflet-popup-content{margin:12px 16px!important;font-family:system-ui,sans-serif!important;color:#e8f4ff!important}
+.leaflet-popup-close-button{color:#6a90b0!important;font-size:16px!important}
+.mpop b{display:block;font-size:13px;margin-bottom:8px;color:#e8f4ff}
+.mpopbtn{width:100%;padding:6px 10px;background:#1976d2;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+.mpopbtn:hover{background:#1565c0}
+</style>
+</head><body>
+<div class="hd" id="mainHd"><div class="rw"><div><div style="font-size:10px;color:rgba(64,144,208,.7);letter-spacing:2px;font-weight:700" id="hdBrand">⚓ METEO PRE-PARTENZA</div><h1>Check Navigazione <span id="hdPill"></span></h1></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select id="zS"></select><button id="favBtn" onclick="toggleFav()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:16px;cursor:pointer" title="Aggiungi ai preferiti">☆</button><button class="bt" id="go">🔄 Carica Dati Live</button><button id="installBtn" onclick="installPWA()" style="display:none;align-items:center;gap:5px;background:rgba(255,200,50,.15);color:#f0c040;border:1px solid rgba(255,200,50,.3);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:700">📲 Installa App</button><button onclick="toggleHelp()" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;font-weight:700" title="Guida">❓</button></div></div>
+<div style="font-size:11px;color:#3a6080;margin-top:5px" id="nf">Premi "Carica Dati Live"</div></div>
+<div id="favsBar" style="padding:6px 16px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:36px">
+<span style="font-size:10px;color:#2a4a60;white-space:nowrap">★ Preferiti:</span>
+<div id="favsList" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+</div>
+<!-- Help Modal -->
+<div id="helpOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;overflow-y:auto" onclick="if(event.target===this)toggleHelp()">
+<div style="max-width:600px;margin:40px auto;background:#0c1e38;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:24px;position:relative">
+<button onclick="toggleHelp()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:#4a7090;font-size:20px;cursor:pointer">✕</button>
+<div style="font-size:18px;font-weight:800;color:#e8f4ff;margin-bottom:4px">⚓ Guida Rapida</div>
+<div style="font-size:11px;color:#3a6080;margin-bottom:20px">Meteo Pre-Partenza Premium</div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #4090d0">
+<div style="font-size:13px;font-weight:700;color:#80c0f0;margin-bottom:5px">📊 Attuale</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Seleziona una località dal menu → premi <b style="color:#80c0f0">Carica Dati Live</b>. Mostra vento, mare, pressione, CAPE e visibilità in tempo reale. Clicca una riga nelle previsioni per vedere il dettaglio di quell'ora. Nella colonna <b style="color:#88c0d8">Tipo</b> puoi cliccare sulla sigla delle nuvole per vedere il nome completo e la descrizione. La colonna <b style="color:#88c0d8">↺↻</b> indica la rotazione del vento: <span style="color:#f0a050">↺ Backing</span> = il vento ruota in senso antiorario, segnale di fronte in avvicinamento; <span style="color:#60a8e0">↻ Veering</span> = il vento ruota in senso orario, indica miglioramento o passaggio di una perturbazione.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #4090d0">
+<div style="font-size:13px;font-weight:700;color:#80c0f0;margin-bottom:5px">🗺️ Mappa</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Visualizza tutte le 105 località sul Mediterraneo. Clicca un punto → appare il pannello sotto con il nome → premi <b style="color:#80c0f0">Carica dati meteo</b>. I marker diventano 🟢🟡🔴 dopo il caricamento.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #f0c040">
+<div style="font-size:13px;font-weight:700;color:#f0c040;margin-bottom:5px">🚦 Partenza</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Dopo aver caricato i dati, mostra il semaforo per <b>Ora, +6h, +12h, +24h, +36h, +48h</b>. Verde = si può uscire, Giallo = cautela, Rosso = non uscire. Indica anche la <b>finestra migliore</b> nelle prossime 48h.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #f0c040">
+<div style="font-size:13px;font-weight:700;color:#f0c040;margin-bottom:5px">📊 Confronto</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Aggiungi fino a <b>4 porti</b> dal menu → premi <b style="color:#7ecfa0">Carica tutti</b>. Vedi una tabella comparativa con vento, mare, pressione, CAPE, visibilità e semaforo 24h per ogni porto.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #7ecfa0">
+<div style="font-size:13px;font-weight:700;color:#7ecfa0;margin-bottom:5px">📍 Rotta</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Aggiungi le tappe in sequenza → premi <b style="color:#7ecfa0">Carica meteo</b>. Mostra distanze in <b>miglia nautiche</b>, condizioni per ogni tappa e semaforo +6/+12/+24h. Imposta <b>velocità e ora di partenza</b> per vedere il meteo all'ora di arrivo stimata.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #c090d0">
+<div style="font-size:13px;font-weight:700;color:#c090d0;margin-bottom:5px">🌀 Fronti &nbsp;|&nbsp; 📡 Quota 5500m</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6"><b>Fronti:</b> analisi della rotazione del vento, backing/veering, firma dei fronti meteorologici e grafico pressione 72h.<br><b>Grafico Pressione 72h:</b> le barre <b style="color:#3090d0">BLU</b> indicano l'ora attuale, le barre <b style="color:rgba(220,70,40,.85)">ROSSE</b> indicano pressione nel 30% più basso del range (zona di bassa pressione), le barre <b style="color:rgba(255,255,255,.4)">GRIGIE</b> indicano pressione nella fascia normale o alta.<br><b>Quota 5500m:</b> analisi del geopotenziale Z500 per valutare la stabilità atmosferica a lungo termine.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #f0a040">
+<div style="font-size:13px;font-weight:700;color:#f0a040;margin-bottom:5px">★ Preferiti</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Premi <b>☆</b> accanto al menu per salvare una località tra i preferiti (max 10). I preferiti appaiono sempre in cima come chip cliccabili. I dati sono salvati nel browser.</div>
+</div>
+
+</div>
+
+<div style="padding:12px 14px;background:rgba(160,96,208,.08);border-radius:10px;border-left:3px solid #c090d0">
+<div style="font-size:13px;font-weight:700;color:#c090d0;margin-bottom:5px">➕ Aggiungi Località Personalizzata</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Nella tab <b>🗺️ Mappa</b>, sotto la cartina, trovi il pannello <b>"Aggiungi Località Personalizzata"</b>. Inserisci nome, latitudine e longitudine di qualsiasi punto del Mediterraneo — il porto del tuo cantiere, il tuo ormeggio abituale, una cala preferita. La località viene <b>salvata nel browser</b> e appare in tutti i menu (Attuale, Confronto, Rotta) con un marker viola sulla mappa.</div>
+</div>
+
+<div style="margin-top:14px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;font-size:10px;color:#2a4a60;text-align:center">
+Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni ufficiali prima di navigare
+</div>
+</div>
+</div>
+<div class="st" id="ss" style="background:rgba(25,110,190,.1);border:1px solid rgba(25,110,190,.2);color:#80c0f0">⏳ Premi il pulsante per caricare i dati meteo</div>
+<div class="dn" id="mu">
+<div class="vd dn" id="vd"></div>
+<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📡 Quota 5500m</button></div>
+<div class="cn" id="pN"></div><div class="cn" id="pM" style="height:0;overflow:hidden;padding:0">
+<div id="mapContainer" style="position:relative;width:100%;height:480px;background:#0a1628;border-radius:12px;border:1px solid rgba(255,255,255,.1);overflow:hidden"></div>
+<div id="addLocPanel" style="margin-top:10px;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div style="font-size:12px;font-weight:700;color:#80c0f0">➕ Aggiungi Località Personalizzata</div>
+    <button onclick="document.getElementById('addLocForm').style.display=document.getElementById('addLocForm').style.display==='none'?'flex':'none'" style="background:none;border:none;color:#4a7090;cursor:pointer;font-size:11px">mostra/nascondi</button>
+  </div>
+  <div id="addLocForm" style="display:none;flex-wrap:wrap;gap:8px;align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:#4a7090">Nome</label>
+      <input id="newLocName" placeholder="Es. Porto di Roma" style="background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 10px;font-size:12px;width:160px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:#4a7090">Latitudine</label>
+      <input id="newLocLat" type="number" step="0.0001" placeholder="41.8900" style="background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 10px;font-size:12px;width:110px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:#4a7090">Longitudine</label>
+      <input id="newLocLon" type="number" step="0.0001" placeholder="12.4900" style="background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 10px;font-size:12px;width:110px">
+    </div>
+    <button onclick="addCustomLoc()" style="padding:6px 14px;background:rgba(25,110,190,.3);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:6px;font-size:12px;cursor:pointer;font-weight:700">+ Aggiungi</button>
+    <button onclick="clearCustomLocs()" style="padding:6px 10px;background:rgba(183,28,28,.2);color:#ff8080;border:1px solid rgba(183,28,28,.3);border-radius:6px;font-size:11px;cursor:pointer">✕ Rimuovi tutte</button>
+  </div>
+  <div id="customLocsList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px"></div>
+</div>
+<div id="mapInfo" style="display:none;margin-top:10px;padding:14px 16px;background:rgba(25,110,190,.15);border:1px solid rgba(25,110,190,.3);border-radius:12px;display:none;align-items:center;justify-content:space-between;gap:10px">
+  <div style="font-size:15px;font-weight:700;color:#e8f4ff" id="mapInfoName">—</div>
+  <button id="mapInfoBtn" style="padding:8px 18px;background:rgba(25,110,190,.5);color:#80c0f0;border:1px solid rgba(25,110,190,.5);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 Carica dati meteo</button>
+</div>
+</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div></div>
+<div class="ft">Dati: Open-Meteo API — Stime indicative — Consultare previsioni ufficiali<br><span style="color:#2a4a60">Progetto: Ernesto Faraco &amp; Claude Sonnet 🤖 — 2025</span></div>
+<script>
+const Z=[{n:"Capo dell'Arma",a:43.8461,o:7.9367},{n:"Capo di Vado",a:44.27,o:8.44},{n:"Capo Mele",a:43.96,o:8.17},{n:"Capo Noli",a:44.1956,o:8.4253},{n:"Portofino",a:44.3039,o:9.2078},{n:"Punta Mesco (Cinque Terre)",a:44.1333,o:9.65},{n:"Cala Galera",a:42.43,o:11.12},{n:"Capel Rosso (Giglio)",a:42.3589,o:10.9211},{n:"Capo d'Argentario",a:42.3833,o:11.15},{n:"Capo d'Enfola (Elba)",a:42.8333,o:10.2667},{n:"Capo d'Orso (Elba)",a:42.45,o:10.4},{n:"Capo d'Uomo (Argentario)",a:42.4,o:11.1},{n:"Capo Linaro (Civitavecchia)",a:42.08,o:11.79},{n:"Isola di Capraia",a:43.0511,o:9.8444},{n:"Livorno (Fanale dei Pisani)",a:43.5439,o:10.2947},{n:"Porto Santo Stefano",a:42.4347,o:11.1197},{n:"Portoferraio (Elba)",a:42.8164,o:10.3342},{n:"Punta del Fenaio (Giglio)",a:42.3667,o:10.8667},{n:"Talamone",a:42.5572,o:11.1394},{n:"Viareggio",a:43.8667,o:10.2333},{n:"Nettuno",a:41.46,o:12.66},{n:"Ponza",a:40.9,o:12.97},{n:"Ventotene",a:40.8,o:13.43},{n:"Capo Miseno",a:40.7778,o:14.0894},{n:"Capo Palinuro",a:40.0264,o:15.275},{n:"Isola d'Ischia",a:40.7333,o:13.95},{n:"Isola di Capri",a:40.55,o:14.2333},{n:"Isola di Stromboli",a:38.8,o:15.2167},{n:"Isola di Ustica",a:38.7078,o:13.1775},{n:"Isole Eolie (centro)",a:38.5333,o:14.9},{n:"Punta Campanella",a:40.5694,o:14.325},{n:"Punta di Posillipo",a:40.8219,o:14.2156},{n:"Punta Licosa",a:40.25,o:14.9},{n:"Capo Colonna (Crotone)",a:39.0333,o:17.2},{n:"Capo dell'Armi",a:37.95,o:15.7},{n:"Capo Peloro (Messina)",a:38.2664,o:15.6531},{n:"Capo Rizzuto",a:38.9667,o:17.2167},{n:"Capo Spartivento (Calabria)",a:37.9167,o:16.0667},{n:"Capo Vaticano",a:38.6194,o:15.8286},{n:"Punta Pellaro",a:38.0183,o:15.6369},{n:"Scilla",a:38.2506,o:15.7189},{n:"Capo Boeo (Marsala)",a:37.8,o:12.4333},{n:"Capo Gallo (Palermo)",a:38.2233,o:13.3167},{n:"Capo Milazzo",a:38.2706,o:15.2311},{n:"Capo Passero",a:36.685,o:15.14},{n:"Capo Zafferano",a:38.1122,o:13.5375},{n:"Isola di Favignana (Egadi)",a:37.9333,o:12.3333},{n:"Isola di Lampedusa",a:35.5086,o:12.5931},{n:"Isola di Pantelleria",a:36.7875,o:11.9925},{n:"Isola di Vulcano",a:38.4,o:14.9667},{n:"San Vito lo Capo",a:38.175,o:12.7333},{n:"Capo di Leuca",a:39.7833,o:18.3667},{n:"Punta della Testa (Gargano)",a:41.95,o:15.9667},{n:"Punta Palascia (Capo d'Otranto)",a:40.1075,o:18.52},{n:"Santa Maria di Leuca",a:39.7994,o:18.355},{n:"Vieste (Gargano)",a:41.8833,o:16.1667},{n:"Cagliari",a:39.22,o:9.12},{n:"Capo Caccia",a:40.57,o:8.16},{n:"Capo Carbonara",a:39.10,o:9.52},{n:"Capo Falcone",a:40.97,o:8.20},{n:"Capo Ferro",a:41.15,o:9.52},{n:"Capo Mannu",a:40.035,o:8.3781},{n:"Capo Marrangiu",a:40.3,o:8.4},{n:"Capo Pecora",a:39.4489,o:8.3917},{n:"Capo Pertusato (Bonifacio)",a:41.3678,o:9.1844},{n:"Capo San Marco",a:39.8583,o:8.4358},{n:"Capo Spartivento",a:38.8789,o:8.8936},{n:"Capo Testa",a:41.25,o:9.14},{n:"Capo Teulada",a:38.8667,o:8.6333},{n:"Carloforte",a:39.14,o:8.28},{n:"Faro della Chiappa",a:41.595,o:9.365},{n:"Olbia",a:40.92,o:9.5},{n:"P.ta Scorno (Asinara)",a:41.12,o:8.32},{n:"Pointe Cacavento",a:41.3883,o:9.1503},{n:"Porto Vecchio (Corsica)",a:41.59,o:9.28},{n:"Punta di u Cappiciolu",a:41.4281,o:9.2647},{n:"Punta Sardegna",a:41.1914,o:9.3608},{n:"Punta Scorno (Asinara)",a:41.1194,o:8.3183},{n:"Îles Lavezzi",a:41.325,o:9.25},{n:"Bastia",a:42.6944,o:9.4539},{n:"Cap Corse",a:42.8333,o:9.4167},{n:"Capu Fenu (Ajaccio)",a:41.9622,o:8.5933},{n:"Giraglia",a:43.03,o:9.41},{n:"Solenzara",a:41.8589,o:9.3997},{n:"Formentera - Cap de Barbaria",a:38.6333,o:1.4},{n:"Ibiza - Cap des Falcó",a:38.8667,o:1.2},{n:"Mahon (Minorca)",a:39.89,o:4.27},{n:"Mallorca - Cap de Formentor",a:39.9667,o:3.2167},{n:"Mallorca - Cap de ses Salines",a:39.2667,o:3.05},{n:"Menorca - Cap de Cavalleria",a:40.0667,o:4.0833},{n:"Palma Mallorca",a:39.57,o:2.65},{n:"Corfù",a:39.62,o:19.92},{n:"Cap Couronne",a:43.3333,o:5.05},{n:"Cap Croisette (Marsiglia)",a:43.2142,o:5.3375},{n:"Cap d'Antibes (Faro Garoupe)",a:43.5583,o:7.125},{n:"Cap Ferrat",a:43.6883,o:7.3289},{n:"Pointe d'Agde",a:43.3089,o:3.4769},{n:"Îles du Frioul (Marsiglia)",a:43.275,o:5.3},{n:"Cabo de Gata",a:36.8303,o:-2.0061},{n:"Cabo de la Nao",a:38.7333,o:0.2167},{n:"Cabo de Palos",a:37.6333,o:-0.7},{n:"Cap de Creus (Costa Brava)",a:42.3167,o:3.3167},{n:"Delta dell'Ebro",a:40.72,o:0.8631},{n:"Punta de Tarifa",a:36.0042,o:-5.6103},{n:"Sitges",a:41.235,o:1.8119}];
+let z=Z[0],D,Mr,vi=0,sl=document.getElementById("zS");
+(function(){
+  var regionOrder = ["Liguria","Toscana","Lazio","Tirreno Centro","Campania","Tirreno Sud","Calabria","Sicilia","Puglia","Sardegna","Corsica","Baleari","Grecia","Francia","Spagna","Altro"];
+  var regionMap = {};
+  var regions_def = [
+    ["Liguria",1,43.5,44.5,7.5,9.8],["Toscana",2,42.0,44.0,9.8,12.0],
+    ["Lazio",3,40.8,42.5,11.0,13.5],["Tirreno Centro",3,40.5,41.5,12.5,14.5],
+    ["Campania",4,40.0,41.2,13.5,15.5],["Tirreno Sud",4,38.5,40.5,13.0,16.0],
+    ["Calabria",5,37.8,39.2,15.5,17.5],["Sicilia",6,35.0,38.5,11.8,16.0],
+    ["Puglia",7,39.5,42.2,15.5,19.0],["Sardegna",8,38.7,41.6,8.0,10.0],
+    ["Corsica",9,41.3,43.1,8.4,9.6],["Baleari",10,38.5,40.2,1.0,4.4],
+    ["Grecia",11,39.0,40.5,19.0,21.0],["Francia",12,43.0,44.0,3.0,7.5],
+    ["Spagna",13,36.0,42.5,-6.0,3.5]
+  ];
+  function getReg(lat,lon){
+    for(var i=0;i<regions_def.length;i++){
+      var r=regions_def[i];
+      if(lat>=r[2]&&lat<=r[3]&&lon>=r[4]&&lon<=r[5]) return r[0];
+    }
+    return "Altro";
+  }
+  Z.forEach(function(x){
+    var rn=getReg(x.a,x.o);
+    if(!regionMap[rn]) regionMap[rn]=[];
+    regionMap[rn].push(x);
+  });
+  regionOrder.forEach(function(rn){
+    if(!regionMap[rn]||regionMap[rn].length===0) return;
+    var grp=document.createElement("optgroup");
+    grp.label="— "+rn+" —";
+    regionMap[rn].forEach(function(x){
+      var o=document.createElement("option");
+      o.value=x.n; o.text=x.n; grp.appendChild(o);
+    });
+    sl.appendChild(grp);
+  });
+})();
+sl.onchange=()=>{z=Z.find(x=>x.n===sl.value)};
+document.getElementById("go").onclick=ld;
+function st(id,b){
+  document.querySelectorAll(".t").forEach(x=>x.classList.remove("a"));
+  b.classList.add("a");
+  ["pN","pF","p24","p48","pR","pZ","pS","pC","pRT"].forEach(x=>document.getElementById(x).classList.add("dn"));
+  if(id==="mp"){
+    document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
+    setTimeout(function(){
+      if(!window._leafMap){
+        window._leafMap=L.map('mapContainer',{center:[38,13],zoom:5});
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri'}).addTo(window._leafMap);
+        window._leafMarkers={};
+        Z.forEach(function(loc){
+          var color=(window._meteoColors&&window._meteoColors[loc.n])||'#4a90c0';
+          var icon=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid rgba(255,255,255,.7)"></div>',iconSize:[12,12],iconAnchor:[6,6],popupAnchor:[0,-8]});
+          var m=L.marker([loc.a,loc.o],{icon:icon});
+          m.locName=loc.n;
+          m.on('click',function(){
+            // No popup - use info panel instead
+            document.getElementById('mapInfo').style.display='block';
+            document.getElementById('mapInfoName').textContent=loc.n;
+            window._selectedMapLoc=loc.n;
+          });
+          m.addTo(window._leafMap);
+          window._leafMarkers[loc.n]=m;
+        });
+      } else {
+        window._leafMap.invalidateSize();
+        Z.forEach(function(loc){
+          var m=window._leafMarkers[loc.n];
+          if(!m)return;
+          var color=(window._meteoColors&&window._meteoColors[loc.n])||'#4a90c0';
+          var icon=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid rgba(255,255,255,.7)"></div>',iconSize:[12,12],iconAnchor:[6,6],popupAnchor:[0,-8]});
+          m.setIcon(icon);
+        });
+      }
+    },200);
+  } else {
+    document.getElementById("pM").style.cssText="height:0;overflow:hidden;padding:0";
+    document.getElementById("mapInfo").style.display='none';
+    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
+  }
+}
+
+function sv(i){vi=i;rn();document.querySelectorAll(".t")[0].click()}
+
+const BF=k=>{if(k<1)return{f:0,d:"Calma",c:"#7ecfa0"};if(k<4)return{f:1,d:"Bava",c:"#7ecfa0"};if(k<7)return{f:2,d:"Brezza legg",c:"#88d8b0"};if(k<11)return{f:3,d:"Brezza tesa",c:"#a0d890"};if(k<17)return{f:4,d:"Moderato",c:"#f0d060"};if(k<22)return{f:5,d:"Teso",c:"#f0b040"};if(k<28)return{f:6,d:"Fresco",c:"#e89050"};if(k<34)return{f:7,d:"Forte",c:"#e06040"};if(k<41)return{f:8,d:"Burrasca",c:"#d03030"};return{f:"9+",d:"Tempesta",c:"#a01020"}};
+const SE=h=>{if(h==null)return{d:"N/D",c:"#666"};if(h<.1)return{d:"Calmo",c:"#7ecfa0"};if(h<.5)return{d:"Q.calmo",c:"#88d8b0"};if(h<1.25)return{d:"Poco mosso",c:"#a0d890"};if(h<2.5)return{d:"Mosso",c:"#f0b040"};if(h<4)return{d:"Molto mosso",c:"#e06040"};return{d:"Agitato",c:"#d03030"}};
+const WN=d=>{if(d==null)return"—";return["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d/22.5)%16]};
+const VI=(h,r,c)=>{if(r>5)return{t:"Scarsa",s:"<2km",c:"#d03030"};if(r>1||(h>95&&c>87))return{t:"Mediocre",s:"2-5km",c:"#e89050"};if(h>85||c>75)return{t:"Discreta",s:"5-10km",c:"#f0d060"};if(h>70)return{t:"Buona",s:"10-20km",c:"#88d8b0"};return{t:"Ottima",s:">20km",c:"#4a9060"}};
+const CT=(v,p)=>{let o=Math.round(v/12.5);if(o<=1)return"Sereno";if(o<=3&&p<200)return"Ci,Cs";if(o<=3)return"Ci,Ac cast⚠️";if(o<=5&&p<500)return"Ac,As";if(o<=5)return"Ac cast";if(o<=7&&p<800)return"Sc,Ns";if(o<=7)return"Cu con";if(p>=1500)return"Cb⚡";if(p>=500)return"Cu/Cb";return"Ns,St"};
+const PT=(p,i)=>{if(!p||i<3)return{t:"N/D",i:"—",c:"#666"};let d=p[i]-p[i-3];if(d<-3)return{t:"Forte calo("+d.toFixed(1)+")",i:"⬇️⬇️",c:"#d03030"};if(d<-1.5)return{t:"Calo("+d.toFixed(1)+")",i:"⬇️",c:"#e89050"};if(d<-.5)return{t:"Lieve calo",i:"↘️",c:"#f0d060"};if(d>3)return{t:"Forte rialzo",i:"⬆️⬆️",c:"#2e7d32"};if(d>1.5)return{t:"Rialzo",i:"⬆️",c:"#4a9060"};if(d>.5)return{t:"Lieve rialzo",i:"↗️",c:"#88d8b0"};return{t:"Stabile",i:"➡️",c:"#5a90a0"}};
+const WR=(d,i)=>{if(!d||i<1||d[i]==null||d[i-1]==null)return null;let x=d[i]-d[i-1];if(x>180)x-=360;if(x<-180)x+=360;return x};
+function AF(h,x){if(!h||x<3)return null;let pd=h.pressure_msl[x]-h.pressure_msl[Math.max(0,x-3)],rs=[],i;for(i=Math.max(1,x-5);i<=x;i++){let r=WR(h.wind_direction_10m,i);if(r!=null)rs.push(r)}let ar=rs.length?rs.reduce((a,b)=>a+b)/rs.length:0,cp=h.cape?.[x]??0,cl=h.cloud_cover?.[x]??0,rr=h.precipitation?.[x]??0,td=x>=3?h.temperature_2m[x]-h.temperature_2m[x-3]:0,sg=[],sv=0,fr=null;if(ar<-3){sg.push("🔄 Backing: sistema avvic.");sv++}if(pd<-3){sg.push("📉 Press. forte calo");sv+=2}else if(pd<-1.5){sg.push("📉 Press. in calo");sv++}if(cp>=1500){sg.push("⚡ CAPE "+cp);sv+=2}else if(cp>=500){sg.push("⛈️ CAPE "+cp);sv++}if(td<-3){sg.push("🌡️ Calo termico rapido");sv++}if(rr>2&&cl>87&&cp>=1000){sg.push("🌧️⚡ Poss. occlusione");sv+=2}if(pd<-2&&ar<-2&&cl>60){if(cp>=1000&&rr>1)fr=cp>=1500||td>0?{t:"OCCLUSIONE CALDA",d:"Temporali embedded insidiosi — il più pericoloso per la navigazione.",c:"#c040a0"}:{t:"OCCLUSIONE FREDDA",d:"Rovesci intensi senza pausa, brusco veering e doppio calo di pressione.",c:"#7b1fa2"};else if(td<-2)fr={t:"FRONTE FREDDO",d:"Veering brusco.",c:"#1565c0"};else if(rr>.5&&cl>75)fr={t:"FRONTE CALDO",d:"Pioggia continua.",c:"#c62828"}}else if(pd<-1&&cl>50&&ar<-1)fr=td<-1?{t:"POSS.FRONTE FREDDO",d:"Monitorare.",c:"#1976d2"}:{t:"POSS.FRONTE CALDO",d:"Monitorare.",c:"#d32f2f"};if(!sg.length)return null;return{sg,fr,pd,lv:sv>=4?"🔴":sv>=2?"🟡":"🟢"}}
+function GG(w,wh,cp,vs,rr){let is=[];if(w>20)is.push("Vento forte("+Math.round(w)+"kn)");else if(w>15)is.push("Vento sostenuto");if(wh>2)is.push("Onde alte("+wh.toFixed(1)+"m)");else if(wh>1.5)is.push("Mare mosso");if(cp>1000)is.push("Rischio temporali");if(rr>3)is.push("Pioggia intensa");if(vs&&vs.t==="Scarsa")is.push("Visibilità scarsa");if(!is.length)return{l:"SI PUÒ USCIRE ✅",c:"#2e7d32",b:"rgba(46,125,50,.12)",is:["Condizioni favorevoli"]};if(w>25||wh>2.5||cp>2000)return{l:"NON USCIRE ⛔",c:"#b71c1c",b:"rgba(183,28,28,.15)",is};return{l:"CAUTELA ⚠️",c:"#e65100",b:"rgba(230,81,0,.12)",is}}
+
+const N=(v,d)=>v!=null?v.toFixed(d):"—";
+
+async function ld(){let b=document.getElementById("go"),s=document.getElementById("ss");b.disabled=true;b.textContent="⏳...";s.className="st";s.style.cssText="background:rgba(25,110,190,.1);border:1px solid rgba(25,110,190,.2);color:#80c0f0";s.textContent="⏳ Connessione a Open-Meteo per "+z.n+"...";
+try{let r1=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+z.a+"&longitude="+z.o+"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape,geopotential_height_500hPa,temperature_500hPa,wind_speed_500hPa,wind_direction_500hPa,geopotential_height_500hPa&forecast_days=3&wind_speed_unit=kn&timezone=Europe%2FRome");if(!r1.ok)throw new Error("API:"+r1.status);D=await r1.json();try{let r2=await fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+z.a+"&longitude="+z.o+"&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,wind_wave_height&forecast_days=3&timezone=Europe%2FRome");if(r2.ok)Mr=await r2.json()}catch(e){Mr=null}
+let now=new Date();vi=0;for(let i=0;i<D.hourly.time.length;i++)if(new Date(D.hourly.time[i])<=now)vi=i;
+s.style.cssText="background:rgba(46,125,50,.1);border:1px solid rgba(46,125,50,.3);color:#4a9060";s.textContent="✅ Dati caricati!";setTimeout(()=>s.classList.add("dn"),1500);document.getElementById("mu").classList.remove("dn");rn()}
+catch(e){s.style.cssText="background:rgba(183,28,28,.1);border:1px solid rgba(183,28,28,.3);color:#ff6060";s.innerHTML="❌ "+e.message+"<br><small style='color:#c0a0a0'>Scarica il file HTML e aprilo in Safari/Chrome</small>"}
+b.disabled=false;b.textContent="🔄 Carica Dati Live"}
+
+function rn(){try{if(!D)return;let h=D.hourly,m=Mr?.hourly,wk=h.wind_speed_10m[vi]??0,wd=h.wind_direction_10m[vi],wg=h.wind_gusts_10m[vi]??0,tp=h.temperature_2m[vi]??0,hm=h.relative_humidity_2m[vi]??0,dw=h.dew_point_2m?.[vi],pr=h.pressure_msl[vi]??1013,cl=h.cloud_cover[vi]??0,rr=h.precipitation?.[vi]??0,cp=h.cape?.[vi]??0,wh=m?.wave_height?.[vi],wdr=m?.wave_direction?.[vi],wp=m?.wave_period?.[vi],swh=m?.swell_wave_height?.[vi],swd=m?.swell_wave_direction?.[vi],wwh=m?.wind_wave_height?.[vi];
+let bf=BF(wk),se=SE(wh),vs=VI(hm,rr,cl),ct=CT(cl,cp),pt=PT(h.pressure_msl,vi),rt=WR(h.wind_direction_10m,vi),fa=AF(h,vi),o8=Math.round(cl/12.5);
+let ts=new Date(h.time[vi]).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+document.getElementById("nf").textContent=ts+" — "+z.n;
+let g=GG(wk,wh??0,cp,vs,rr),ve=document.getElementById("vd");
+// Update map marker color for current location
+if(!window._meteoColors)window._meteoColors={};
+if(!window._meteoStatus)window._meteoStatus={};
+window._meteoColors[z.n]=g.c;
+window._meteoStatus[z.n]=g.l.replace(/<[^>]+>/g,'');
+if(window.MAP)placeMarkers();
+// Update Leaflet marker color if map is open
+if(window._leafMarkers && window._leafMarkers[z.n]){
+  var _mc=g.c;
+  var _mi=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+_mc+';border:2px solid rgba(255,255,255,.7)"></div>',iconSize:[12,12],iconAnchor:[6,6],popupAnchor:[0,-8]});
+  window._leafMarkers[z.n].setIcon(_mi);
+}
+ve.classList.remove("dn");ve.style.cssText="background:"+g.b+";border:1px solid "+g.c+"30";ve.innerHTML='<h2 style="color:'+g.c+'">'+g.l+"</h2>"+g.is.map(x=>'<p style="color:'+g.c+'">• '+x+"</p>").join("");
+let rtg=rt!=null?'<div class="tg" style="background:'+(rt<-2?"rgba(230,80,0,.15)":rt>2?"rgba(40,120,200,.15)":"rgba(255,255,255,.04)")+";color:"+(rt<-2?"#f0a050":rt>2?"#60a8e0":"#5a7888")+'">'+(rt<-2?"🔄 Backing "+rt.toFixed(0)+"°":rt>2?"↻ Veering +"+rt.toFixed(0)+"°":"→ Stabile")+"</div>":"";
+document.getElementById("pN").innerHTML='<div class="gr">'+
+'<div class="cd"><div class="lb">💨 Vento</div><div class="rw"><div><span class="vl" style="color:'+bf.c+'">'+N(wk,0)+' kn</span> <span style="font-size:12px;color:#5a8098">F'+bf.f+'</span></div><div style="font-size:14px;font-weight:700;color:#b0c8d8">'+WN(wd)+' ('+N(wd,0)+'°)</div></div><div class="sb">'+bf.d+' — Raff: '+N(wg,0)+' kn</div>'+rtg+'</div>'+
+'<div class="cd"><div class="lb">📊 Pressione</div><div class="vl">'+N(pr,1)+' <span style="font-size:12px;font-weight:400">hPa</span></div><div class="sb" style="color:'+pt.c+'">'+pt.i+' '+pt.t+' (3h)</div></div>'+
+'<div class="cd"><div class="lb">🌡️ Temperatura</div><div class="vl">'+N(tp,1)+'°C</div><div class="sb">Umidità: '+hm+'% — Rug: '+N(dw,1)+'°C</div></div>'+
+'<div class="cd"><div class="lb">☁️ Nuvolosità</div><div class="vl">'+o8+'<span style="font-size:12px;font-weight:400">/8</span></div><div class="sb">'+ct+'</div><div class="bb"><div class="bf" style="width:'+cl+'%"></div></div></div>'+
+'<div class="cd"><div class="lb">⚡ CAPE</div><div class="vl" style="color:'+(cp>=1500?"#ff5050":cp>=500?"#f0a040":"#7ecfa0")+'">'+cp+' <span style="font-size:12px;font-weight:400">J/kg</span></div><div class="sb">'+(cp>=1500?"Alto: temporali probabili":cp>=500?"Moderato":cp>=100?"Basso":"Stabile")+'</div></div>'+
+'<div class="cd"><div class="lb">👁️ Visibilità</div><div class="vl" style="color:'+vs.c+'">'+vs.t+'</div><div class="sb">'+vs.s+' — Precip: '+N(rr,1)+' mm/h</div></div>'+
+'<div class="cd"><div class="lb">🌊 Mare</div><div class="rw"><span class="vl" style="color:'+se.c+'">'+(wh!=null?wh.toFixed(1):"—")+' m</span><span style="font-size:12px;color:#5a8098">'+se.d+'</span></div><div class="sb">Per: '+(wp!=null?wp.toFixed(0):"—")+'s Dir: '+WN(wdr)+'</div>'+(swh!=null?'<div class="sb">Swell: '+swh.toFixed(1)+'m '+WN(swd)+'</div>':"")+'</div></div>';
+// FC table builder
+function bFc(from,hours){let fc='<div style="overflow-x:auto"><table style="min-width:780px"><thead><tr>';
+[
+  {h:"Ora",   t:""},
+  {h:"Vn",    t:"Vento (kn)"},
+  {h:"Dir",   t:"Direzione vento"},
+  {h:"Rf",    t:"Raffiche (kn)"},
+  {h:"hPa",   t:"Pressione"},
+  {h:"&#8635;&#8634;", t:"Rotazione vento: &#8634; Backing=peggiora / &#8635; Veering=migliora"},
+  {h:"&deg;C",t:"Temperatura"},
+  {h:"Um",    t:"Umidita %"},
+  {h:"Nv",    t:"Nuvolosita /8"},
+  {h:"Tipo",  t:"Tipo nuvole - clicca per info"},
+  {h:"CAPE",  t:"Energia convettiva - rischio temporali"},
+  {h:"mm",    t:"Precipitazioni mm/h"},
+  {h:"Vis",   t:"Visibilita"},
+  {h:"On",    t:"Altezza onde (m)"},
+  {h:"Mare",  t:"Stato del mare"}
+].forEach(function(x){fc+='<th title="'+x.t+'">'+x.h+'</th>';});
+fc+="</tr></thead><tbody>";
+let step=hours>24?2:1;
+for(let i=from;i<Math.min(from+hours+1,h.time.length);i+=step){let t=new Date(h.time[i]),w=h.wind_speed_10m[i],b=BF(w),c8=Math.round((h.cloud_cover[i]??0)/12.5),p=PT(h.pressure_msl,i),ca=h.cape?.[i]??0,ra=h.precipitation?.[i]??0,v=VI(h.relative_humidity_2m[i],ra,h.cloud_cover[i]),wi=m?.wave_height?.[i],s=SE(wi),ct=CT(h.cloud_cover[i]??0,ca),ctQ=ct.replace(/'/g,"&#39;");
+fc+='<tr class="cr'+(i===vi?" hi":"")+'" onclick="sv('+i+')"><td style="white-space:nowrap"><b>'+t.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})+'</b><br><span style="font-size:8px;color:#3a6080">'+t.toLocaleDateString("it-IT",{weekday:"short",day:"numeric"})+'</span></td><td style="color:'+b.c+';font-weight:700">'+N(w,0)+'</td><td>'+WN(h.wind_direction_10m[i])+'</td><td>'+N(h.wind_gusts_10m[i],0)+'</td><td>'+N(h.pressure_msl[i],1)+'</td><td style="color:'+p.c+'">'+p.i+'</td><td>'+N(h.temperature_2m[i],1)+'</td><td>'+(h.relative_humidity_2m[i]??"—")+'</td><td>'+c8+'/8</td><td onclick="event.stopPropagation();showCloudTip(this,\''+ctQ+'\')" style="font-size:8px;cursor:pointer;text-decoration:underline dotted;color:#88c0d8">'+ct+'</td><td style="color:'+(ca>=1500?"#ff5050":ca>=500?"#f0a040":"#7ecfa0")+'">'+ca+'</td><td>'+(ra>0?ra.toFixed(1):"—")+'</td><td style="color:'+v.c+';font-size:8px">'+v.t+'</td><td style="color:'+s.c+'">'+(wi!=null?wi.toFixed(1):"—")+'</td><td style="font-size:8px">'+s.d+'</td></tr>'}
+fc+='</tbody></table></div><div style="font-size:10px;color:#3a5a70;margin-top:6px">💡 Tocca riga per dettaglio'+(step>1?' — Dati ogni 2h':'')+'</div>';
+return fc}
+document.getElementById("pF").innerHTML=bFc(vi,12);
+document.getElementById("p24").innerHTML=bFc(vi,24);
+document.getElementById("p48").innerHTML=bFc(vi,48);
+// FR tab
+let fr='<div style="font-size:10px;color:#3a6080;margin-bottom:10px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05)">Analisi frontale e rotazione vento: dati relativi all\'ora selezionata. Grafico pressione: evoluzione 72h.</div>';
+fr+='<div class="cd" style="margin-bottom:10px"><div class="lb" style="margin-bottom:8px">🌀 ANALISI FRONTALE — '+ts+'</div>';
+if(fa){if(fa.fr)fr+='<div style="padding:10px 12px;border-radius:8px;margin-bottom:8px;background:'+fa.fr.c+'15;border:1px solid '+fa.fr.c+'30"><div style="font-size:16px;font-weight:900;color:'+fa.fr.c+'">'+fa.lv+' '+fa.fr.t+'</div><div style="font-size:11px;color:#b0c8d8;margin-top:3px">'+fa.fr.d+'</div></div>';fa.sg.forEach(s=>fr+='<div class="sg">'+s+'</div>');
+let eta=fa.pd<-3?"~6h":fa.pd<-1.5?"~12-24h":"oltre 24h";fr+='<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(48,144,208,.08);border:1px solid rgba(48,144,208,.15);font-size:11px;color:#80c0f0">⏱️ Fronte stimato entro <b>'+eta+'</b> <span style="color:#5a8098;font-size:9px">(stima indicativa basata sulla tendenza barica)</span></div>'}
+else fr+='<div style="font-size:13px;color:#4a8a60">🟢 Nessun segnale frontale.</div>';
+fr+='</div>';
+// Rotation
+fr+='<div class="cd"><div class="lb" style="margin-bottom:8px">🔄 ROTAZIONE VENTO</div><div style="display:flex;gap:2px;flex-wrap:wrap">';
+for(let k=0;k<Math.min(16,h.time.length-Math.max(0,vi-6));k++){let i=Math.max(0,vi-6)+k;if(i>=h.time.length)continue;let r=WR(h.wind_direction_10m,i),t=new Date(h.time[i]);
+fr+='<div style="text-align:center;padding:3px 2px;border-radius:5px;min-width:42px;'+(i===vi?"background:rgba(25,110,190,.15);border:1px solid rgba(25,110,190,.3)":"border:1px solid transparent")+'"><div style="font-size:7px;color:#3a6888">'+t.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})+'</div><div style="font-size:12px;font-weight:700;color:#c8dce8">'+WN(h.wind_direction_10m[i])+'</div><div style="font-size:8px;color:#4a7a98">'+h.wind_direction_10m[i]?.toFixed(0)+'°</div>';
+if(r!=null)fr+='<div style="font-size:8px;color:'+(r<-2?"#f0a050":r>2?"#60a8e0":"#3a5a68")+';font-weight:'+(Math.abs(r)>2?700:400)+'">'+(r<-2?"↺"+r.toFixed(0):r>2?"↻+"+r.toFixed(0):"·")+'</div>';fr+='</div>'}
+fr+='</div><div style="margin-top:8px;font-size:9px;color:#3a5a70"><span style="color:#f0a050">↺ Backing</span>=avvic. | <span style="color:#60a8e0">↻ Veering</span>=passaggio</div></div>';
+// Pressure
+let ps=h.pressure_msl.filter((_,i)=>i%2===0),mn=Math.min(...ps),mx=Math.max(...ps),rg=mx-mn||1;
+fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:4px">📈 PRESSIONE 72h</div><div style="display:flex;align-items:flex-end;gap:1px;height:50px">';
+ps.forEach((p,i)=>{let pc=((p-mn)/rg)*100;fr+='<div style="flex:1;max-width:5px;height:'+Math.max(2,pc*.5)+'px;background:'+(Math.abs(i*2-vi)<=1?"#3090d0":p<mn+rg*.3?"rgba(220,70,40,.45)":"rgba(255,255,255,.1)")+';border-radius:1px"></div>'});
+fr+='</div><div style="display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:#3a5a70"><span>Min:'+mn.toFixed(1)+'</span><span>Max:'+mx.toFixed(1)+'</span></div></div>';
+// Reference
+fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:6px">📚 FRONTI</div><div style="display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(155px,1fr))">';
+[["🔵 Fr.Freddo","Backing→Veer BRUSCO<br>Rovesci,Cb,calo T","21,101,192"],["🔴 Fr.Caldo","Backing lento→Veer grad<br>Pioggia cont,Ns","198,40,40"],["🟣 Occl.Fredda","Pioggia→rovesci NO pausa<br>Veer brusco,doppio calo","123,31,162"],["🟣 Occl.Calda","Sembra caldo MA temporali<br>⚠️ Il più insidioso","192,64,160"]].forEach(([t,d,rgb])=>{fr+='<div class="rx" style="background:rgba('+rgb+',.08);border:1px solid rgba('+rgb+',.15)"><strong style="color:rgba('+rgb.split(",").map(x=>Math.min(255,+x+80)).join(",")+',1)">'+t+'</strong><br><span style="font-size:9px">'+d+'</span></div>'});
+fr+='</div></div>';
+document.getElementById("pR").innerHTML=fr}catch(e){console.error("Errore rendering:",e);document.getElementById("ss").className="st";document.getElementById("ss").style.cssText="background:rgba(183,28,28,.1);border:1px solid rgba(183,28,28,.3);color:#ff6060";document.getElementById("ss").innerHTML="⚠️ Errore rendering: "+e.message;document.getElementById("ss").classList.remove("dn")}}
+var zBuilt=false;
+function bzP(){
+  zBuilt=true;
+  if(!D){
+    document.getElementById("pZ").innerHTML='<div class="cd"><div style="font-size:12px;color:#4a7090;text-align:center;padding:20px">&#9888; Premi prima "Carica Dati Live" per caricare i dati in quota.</div></div>';
+    return;
+  }
+  rzZ();
+}
+
+function rzZ(){
+  if(!D)return;
+  var h=D.hourly;
+  var z5=h.geopotential_height_500hPa;
+  var t5=h.temperature_500hPa;
+  var ws5=h.wind_speed_500hPa;
+  var wd5=h.wind_direction_500hPa;
+
+  if(!z5||z5[vi]==null){
+    document.getElementById("pZ").innerHTML='<div class="cd"><div style="font-size:12px;color:#4a7090;text-align:center;padding:20px">&#9888; Dati quota 500 hPa non disponibili per questa posizione.</div></div>';
+    return;
+  }
+
+  var z0=Math.round(z5[vi]);
+  var t0=t5?t5[vi]?.toFixed(1):null;
+  var ws0=ws5?Math.round(ws5[vi]):null;
+  var wd0=wd5?wd5[vi]:null;
+  var z0dam=Math.round(z0/10);
+
+  var z6h=z5[vi+6]!=null?Math.round(z5[vi+6]):null;
+  var z24h=z5[vi+24]!=null?Math.round(z5[vi+24]):null;
+  var z48h=z5[vi+48]!=null?Math.round(z5[vi+48]):null;
+  var delta6=z6h!=null?z6h-z0:null;
+  var delta24=z24h!=null?z24h-z0:null;
+
+  var wdName=wd0!=null?["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(wd0/22.5)%16]:"N/D";
+
+  var regime,rc;
+  if(z0>5800){regime="Alta pressione intensa";rc="#4a9060";}
+  else if(z0>5640){regime="Alta pressione stabile";rc="#4a9060";}
+  else if(z0>5520){regime="Zona di transizione";rc="#f0d060";}
+  else if(z0>5400){regime="Saccatura in avvicinamento";rc="#e89050";}
+  else{regime="Depressione / cut-off";rc="#d03030";}
+
+  var struttura;
+  if(z0>5600){struttura="&#9968; PROMONTORIO dominante. Aria calda spinge il livello 500 hPa verso l'alto. Atmosfera stabile.";}
+  else if(z0>5400){struttura="&#8600; Situazione di transizione. Possibile saccatura in avvicinamento. Monitorare.";}
+  else{struttura="&#127744; SACCATURA presente. Il livello 500 hPa si abbassa verso il mare. Perturbazione probabile.";}
+
+  var trendL,trendC;
+  if(delta6==null){trendL="N/D";trendC="#5a8098";}
+  else if(delta6>60){trendL="&#8599; +"+(delta6)+"m in 6h &#8212; Risalita decisa";trendC="#4a9060";}
+  else if(delta6>20){trendL="&#8599; +"+(delta6)+"m in 6h &#8212; Leggera risalita";trendC="#4a9060";}
+  else if(delta6>=-20){trendL="&#8594; "+(delta6)+"m in 6h &#8212; Stazionario";trendC="#f0d060";}
+  else if(delta6>=-60){trendL="&#8600; "+(delta6)+"m in 6h &#8212; Calo moderato";trendC="#e89050";}
+  else{trendL="&#8600; "+(delta6)+"m in 6h &#8212; Calo rapido";trendC="#d03030";}
+
+  var windNote="";
+  if(wd0!=null){
+    if((wd0>=225&&wd0<=315)){windNote="Vento da W/SW &#8212; flusso zonale, promontorio o fronte caldo lento.";}
+    else if(wd0>315||wd0<45){windNote="Vento da N/NW &#8212; aria fredda in discesa, fronte freddo in transito.";}
+    else if(wd0>=135&&wd0<225){windNote="Vento da S/SE &#8212; precede spesso l'arrivo di un fronte caldo.";}
+    else{windNote="Vento da E/NE &#8212; situazione atipica, possibile blocco o cut-off.";}
+  }
+
+  var fronte="";
+  var isNW=(wd0!=null&&(wd0>270||wd0<45));
+  var isSW=(wd0!=null&&wd0>=180&&wd0<=270);
+  if(z0<5400&&delta6!=null&&delta6<-40&&isNW){
+    fronte='<div class="rx" style="background:rgba(21,101,192,.12);border:1px solid rgba(21,101,192,.3);margin-bottom:6px"><strong style="color:#64b5f6">&#10052; Firma: FRONTE FREDDO</strong><br><span style="font-size:9px">Z500 basso + calo rapido + vento da NW. Peggioramento breve ma intenso. Prepara i terzaroli.</span></div>';
+  } else if(z0<5550&&isSW&&delta6!=null&&delta6<0){
+    fronte='<div class="rx" style="background:rgba(198,40,40,.1);border:1px solid rgba(198,40,40,.25);margin-bottom:6px"><strong style="color:#ef9a9a">&#127777; Firma: FRONTE CALDO</strong><br><span style="font-size:9px">Z500 in calo + vento da SW/S. Peggioramento graduale ma prolungato. Piogge continue.</span></div>';
+  } else if(z0<5400&&delta6!=null&&Math.abs(delta6)<20){
+    fronte='<div class="rx" style="background:rgba(123,31,162,.1);border:1px solid rgba(123,31,162,.25);margin-bottom:6px"><strong style="color:#ce93d8">&#127744; Firma: POSSIBILE CUT-OFF</strong><br><span style="font-size:9px">Z500 molto basso e stazionario. Sistema difficile da prevedere. Massima cautela.</span></div>';
+  }
+
+  var vl,vc,vb,vi2;
+  if(z0>5640&&(delta6==null||delta6>-40)){
+    vl="SI PUO USCIRE &#10003;";vc="#2e7d32";vb="rgba(46,125,50,.12)";
+    vi2="Z500 a "+z0+"m ("+z0dam+" dam) &#8212; atmosfera stabile e prevedibile.";
+  } else if(z0>5400||(delta6!=null&&delta6>0)){
+    vl="CAUTELA &#9888;";vc="#e65100";vb="rgba(230,81,0,.12)";
+    vi2="Z500 a "+z0+"m ("+z0dam+" dam) &#8212; situazione in evoluzione. Monitorare.";
+  } else {
+    vl="ATTENZIONE &#9940;";vc="#b71c1c";vb="rgba(183,28,28,.15)";
+    vi2="Z500 a "+z0+"m ("+z0dam+" dam) &#8212; bassa pressione in quota. Previsione incerta oltre 24h.";
+  }
+
+  var f24l,f24c,f48l,f48c;
+  if(delta24!=null){
+    if(z24h>5640&&delta24>-40){f24l="&#10003; Ottimo";f24c="#4a9060";}
+    else if(z24h>5400){f24l="&#9888; Variabile";f24c="#f0d060";}
+    else{f24l="&#128308; Perturbato";f24c="#d03030";}
+    if(z48h!=null){
+      if(z48h>5640){f48l="&#10003; Buono";f48c="#4a9060";}
+      else if(z48h>5400){f48l="&#9888; Incerto";f48c="#f0d060";}
+      else{f48l="&#128308; Perturbato";f48c="#d03030";}
+    } else {f48l="N/D";f48c="#5a8098";}
+  } else {f24l="N/D";f24c="#5a8098";f48l="N/D";f48c="#5a8098";}
+
+  var ts=new Date(h.time[vi]).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+
+  var out='';
+  out+='<div class="vd" style="background:'+vb+';border:1px solid '+vc+'30;margin-bottom:8px"><h2 style="color:'+vc+'">'+vl+'</h2><p style="color:'+vc+'">'+vi2+'</p></div>';
+
+  out+='<div class="gr" style="margin-bottom:8px">';
+  out+='<div class="cd"><div class="lb">&#127759; Z500 ora</div><div class="vl" style="color:'+rc+'">'+z0+' m</div><div class="sb">'+z0dam+' dam &#8212; '+regime+'</div></div>';
+  out+='<div class="cd"><div class="lb">&#128200; Tendenza +6h</div><div class="vl" style="font-size:15px;color:'+trendC+'">'+trendL+'</div><div class="sb">'+(z6h!=null?z6h+" m tra 6 ore":"N/D")+'</div></div>';
+  if(t0!=null)out+='<div class="cd"><div class="lb">&#127777; Temperatura 500hPa</div><div class="vl">'+t0+'&#176;C</div><div class="sb">Temperatura a ~5.500 m</div></div>';
+  if(ws0!=null)out+='<div class="cd"><div class="lb">&#128168; Vento 500hPa</div><div class="vl">'+ws0+' kn</div><div class="sb">'+wdName+' ('+Math.round(wd0)+'&#176;)</div></div>';
+  out+='</div>';
+
+  out+='<div class="cd" style="margin-bottom:8px">';
+  out+='<div class="lb" style="margin-bottom:6px">&#9968; STRUTTURA IN QUOTA &#8212; '+ts+'</div>';
+  out+='<div class="sg" style="font-size:10px;margin-bottom:5px">'+struttura+'</div>';
+  if(windNote)out+='<div class="sg" style="font-size:10px;margin-bottom:5px">'+windNote+'</div>';
+  if(fronte)out+=fronte;
+  out+='</div>';
+
+  if(z24h!=null||z48h!=null){
+    out+='<div class="cd" style="margin-bottom:8px"><div class="lb" style="margin-bottom:6px">&#128197; EVOLUZIONE Z500</div>';
+    out+='<div style="display:flex;gap:3px;align-items:flex-end;height:52px;margin-bottom:6px">';
+    var vals=[z0,z6h,z24h,z48h].filter(v=>v!=null);
+    var mn=Math.min(...vals),mx=Math.max(...vals),rg=mx-mn||1;
+    var labs=["Ora","+6h","+24h","+48h"];
+    [z0,z6h,z24h,z48h].forEach(function(v,i){
+      if(v==null)return;
+      var pct=Math.max(8,((v-mn)/rg)*100);
+      var col=v>5640?"rgba(67,160,71,.6)":v>5400?"rgba(249,168,37,.6)":"rgba(210,48,48,.6)";
+      out+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">';
+      out+='<div style="font-size:8px;color:#3a6888">'+v+'m</div>';
+      out+='<div style="width:100%;height:'+Math.round(pct*.42)+'px;background:'+col+';border-radius:3px 3px 0 0"></div>';
+      out+='<div style="font-size:8px;color:#3a5a70">'+labs[i]+'</div>';
+      out+='</div>';
+    });
+    out+='</div></div>';
+  }
+
+  out+='<div class="cd" style="margin-bottom:8px"><div class="lb" style="margin-bottom:8px">&#128197; PREVISIONE 24h / 48h</div>';
+  out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+  out+='<div class="rx" style="text-align:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#3a6888;margin-bottom:3px">24 ORE</div><div style="font-size:15px;font-weight:800;color:'+f24c+'">'+f24l+'</div>'+(z24h!=null?'<div style="font-size:9px;color:#3a6888;margin-top:2px">Z500: '+z24h+'m</div>':'')+'</div>';
+  out+='<div class="rx" style="text-align:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#3a6888;margin-bottom:3px">48 ORE</div><div style="font-size:15px;font-weight:800;color:'+f48c+'">'+f48l+'</div>'+(z48h!=null?'<div style="font-size:9px;color:#3a6888;margin-top:2px">Z500: '+z48h+'m</div>':'')+'</div>';
+  out+='</div></div>';
+
+  out+='<div class="cd"><div class="lb" style="margin-bottom:6px">&#128218; RIFERIMENTO FRONTI IN QUOTA</div>';
+  out+='<div style="display:grid;gap:5px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">';
+  out+='<div class="rx" style="background:rgba(21,101,192,.08);border:1px solid rgba(21,101,192,.2)"><strong style="color:#90c0f0">&#10052; Fronte freddo</strong><br><span style="font-size:8px;color:#5a8098">Z500 basso &#8226; calo rapido &#8226; vento da NW &#8226; peggioramento breve e intenso</span></div>';
+  out+='<div class="rx" style="background:rgba(198,40,40,.08);border:1px solid rgba(198,40,40,.2)"><strong style="color:#f09090">&#127777; Fronte caldo</strong><br><span style="font-size:8px;color:#5a8098">Z500 in calo lento &#8226; vento da SW/S &#8226; piogge lunghe e continue</span></div>';
+  out+='<div class="rx" style="background:rgba(123,31,162,.08);border:1px solid rgba(123,31,162,.2)"><strong style="color:#c090d0">&#127744; Occlusione/Cut-off</strong><br><span style="font-size:8px;color:#5a8098">Z500 molto basso e stazionario &#8226; sistema complesso &#8226; massima cautela</span></div>';
+  out+='</div></div>';
+  out+='<div style="font-size:9px;color:#2a4060;text-align:center;margin-top:8px">Dati: Open-Meteo &#8212; GFS/ICON &#8212; 1 dam = 10 m</div>';
+
+  document.getElementById("pZ").innerHTML=out;
+}
+  var p=document.getElementById("pZ");
+  var h='';
+  h+='<div class="cd" style="margin-bottom:10px">';
+
+</script><script>
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+window._meteoColors = window._meteoColors || {};
+window._meteoStatus = window._meteoStatus || {};
+
+// Map info panel button - use delegation since element may be hidden at load
+document.addEventListener('click', function(e){
+  if(e.target && e.target.id === 'mapInfoBtn'){
+    var name = window._selectedMapLoc;
+    if(!name) return;
+    var found = Z.find(function(x){return x.n===name;});
+    if(!found) return;
+    z = found;
+    document.getElementById('zS').value = name;
+    document.getElementById('mapInfo').style.display = 'none';
+    document.querySelectorAll('.t')[0].click();
+    setTimeout(function(){ ld(); }, 100);
+  }
+});
+// Map init moved to first Mappa tab click
+
+window._leafMap = null;
+window.renderSVGMap = function() {
+  var container = document.getElementById('mapContainer');
+  if (!container) { console.error('no mapContainer'); return; }
+  container.innerHTML = '';
+  
+  // Use Leaflet if available, otherwise fallback to SVG-only
+  // Update marker colors only - map is already initialized
+  if(window._leafMarkers) {
+    Z.forEach(function(loc){
+      var m = window._leafMarkers[loc.n];
+      if(!m) return;
+      var color = (window._meteoColors[loc.n]) || '#4a90c0';
+      var icon = L.divIcon({className:'',
+        html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid rgba(255,255,255,0.7);box-shadow:0 0 5px '+color+'"></div>',
+        iconSize:[12,12], iconAnchor:[6,6], popupAnchor:[0,-8]
+      });
+      m.setIcon(icon);
+    });
+    return;
+  }
+  if(typeof L !== 'undefined') {
+    if(window._leafMap) {
+      window._leafMap.eachLayer(function(l){if(l._lmMarker)window._leafMap.removeLayer(l);});
+    } else {
+      // First time init - already done in st()
+    }
+    console.log('Leaflet map rendered');
+    return;
+  }
+
+  // Fallback SVG (no internet)
+  var LON_MIN=-8, LON_MAX=37, LAT_MIN=29, LAT_MAX=47;
+  var W=700, H=500;
+  function lx(lon){ return Math.round(((lon-LON_MIN)/(LON_MAX-LON_MIN))*W); }
+  function ly(lat){ return Math.round(((LAT_MAX-lat)/(LAT_MAX-LAT_MIN))*H); }
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 700 500');
+  svg.setAttribute('xmlns',ns);
+  svg.style.cssText = 'display:block;width:100%;height:100%;position:absolute;top:0;left:0;';
+  var bg = document.createElementNS(ns,'rect');
+  bg.setAttribute('x','0'); bg.setAttribute('y','0');
+  bg.setAttribute('width','700'); bg.setAttribute('height','500');
+  bg.setAttribute('fill','#0a1a2e');
+  svg.appendChild(bg);
+  Z.forEach(function(loc){
+    var cx=lx(loc.o), cy=ly(loc.a);
+    var color = (window._meteoColors[loc.n]) || '#4a90c0';
+    var g = document.createElementNS(ns,'g');
+    g.style.cursor='pointer';
+    var dot = document.createElementNS(ns,'circle');
+    dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r','5');
+    dot.setAttribute('fill',color); dot.setAttribute('stroke','white'); dot.setAttribute('stroke-width','1.5');
+    g.appendChild(dot);
+
+    g.addEventListener('click',function(e){
+      e.stopPropagation();
+      var old=document.getElementById('svgPopup');
+      if(old)old.remove();
+      var pop=document.createElement('div');
+      pop.id='svgPopup';
+      var st=window._meteoStatus[loc.n]||'';
+      // Build popup using DOM (avoids apostrophe issues in names)
+      pop.style.cssText='position:absolute;background:#0c1e38;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;z-index:20;min-width:160px;pointer-events:all;';
+      var title=document.createElement('div');
+      title.style.cssText='font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:4px';
+      title.textContent=loc.n;
+      pop.appendChild(title);
+      if(st){var stDiv=document.createElement('div');stDiv.style.cssText='font-size:10px;color:#7ecfa0;margin-bottom:5px';stDiv.textContent=st;pop.appendChild(stDiv);}
+      var btn=document.createElement('button');
+      btn.style.cssText='width:100%;padding:5px 10px;background:rgba(25,110,190,.4);color:#80c0f0;border:1px solid rgba(25,110,190,.5);border-radius:6px;font-size:12px;cursor:pointer;font-weight:700';
+      btn.textContent='🔄 Carica dati';
+      btn.addEventListener('click',function(){window.mapSelectLoc(loc.n);});
+      pop.appendChild(btn);
+      var cls=document.createElement('div');
+      cls.style.cssText='position:absolute;top:6px;right:8px;cursor:pointer;color:#4a7090;font-size:12px';
+      cls.textContent='✕';
+      cls.addEventListener('click',function(){pop.remove();});
+      pop.appendChild(cls);
+      var px=cx+10, py=cy-20;
+      if(px>520)px=cx-175; if(py>420)py=cy-90;
+      pop.style.left=px+'px'; pop.style.top=py+'px';
+      container.appendChild(pop);
+    });
+    svg.appendChild(g);
+  });
+
+  svg.addEventListener('click',function(){var p=document.getElementById('svgPopup');if(p)p.remove();});
+  container.appendChild(svg);
+  console.log('SVG map rendered, markers:', Z.length);
+};
+
+window.mapSelectLoc = function(name){
+  if(window._leafMap) window._leafMap.closePopup();
+  var found = Z.find(function(x){return x.n===name;});
+  if(!found){console.error('Non trovato:',name);return;}
+  // Set active location
+  z = found;
+  var sl=document.getElementById('zS');
+  sl.value=name;
+  // Switch to Attuale tab
+  document.querySelectorAll('.t')[0].click();
+  // Call ld() directly (more reliable than button.click())
+  setTimeout(function(){
+    ld();
+  }, 100);
+  // After data loads, update marker colors and stay on map
+  setTimeout(function(){
+    if(!window._meteoColors) window._meteoColors={};
+    if(!window._leafMarkers) return;
+    Z.forEach(function(loc){
+      var m=window._leafMarkers[loc.n];
+      if(!m) return;
+      var color=(window._meteoColors[loc.n])||'#4a90c0';
+      var icon=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid rgba(255,255,255,.7);box-shadow:0 0 5px '+color+'"></div>',iconSize:[12,12],iconAnchor:[6,6],popupAnchor:[0,-8]});
+      m.setIcon(icon);
+    });
+  }, 3000);
+};
+function bzS(){
+  if(!D){
+    document.getElementById("pS").innerHTML='<div class="cd" style="text-align:center;padding:30px"><div style="font-size:14px;color:#4a7090">⚠️ Carica prima i dati meteo con "Carica Dati Live"</div></div>';
+    return;
+  }
+  var h=D.hourly, m=Mr?Mr.hourly:null;
+  var slots=[
+    {label:"Ora",     icon:"🕐", offset:0},
+    {label:"+6h",     icon:"🕕", offset:6},
+    {label:"+12h",    icon:"🕛", offset:12},
+    {label:"+24h",    icon:"🕛", offset:24},
+    {label:"+36h",    icon:"🕕", offset:36},
+    {label:"+48h",    icon:"🕛", offset:48},
+  ];
+
+  function scoreSlot(i){
+    if(i>=h.time.length)return null;
+    var wk=h.wind_speed_10m[i]||0;
+    var wg=h.wind_gusts_10m[i]||0;
+    var cp=h.cape?.[i]||0;
+    var rr=h.precipitation?.[i]||0;
+    var hm=h.relative_humidity_2m[i]||0;
+    var cl=h.cloud_cover[i]||0;
+    var wh=m?m.wave_height?.[i]:null;
+    var issues=[];
+    var score=0; // 0=green, 1=yellow, 2=red
+
+    if(wk>25||wg>30){issues.push("Vento forte "+Math.round(wk)+"kn");score=Math.max(score,2);}
+    else if(wk>15){issues.push("Vento sostenuto "+Math.round(wk)+"kn");score=Math.max(score,1);}
+    
+    if(wh!=null){
+      if(wh>2.5){issues.push("Mare agitato "+wh.toFixed(1)+"m");score=Math.max(score,2);}
+      else if(wh>1.5){issues.push("Mare mosso "+wh.toFixed(1)+"m");score=Math.max(score,1);}
+    }
+    
+    if(cp>1500){issues.push("Rischio temporali (CAPE "+cp+")");score=Math.max(score,2);}
+    else if(cp>500){issues.push("Poss. temporali (CAPE "+cp+")");score=Math.max(score,1);}
+    
+    if(rr>3){issues.push("Pioggia intensa "+rr.toFixed(1)+"mm/h");score=Math.max(score,2);}
+    else if(rr>0.5){issues.push("Pioggia "+rr.toFixed(1)+"mm/h");score=Math.max(score,1);}
+
+    // Pressure trend
+    var pd=i>=3?h.pressure_msl[i]-h.pressure_msl[i-3]:0;
+    if(pd<-3){issues.push("Pressione in forte calo");score=Math.max(score,2);}
+    else if(pd<-1.5){issues.push("Pressione in calo");score=Math.max(score,1);}
+
+    if(issues.length===0)issues.push("Condizioni favorevoli");
+    return {score:score, issues:issues, wk:Math.round(wk), wh:wh, cp:cp, wd:WN(h.wind_direction_10m[i])};
+  }
+
+  var colors=["#2e7d32","#e65100","#b71c1c"];
+  var bgColors=["rgba(46,125,50,.12)","rgba(230,81,0,.12)","rgba(183,28,28,.15)"];
+  var borderColors=["rgba(46,125,50,.3)","rgba(230,81,0,.3)","rgba(183,28,28,.3)"];
+  var labels=["🟢 SI PUÒ USCIRE","🟡 CAUTELA","🔴 NON USCIRE"];
+  var icons=["✅","⚠️","⛔"];
+
+  var ts=new Date(h.time[vi]).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  var locName=z.n; // z is the actually loaded location
+  var selectedName=document.getElementById('zS').value;
+  var html='';
+  if(selectedName && selectedName!==locName){
+    html+='<div style="background:rgba(230,81,0,.12);border:1px solid rgba(230,81,0,.3);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:#f0a050">⚠️ Stai visualizzando i dati di <b>'+locName+'</b>. Premi "Carica Dati Live" per aggiornare con <b>'+selectedName+'</b>.</div>';
+  }
+  html+='<div style="margin-bottom:12px"><div style="font-size:11px;color:#3a6080;margin-bottom:4px">📍 '+locName+' — '+ts+'</div>';
+  html+='<div style="font-size:11px;color:#3a6080">Analisi condizioni di partenza per le prossime 48 ore</div></div>';
+
+  // Big grid of slots
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px">';
+  
+  slots.forEach(function(slot){
+    var idx=vi+slot.offset;
+    var r=scoreSlot(idx);
+    if(!r){html+='';return;}
+    var t=new Date(h.time[idx]);
+    var timeStr=t.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+    var dateStr=t.toLocaleDateString("it-IT",{weekday:"short",day:"numeric"});
+    
+    html+='<div style="background:'+bgColors[r.score]+';border:2px solid '+borderColors[r.score]+';border-radius:14px;padding:14px;text-align:center">';
+    html+='<div style="font-size:11px;color:#5a8098;margin-bottom:4px">'+slot.icon+' '+slot.label+'</div>';
+    html+='<div style="font-size:10px;color:#4a7090;margin-bottom:8px">'+dateStr+' '+timeStr+'</div>';
+    html+='<div style="font-size:32px;margin-bottom:6px">'+icons[r.score]+'</div>';
+    html+='<div style="font-size:12px;font-weight:800;color:'+colors[r.score]+';margin-bottom:8px">'+labels[r.score]+'</div>';
+    html+='<div style="font-size:10px;color:#5a8098;text-align:left;border-top:1px solid rgba(255,255,255,.06);padding-top:6px">';
+    r.issues.forEach(function(issue){
+      html+='<div style="margin-bottom:2px">• '+issue+'</div>';
+    });
+    html+='</div>';
+    // Mini stats
+    html+='<div style="display:flex;justify-content:space-around;margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">';
+    var _sfWdir=h&&h.wind_direction_10m?WN(h.wind_direction_10m[idx]):'—';
+    html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+colors[r.score]+'">'+r.wk+'</div><div style="font-size:8px;color:#3a6080">kn '+_sfWdir+'</div></div>';
+    if(r.wh!=null){
+      html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+colors[r.score]+'">'+r.wh.toFixed(1)+'</div><div style="font-size:8px;color:#3a6080">m</div></div>';
+    }
+    html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+(r.cp>500?"#f0a040":"#7ecfa0")+'">'+r.cp+'</div><div style="font-size:8px;color:#3a6080">CAPE</div></div>';
+    html+='</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Best window suggestion
+  var bestSlot=null, bestScore=3;
+  slots.forEach(function(slot){
+    var r=scoreSlot(vi+slot.offset);
+    if(r&&r.score<bestScore){bestScore=r.score;bestSlot=slot;}
+  });
+  if(bestSlot){
+    var bestTime=new Date(h.time[vi+bestSlot.offset]);
+    html+='<div style="background:rgba(25,110,190,.1);border:1px solid rgba(25,110,190,.25);border-radius:12px;padding:14px">';
+    html+='<div style="font-size:12px;font-weight:700;color:#80c0f0;margin-bottom:6px">⭐ FINESTRA MIGLIORE</div>';
+    html+='<div style="font-size:14px;color:#b0d0e8">'+bestSlot.label+' — '+bestTime.toLocaleString("it-IT",{weekday:"long",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+'</div>';
+    html+='<div style="font-size:11px;color:#4a7090;margin-top:4px">'+labels[bestScore]+' — condizioni '+["ottime","accettabili","difficili"][bestScore]+'</div>';
+    html+='</div>';
+  }
+
+  document.getElementById("pS").innerHTML=html;
+}
+
+// ===== CONFRONTO PORTI =====
+var _cfData = {}; // cache dati per confronto: {locName: {D, Mr, score}}
+
+function bzC(){
+  try{
+    if(!window._cfSelected) window._cfSelected=[];
+    renderCfUI();
+  }catch(e){
+    document.getElementById('pC').innerHTML='<div style="color:#ff6060;padding:20px">Errore: '+e.message+'</div>';
+    console.error('bzC error:',e);
+  }
+}
+
+function renderCfUI(){
+  var sel = window._cfSelected || [];
+  var html = '';
+
+  // Header
+  html += '<div style="margin-bottom:14px">';
+  html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:6px">📊 Confronto Porti</div>';
+  html += '<div style="font-size:11px;color:#3a6080">Seleziona fino a 4 porti e carica i dati per confrontarli</div>';
+  html += '</div>';
+
+  // Port selector
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center">';
+  html += '<select id="cfSelect" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px;flex:1;min-width:160px">';
+  html += '<option value="">— Scegli porto —</option>';
+  Z.forEach(function(loc){
+    html += '<option value="'+loc.n+'">'+loc.n+'</option>';
+  });
+  html += '</select>';
+  html += '<button onclick="cfAdd()" style="padding:7px 14px;background:rgba(25,110,190,.3);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">+ Aggiungi</button>';
+  html += '<button onclick="cfLoadAll()" style="padding:7px 14px;background:rgba(46,125,50,.3);color:#7ecfa0;border:1px solid rgba(46,125,50,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">🔄 Carica tutti</button>';
+  html += '<button onclick="cfClear()" style="padding:7px 14px;background:rgba(183,28,28,.2);color:#ff8080;border:1px solid rgba(183,28,28,.3);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">✕ Svuota</button>';
+  html += '</div>';
+
+  // Selected ports chips
+  if(sel.length > 0){
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">';
+    sel.forEach(function(name){
+      var loaded = _cfData[name] && _cfData[name].D;
+      var loadedIcon = loaded ? '✅' : '⏳';
+      html += '<div style="padding:4px 10px;background:rgba(25,110,190,.15);border:1px solid rgba(25,110,190,.3);border-radius:20px;font-size:11px;color:#80c0f0;display:flex;align-items:center;gap:6px">';
+      html += loadedIcon+' '+name;
+      window._cfChips=window._cfChips||{};var ci=Object.keys(window._cfChips).length;window._cfChips[ci]=name;
+      html += '<span onclick="cfRemoveIdx('+ci+')" style="cursor:pointer;color:#4a7090;margin-left:4px">&#x2715;</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Comparison table
+  var loaded = sel.filter(function(n){ return _cfData[n] && _cfData[n].D; });
+  if(loaded.length >= 2){
+    html += renderCfTable(loaded);
+  } else if(sel.length > 0){
+    html += '<div style="text-align:center;padding:20px;color:#3a6080;font-size:12px">'+
+      (loaded.length === 0 ? 'Premi "Carica tutti" per caricare i dati dei porti selezionati' : 
+       'Carica i dati di almeno 2 porti per confrontarli')+'</div>';
+  } else {
+    html += '<div style="text-align:center;padding:30px;color:#2a4a60;font-size:12px">Aggiungi 2-4 porti per confrontare le condizioni meteo attuali</div>';
+  }
+
+  document.getElementById('pC').innerHTML = html;
+}
+
+function renderCfTable(names){
+  var rows = [
+    {key:'verdict',   label:'Situazione',    fn: function(d,m,vi){ var g=GG(d.hourly.wind_speed_10m[vi]||0, m&&m.hourly.wave_height?.[vi]||0, d.hourly.cape?.[vi]||0, VI(d.hourly.relative_humidity_2m[vi],d.hourly.precipitation?.[vi]||0,d.hourly.cloud_cover[vi]||0), d.hourly.precipitation?.[vi]||0); return {val:g.l, color:g.c}; }},
+    {key:'wind',      label:'💨 Vento',       fn: function(d,m,vi){ var w=d.hourly.wind_speed_10m[vi]||0; var b=BF(w); var wd=WN(d.hourly.wind_direction_10m[vi]); return {val:Math.round(w)+' kn F'+b.f+' '+wd, color:b.c}; }},
+    {key:'gusts',     label:'💨 Raffiche',    fn: function(d,m,vi){ var g=d.hourly.wind_gusts_10m[vi]||0; return {val:Math.round(g)+' kn', color:g>25?'#e06040':g>15?'#f0d060':'#7ecfa0'}; }},
+    {key:'dir',       label:'🧭 Direzione',   fn: function(d,m,vi){ return {val:WN(d.hourly.wind_direction_10m[vi])+' ('+Math.round(d.hourly.wind_direction_10m[vi]||0)+'°)', color:'#b0c8d8'}; }},
+    {key:'sea',       label:'🌊 Mare',        fn: function(d,m,vi){ if(!m)return{val:'N/D',color:'#555'}; var h=m.hourly.wave_height?.[vi]; var s=SE(h); return {val:h!=null?h.toFixed(1)+'m':'-', color:s.c}; }},
+    {key:'pressure',  label:'📊 Pressione',   fn: function(d,m,vi){ var p=d.hourly.pressure_msl[vi]||0; var pt=PT(d.hourly.pressure_msl,vi); return {val:p.toFixed(1)+' hPa '+pt.i, color:pt.c}; }},
+    {key:'temp',      label:'🌡️ Temp',        fn: function(d,m,vi){ var t=d.hourly.temperature_2m[vi]; return {val:t!=null?t.toFixed(1)+'°C':'-', color:'#b0c8d8'}; }},
+    {key:'cape',      label:'⚡ CAPE',        fn: function(d,m,vi){ var c=d.hourly.cape?.[vi]||0; return {val:c+' J/kg', color:c>=1500?'#ff5050':c>=500?'#f0a040':'#7ecfa0'}; }},
+    {key:'vis',       label:'👁️ Visibilità',  fn: function(d,m,vi){ var v=VI(d.hourly.relative_humidity_2m[vi],d.hourly.precipitation?.[vi]||0,d.hourly.cloud_cover[vi]||0); return {val:v.t+' '+v.s, color:v.c}; }},
+    {key:'semaforo',  label:'🚦 Ora/+6/+12/+24h',         fn: function(d,m,vi){ 
+      var scores=['🟢','🟡','🔴'];
+      var out='';
+      [0,6,12,24].forEach(function(off){
+        var i=vi+off;
+        if(i>=d.hourly.time.length)return;
+        var w=d.hourly.wind_speed_10m[i]||0;
+        var wh=m&&m.hourly.wave_height?.[i]||0;
+        var cp=d.hourly.cape?.[i]||0;
+        var rr=d.hourly.precipitation?.[i]||0;
+        var g=GG(w,wh,cp,VI(d.hourly.relative_humidity_2m[i],rr,d.hourly.cloud_cover[i]||0),rr);
+        var sc=g.l.includes('USCIRE ✅')?0:g.l.includes('CAUTELA')?1:2;
+        out+=scores[sc];
+      });
+      return {val:out, color:'#b0c8d8'};
+    }},
+  ];
+
+  var html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+  
+  // Header row
+  html += '<thead><tr><th style="text-align:left;padding:8px 6px;color:#4a7898;font-size:10px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06)">Parametro</th>';
+  names.forEach(function(name){
+    html += '<th style="text-align:center;padding:8px 6px;color:#80c0f0;font-size:11px;border-bottom:1px solid rgba(255,255,255,.06);min-width:100px">'+name+'</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  // Data rows
+  rows.forEach(function(row, ri){
+    html += '<tr style="'+(ri%2===0?'background:rgba(255,255,255,.02)':'')+'">';
+    html += '<td style="padding:7px 6px;color:#4a7898;font-size:10px;white-space:nowrap">'+row.label+'</td>';
+    names.forEach(function(name){
+      var d = _cfData[name];
+      if(!d||!d.D){html+='<td style="text-align:center;color:#3a5a70">—</td>';return;}
+      var r = row.fn(d.D, d.Mr, d.vi);
+      html += '<td style="text-align:center;padding:7px 6px;color:'+r.color+';font-weight:'+(row.key==='verdict'||row.key==='semaforo'?'700':'400')+'">'+r.val+'</td>';
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+window._cfSelected = window._cfSelected || [];
+
+function cfAdd(){
+  var sel = document.getElementById('cfSelect');
+  var name = sel.value;
+  if(!name) return;
+  if(window._cfSelected.indexOf(name) >= 0){ renderCfUI(); return; }
+  if(window._cfSelected.length >= 4){ alert('Massimo 4 porti'); return; }
+  window._cfSelected.push(name);
+  renderCfUI();
+}
+
+function cfRemove(name){
+  window._cfSelected = window._cfSelected.filter(function(n){ return n!==name; });
+  delete _cfData[name];
+  renderCfUI();
+}
+function cfRemoveIdx(idx){
+  var name = window._cfChips && window._cfChips[idx];
+  if(name) cfRemove(name);
+}
+
+function cfClear(){
+  window._cfSelected = [];
+  _cfData = {};
+  renderCfUI();
+}
+
+async function cfLoadAll(){
+  var sel = window._cfSelected;
+  if(sel.length === 0){ alert('Aggiungi almeno un porto'); return; }
+  
+  var btn = document.querySelector('[onclick="cfLoadAll()"]');
+  if(btn){ btn.textContent = '⏳ Caricamento...'; btn.disabled = true; }
+
+  var promises = sel.map(function(name){
+    var loc = Z.find(function(x){ return x.n===name; });
+    if(!loc) return Promise.resolve();
+    return fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.a+'&longitude='+loc.o+'&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape&forecast_days=3&wind_speed_unit=kn&timezone=Europe%2FRome')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var mr = null;
+        return fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+loc.a+'&longitude='+loc.o+'&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,wind_wave_height&forecast_days=3&timezone=Europe%2FRome')
+          .then(function(r2){ if(r2.ok) return r2.json(); return null; })
+          .catch(function(){ return null; })
+          .then(function(mrData){
+            var now = new Date();
+            var viIdx = 0;
+            for(var i=0;i<data.hourly.time.length;i++){
+              if(new Date(data.hourly.time[i])<=now) viIdx=i;
+            }
+            _cfData[name] = {D: data, Mr: mrData, vi: viIdx};
+          });
+      })
+      .catch(function(e){ console.error('Errore caricamento '+name, e); });
+  });
+
+  await Promise.all(promises);
+  if(btn){ btn.textContent = '🔄 Carica tutti'; btn.disabled = false; }
+  renderCfUI();
+}
+
+// ===== ROTTA PERSONALIZZATA =====
+var _rtWaypoints = []; // {name, lat, lon, D, Mr, vi}
+var _rtMap = null;
+var _rtMarkers = [];
+var _rtPolyline = null;
+
+function bzRT(){
+  try{
+    if(!window._rtWaypoints) window._rtWaypoints=[];
+    renderRottaUI();
+  }catch(e){
+    document.getElementById('pRT').innerHTML='<div style="color:#ff6060;padding:20px">Errore: '+e.message+'</div>';
+    console.error('bzRT error:',e);
+  }
+}
+
+function renderRottaUI(){
+  var wp = _rtWaypoints;
+  var html = '';
+
+  html += '<div style="margin-bottom:12px">';
+  html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:4px">📍 Rotta Personalizzata</div>';
+  html += '<div style="font-size:11px;color:#3a6080">Aggiungi le tappe della tua rotta e carica il meteo per ognuna</div>';
+  html += '</div>';
+
+  // Controls
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">';
+  html += '<select id="rtSelect" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px;flex:1;min-width:160px">';
+  html += '<option value="">— Aggiungi tappa —</option>';
+  Z.forEach(function(loc){ html += '<option value="'+loc.n+'">'+loc.n+'</option>'; });
+  html += '</select>';
+  html += '<button onclick="rtAdd()" style="padding:7px 14px;background:rgba(25,110,190,.3);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">+ Aggiungi</button>';
+  html += '<button onclick="rtLoadAll()" style="padding:7px 14px;background:rgba(46,125,50,.3);color:#7ecfa0;border:1px solid rgba(46,125,50,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">🔄 Carica meteo</button>';
+  html += '<button onclick="rtClear()" style="padding:7px 14px;background:rgba(183,28,28,.2);color:#ff8080;border:1px solid rgba(183,28,28,.3);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">✕ Azzera</button>';
+  html += '</div>';
+
+  // Speed and departure time inputs
+  var spd = window._rtSpeed || 6;
+  var dep = window._rtDeparture || '';
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;align-items:center">';
+  html += '<div style="font-size:11px;color:#4a7090;font-weight:700;white-space:nowrap">⏰ Navigazione stimata</div>';
+  html += '<div style="display:flex;align-items:center;gap:6px">';
+  html += '<label style="font-size:11px;color:#4a7090">Velocità:</label>';
+  html += '<input id="rtSpeed" type="number" min="1" max="20" value="'+spd+'" onchange="window._rtSpeed=+this.value;renderRottaUI()" style="width:60px;background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 8px;font-size:13px;text-align:center"> kn</div>';
+  html += '<div style="display:flex;align-items:center;gap:6px">';
+  html += '<label style="font-size:11px;color:#4a7090">Partenza:</label>';
+  html += '<input id="rtDep" type="datetime-local" value="'+dep+'" onchange="window._rtDeparture=this.value;renderRottaUI()" style="background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 8px;font-size:12px">';
+  html += '</div>';
+  if(dep){
+    html += '<div style="font-size:10px;color:#3a8060">&#x2705; Meteo calcolato all\'ora di arrivo stimata</div>';
+  } else {
+    html += '<div style="font-size:10px;color:#3a6080">Imposta ora di partenza per vedere il meteo all\'arrivo</div>';
+  }
+  html += '</div>';
+
+  // Waypoints list
+  if(wp.length > 0){
+    html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">';
+    wp.forEach(function(w, i){
+      var hasData = w.D != null;
+      var score = hasData ? rtScore(w) : null;
+      var colors = ["#2e7d32","#e65100","#b71c1c"];
+      var icons = ["🟢","🟡","🔴"];
+      
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px">';
+      // Step number
+      html += '<div style="width:24px;height:24px;border-radius:50%;background:rgba(25,110,190,.3);color:#80c0f0;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div>';
+      // Arrow between waypoints
+      if(i > 0) html = html; // arrow shown via border
+      // Name and data
+      html += '<div style="flex:1">';
+      html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff">'+w.name+'</div>';
+      if(hasData && score !== null){
+        var wk = Math.round(w.D.hourly.wind_speed_10m[w.vi]||0);
+        var wh = w.Mr ? (w.Mr.hourly.wave_height?.[w.vi]||0).toFixed(1) : '—';
+        html += '<div style="font-size:10px;color:'+colors[score.s]+'">'+icons[score.s]+' '+score.label+' • 💨'+wk+'kn • 🌊'+wh+'m</div>';
+      } else {
+        html += '<div style="font-size:10px;color:#3a6080">⏳ Dati non caricati</div>';
+      }
+      html += '</div>';
+      // Remove button
+      html += '<span onclick="rtRemove('+i+')" style="cursor:pointer;color:#4a7090;font-size:16px;padding:4px">✕</span>';
+      html += '</div>';
+      
+      // Arrow connector
+      if(i < wp.length - 1){
+        html += '<div style="text-align:center;color:#2a4a60;font-size:16px;margin:-2px 0">↓</div>';
+      }
+    });
+    html += '</div>';
+  } else {
+    html += '<div style="text-align:center;padding:20px;color:#2a4a60;font-size:12px">Aggiungi le tappe della tua rotta usando il menu sopra</div>';
+  }
+
+  // Mini map showing route
+  if(wp.length >= 2){
+    html += '<div id="rtMapContainer" style="height:300px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07);margin-bottom:14px;background:#0a1628"></div>';
+  }
+
+  // Meteo table per tappa
+  if(wp.filter(function(w){return w.D;}).length >= 1){
+    html += renderRottaTable();
+  }
+
+  document.getElementById('pRT').innerHTML = html;
+
+  // Init mini map if needed
+  if(wp.length >= 2){
+    setTimeout(renderRottaMap, 100);
+  }
+}
+
+function rtScore(w){
+  var d = w.D, m = w.Mr, vi = w.vi;
+  var wk = d.hourly.wind_speed_10m[vi]||0;
+  var wh = m ? m.hourly.wave_height?.[vi]||0 : 0;
+  var cp = d.hourly.cape?.[vi]||0;
+  var rr = d.hourly.precipitation?.[vi]||0;
+  var vs = VI(d.hourly.relative_humidity_2m[vi], rr, d.hourly.cloud_cover[vi]||0);
+  var g = GG(wk, wh, cp, vs, rr);
+  var s = g.l.includes('USCIRE ✅') ? 0 : g.l.includes('CAUTELA') ? 1 : 2;
+  return {s:s, label:g.l.replace(/[✅⚠️⛔]/g,'').trim()};
+}
+
+// Calculate nautical miles between two points
+function nmDistance(lat1,lon1,lat2,lon2){
+  var R=3440.065; // Earth radius in NM
+  var dLat=(lat2-lat1)*Math.PI/180;
+  var dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+
+        Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+        Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function renderRottaTable(){
+  var allWp = _rtWaypoints;
+  var wp = allWp.filter(function(w){return w.D;});
+  if(wp.length === 0) return '';
+  
+  var colors = ["#2e7d32","#e65100","#b71c1c"];
+  var icons = ["✅","⚠️","⛔"];
+  var spd = window._rtSpeed || 6;
+  var dep = window._rtDeparture || '';
+  var useArrival = dep !== '';
+  var depTime = dep ? new Date(dep) : null;
+
+  // Calculate distances and cumulative travel times
+  var totalNm = 0;
+  var legNm = [];
+  var arrivalTimes = []; // estimated arrival time for each waypoint
+  var cumNm = 0;
+  for(var i=0;i<allWp.length;i++){
+    if(i===0){
+      legNm.push(0);
+      arrivalTimes.push(depTime ? new Date(depTime) : null);
+    } else {
+      var dist=nmDistance(allWp[i-1].lat,allWp[i-1].lon,allWp[i].lat,allWp[i].lon);
+      legNm.push(dist);
+      totalNm+=dist;
+      cumNm+=dist;
+      if(depTime){
+        var hoursToArrive = cumNm / spd;
+        var arrTime = new Date(depTime.getTime() + hoursToArrive*3600000);
+        arrivalTimes.push(arrTime);
+      } else {
+        arrivalTimes.push(null);
+      }
+    }
+  }
+
+  // Get vi index for a given time in a dataset
+  function getViForTime(d, t){
+    if(!t) return null;
+    var best = 0;
+    for(var i=0;i<d.hourly.time.length;i++){
+      if(new Date(d.hourly.time[i]) <= t) best=i;
+    }
+    return best;
+  }
+
+  // Total distance banner
+  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">';
+  html += '<div style="padding:8px 14px;background:rgba(25,110,190,.12);border:1px solid rgba(25,110,190,.25);border-radius:10px;font-size:12px">';
+  html += '⚓ <b style="color:#80c0f0">Distanza totale:</b> <span style="color:#e8f4ff;font-weight:700">'+totalNm.toFixed(1)+' NM</span> ('+allWp.length+' tappe)</div>';
+  html += '</div>';
+
+  // Table
+  html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<thead><tr style="background:rgba(255,255,255,.03)">';
+  html += '<th style="text-align:left;padding:9px 8px;color:#4a7898;font-size:10px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap">Tappa</th>';
+  html += '<th style="text-align:right;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap">⚓ NM</th>';
+  html += '<th style="text-align:center;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08)">💨 Vento</th>';
+  html += '<th style="text-align:center;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08)">🌊 Mare</th>';
+  html += '<th style="text-align:center;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08)">📊 hPa</th>';
+  html += '<th style="text-align:center;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08)">+6h</th>';
+  html += '<th style="text-align:center;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08)">+12h</th>';
+  html += '<th style="text-align:center;padding:9px 8px;color:#4a7898;font-size:10px;border-bottom:1px solid rgba(255,255,255,.08)">+24h</th>';
+  html += '</tr></thead><tbody>';
+
+  allWp.forEach(function(w, i){
+    var nm = legNm[i];
+    var hasDati = w.D != null;
+    var bg = i%2===0?'background:rgba(255,255,255,.02)':'';
+
+    if(!hasDati){
+      html += '<tr style="'+bg+'">';
+      html += '<td style="padding:9px 8px;font-weight:700;color:#e8f4ff;white-space:nowrap"><span style="color:#4a7090;margin-right:5px">'+(i+1)+'.</span>'+w.name+'</td>';
+      html += '<td style="text-align:right;padding:9px 8px;color:#3a6080">'+(nm>0?nm.toFixed(1):'—')+'</td>';
+      html += '<td colspan="6" style="text-align:center;color:#2a4060;font-size:10px">⏳ Dati non caricati</td>';
+      html += '</tr>';
+      return;
+    }
+
+    var d=w.D, m=w.Mr;
+    // Use arrival time vi if departure set, otherwise current vi
+    var arrT = arrivalTimes[i];
+    var vi = (useArrival && arrT) ? (getViForTime(d, arrT)||w.vi) : w.vi;
+    var arrLabel = (useArrival && arrT) ? arrT.toLocaleString('it-IT',{weekday:'short',hour:'2-digit',minute:'2-digit'}) : null;
+    var score=rtScore({D:d,Mr:m,vi:vi});
+    var wk=Math.round(d.hourly.wind_speed_10m[vi]||0);
+    var bf=BF(wk);
+    var wh=m?m.hourly.wave_height?.[vi]:null;
+    var se=SE(wh);
+    var pr=d.hourly.pressure_msl[vi]||0;
+    var pt=PT(d.hourly.pressure_msl,vi);
+
+    function slotIcon(off){
+      var ii=vi+off;
+      if(ii>=d.hourly.time.length)return'—';
+      var w2=d.hourly.wind_speed_10m[ii]||0;
+      var wh2=m?m.hourly.wave_height?.[ii]||0:0;
+      var cp2=d.hourly.cape?.[ii]||0;
+      var rr2=d.hourly.precipitation?.[ii]||0;
+      var g2=GG(w2,wh2,cp2,VI(d.hourly.relative_humidity_2m[ii],rr2,d.hourly.cloud_cover[ii]||0),rr2);
+      var s2=g2.l.includes('USCIRE ✅')?0:g2.l.includes('CAUTELA')?1:2;
+      return['🟢','🟡','🔴'][s2];
+    }
+
+    html += '<tr style="'+bg+'">';
+    var arrStr = arrLabel ? '<div style="font-size:9px;color:#3a8060">🕐 arr. '+arrLabel+'</div>' : '';
+    html += '<td style="padding:9px 8px;font-weight:700;color:#e8f4ff;white-space:nowrap"><span style="color:'+colors[score.s]+';margin-right:5px">'+icons[score.s]+'</span><span style="color:#4a7090;margin-right:4px">'+(i+1)+'.</span>'+w.name+arrStr+'</td>';
+    html += '<td style="text-align:right;padding:9px 8px;color:#4a90c0;font-weight:700">'+(nm>0?nm.toFixed(1):'⚓')+'</td>';
+    var wdir=WN(d.hourly.wind_direction_10m[vi]);
+    html += '<td style="text-align:center;padding:9px 8px;color:'+bf.c+'">'+wk+' kn F'+bf.f+' '+wdir+'</td>';
+    html += '<td style="text-align:center;padding:9px 8px;color:'+se.c+'">'+(wh!=null?wh.toFixed(1)+'m':'—')+'</td>';
+    html += '<td style="text-align:center;padding:9px 8px;color:'+pt.c+'">'+pr.toFixed(0)+' '+pt.i+'</td>';
+    html += '<td style="text-align:center;padding:9px 8px">'+slotIcon(6)+'</td>';
+    html += '<td style="text-align:center;padding:9px 8px">'+slotIcon(12)+'</td>';
+    html += '<td style="text-align:center;padding:9px 8px">'+slotIcon(24)+'</td>';
+    html += '</tr>';
+  });
+
+  // Total row
+  html += '<tr style="background:rgba(25,110,190,.08);border-top:1px solid rgba(25,110,190,.2)">';
+  html += '<td style="padding:9px 8px;font-weight:700;color:#80c0f0">⚓ Totale rotta</td>';
+  html += '<td style="text-align:right;padding:9px 8px;color:#80c0f0;font-weight:700">'+totalNm.toFixed(1)+' NM</td>';
+  html += '<td colspan="6"></td>';
+  html += '</tr>';
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function renderRottaMap(){
+  var wp = _rtWaypoints;
+  if(wp.length < 2) return;
+  var container = document.getElementById('rtMapContainer');
+  if(!container) return;
+  
+  if(_rtMap){ _rtMap.remove(); _rtMap=null; }
+  
+  var lats = wp.map(function(w){return w.lat;});
+  var lons = wp.map(function(w){return w.lon;});
+  var centerLat = (Math.max.apply(null,lats)+Math.min.apply(null,lats))/2;
+  var centerLon = (Math.max.apply(null,lons)+Math.min.apply(null,lons))/2;
+  
+  _rtMap = L.map('rtMapContainer',{center:[centerLat,centerLon],zoom:6,zoomControl:true});
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri'}).addTo(_rtMap);
+  
+  // Draw polyline
+  var latlngs = wp.map(function(w){return [w.lat,w.lon];});
+  L.polyline(latlngs,{color:'#4090d0',weight:2,dashArray:'6,4',opacity:0.8}).addTo(_rtMap);
+  
+  // Markers
+  wp.forEach(function(w,i){
+    var score = w.D ? rtScore(w) : null;
+    var color = score ? ["#2e7d32","#e65100","#b71c1c"][score.s] : '#4a90c0';
+    var icon = L.divIcon({className:'',
+      html:'<div style="width:22px;height:22px;border-radius:50%;background:'+color+';border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white">'+(i+1)+'</div>',
+      iconSize:[22,22],iconAnchor:[11,11]
+    });
+    L.marker([w.lat,w.lon],{icon:icon}).bindPopup('<b>'+w.name+'</b>').addTo(_rtMap);
+  });
+  
+  _rtMap.fitBounds(latlngs, {padding:[20,20]});
+}
+
+function rtAdd(){
+  var sel = document.getElementById('rtSelect');
+  var name = sel.value;
+  if(!name) return;
+  if(_rtWaypoints.find(function(w){return w.name===name;})){
+    renderRottaUI(); return;
+  }
+  var loc = Z.find(function(x){return x.n===name;});
+  if(!loc) return;
+  _rtWaypoints.push({name:name, lat:loc.a, lon:loc.o, D:null, Mr:null, vi:0});
+  renderRottaUI();
+}
+
+function rtRemove(idx){
+  _rtWaypoints.splice(idx,1);
+  renderRottaUI();
+}
+
+function rtClear(){
+  _rtWaypoints = [];
+  if(_rtMap){_rtMap.remove();_rtMap=null;}
+  renderRottaUI();
+}
+
+async function rtLoadAll(){
+  if(_rtWaypoints.length === 0){alert('Aggiungi almeno una tappa');return;}
+  var btn = document.querySelector('[onclick="rtLoadAll()"]');
+  if(btn){btn.textContent='⏳ Caricamento...';btn.disabled=true;}
+  
+  var promises = _rtWaypoints.map(function(w){
+    return fetch('https://api.open-meteo.com/v1/forecast?latitude='+w.lat+'&longitude='+w.lon+'&hourly=temperature_2m,relative_humidity_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape&forecast_days=3&wind_speed_unit=kn&timezone=Europe%2FRome')
+      .then(function(r){return r.json();})
+      .then(function(data){
+        return fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+w.lat+'&longitude='+w.lon+'&hourly=wave_height,wave_direction,wave_period&forecast_days=3&timezone=Europe%2FRome')
+          .then(function(r2){return r2.ok?r2.json():null;})
+          .catch(function(){return null;})
+          .then(function(mrData){
+            var now=new Date(), viIdx=0;
+            for(var i=0;i<data.hourly.time.length;i++){
+              if(new Date(data.hourly.time[i])<=now)viIdx=i;
+            }
+            w.D=data; w.Mr=mrData; w.vi=viIdx;
+          });
+      })
+      .catch(function(e){console.error('Errore',w.name,e);});
+  });
+  
+  await Promise.all(promises);
+  if(btn){btn.textContent='🔄 Carica meteo';btn.disabled=false;}
+  renderRottaUI();
+}
+
+
+// ===== PREFERITI =====
+// Load favorites from localStorage
+function getFavs(){
+  try{ return JSON.parse(localStorage.getItem('navFavs')||'[]'); }
+  catch(e){ return []; }
+}
+function saveFavs(favs){
+  try{ localStorage.setItem('navFavs', JSON.stringify(favs)); }
+  catch(e){}
+}
+
+function toggleFav(){
+  var name = document.getElementById('zS').value;
+  if(!name) return;
+  var favs = getFavs();
+  var idx = favs.indexOf(name);
+  if(idx >= 0){
+    favs.splice(idx, 1);
+  } else {
+    if(favs.length >= 10){ alert('Massimo 10 preferiti'); return; }
+    favs.unshift(name);
+  }
+  saveFavs(favs);
+  updateFavBtn();
+  updateFavsList();
+}
+
+function updateFavBtn(){
+  var btn = document.getElementById('favBtn');
+  if(!btn) return;
+  var name = document.getElementById('zS').value;
+  var favs = getFavs();
+  var isFav = favs.indexOf(name) >= 0;
+  btn.textContent = isFav ? '★' : '☆';
+  btn.style.color = isFav ? '#f0c040' : '#a0c8e0';
+  btn.title = isFav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti';
+}
+
+function updateFavsList(){
+  var favs = getFavs();
+  var el = document.getElementById('favsList');
+  if(!el) return;
+  if(favs.length === 0){
+    el.innerHTML = '<div style="font-size:11px;color:#2a4a60;padding:6px 0">Nessun preferito — premi ☆ per aggiungere</div>';
+    return;
+  }
+  window._favChips = {};
+  el.innerHTML = favs.map(function(name, i){
+    window._favChips[i] = name;
+    return '<button onclick="selectFav(window._favChips['+i+'])" style="padding:5px 10px;background:rgba(255,200,50,.08);color:#f0c040;border:1px solid rgba(255,200,50,.2);border-radius:16px;font-size:11px;cursor:pointer;white-space:nowrap">★ '+name+'</button>';
+  }).join('');
+}
+
+function selectFav(name){
+  // Handle apostrophes - name might come from data attribute
+  var sl = document.getElementById('zS');
+  sl.value = name;
+  z = Z.find(function(x){return x.n===name;});
+  if(z) updateFavBtn();
+}
+
+// Hook into dropdown change to update star
+document.addEventListener('DOMContentLoaded', function(){
+  updateFavBtn();
+  updateFavsList();
+});
+
+// Also update when dropdown changes
+var _origOnchange = null;
+setTimeout(function(){
+  var sl = document.getElementById('zS');
+  if(sl){
+    var orig = sl.onchange;
+    sl.onchange = function(){
+      if(orig) orig.call(this);
+      updateFavBtn();
+    };
+    updateFavBtn();
+    updateFavsList();
+  }
+}, 500);
+
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js')
+      .then(function(reg){ console.log('SW registrato'); })
+      .catch(function(e){ console.log('SW errore:', e); });
+  });
+}
+// PWA install prompt
+var _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  _deferredPrompt = e;
+  var btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'flex';
+});
+window.addEventListener('appinstalled', function(){
+  var btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'none';
+  _deferredPrompt = null;
+});
+function installPWA(){
+  if(!_deferredPrompt) return;
+  _deferredPrompt.prompt();
+  _deferredPrompt.userChoice.then(function(r){
+    _deferredPrompt = null;
+  });
+}
+// ===== LOCALITÀ PERSONALIZZATE =====
+function getCustomLocs(){
+  try{ return JSON.parse(localStorage.getItem('customLocs')||'[]'); }
+  catch(e){ return []; }
+}
+function saveCustomLocs(locs){
+  try{ localStorage.setItem('customLocs', JSON.stringify(locs)); }
+  catch(e){}
+}
+
+function addCustomLoc(){
+  var name = document.getElementById('newLocName').value.trim();
+  var lat = parseFloat(document.getElementById('newLocLat').value);
+  var lon = parseFloat(document.getElementById('newLocLon').value);
+
+  if(!name){ alert('Inserisci un nome'); return; }
+  if(isNaN(lat)||lat<-90||lat>90){ alert('Latitudine non valida (es. 41.8900)'); return; }
+  if(isNaN(lon)||lon<-180||lon>180){ alert('Longitudine non valida (es. 12.4900)'); return; }
+  if(Z.find(function(x){return x.n===name;})){ alert('Esiste già una località con questo nome'); return; }
+
+  var newLoc = {n:name, a:lat, o:lon};
+  Z.push(newLoc);
+
+  // Save to localStorage
+  var customs = getCustomLocs();
+  customs.push(newLoc);
+  saveCustomLocs(customs);
+
+  // Add to all dropdowns
+  refreshAllDropdowns();
+
+  // Add marker to map if open
+  if(window._leafMap && window._leafMarkers){
+    var color='#a060d0';
+    var icon=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid rgba(255,255,255,.7)"></div>',iconSize:[12,12],iconAnchor:[6,6],popupAnchor:[0,-8]});
+    var m=L.marker([lat,lon],{icon:icon});
+    m.locName=name;
+    m.on('click',function(){
+      document.getElementById('mapInfo').style.display='flex';
+      document.getElementById('mapInfoName').textContent=name;
+      window._selectedMapLoc=name;
+    });
+    m.addTo(window._leafMap);
+    window._leafMarkers[name]=m;
+  }
+
+  // Clear inputs
+  document.getElementById('newLocName').value='';
+  document.getElementById('newLocLat').value='';
+  document.getElementById('newLocLon').value='';
+
+  updateCustomLocsList();
+  alert('✅ '+name+' aggiunta! Ora puoi selezionarla dal menu.');
+}
+
+function clearCustomLocs(){
+  if(!confirm('Rimuovere tutte le località personalizzate?')) return;
+  var customs = getCustomLocs();
+  // Remove from Z array
+  customs.forEach(function(c){
+    var idx = Z.findIndex(function(x){return x.n===c.n;});
+    if(idx>=0) Z.splice(idx,1);
+  });
+  saveCustomLocs([]);
+  refreshAllDropdowns();
+  updateCustomLocsList();
+}
+
+function updateCustomLocsList(){
+  var el = document.getElementById('customLocsList');
+  if(!el) return;
+  var customs = getCustomLocs();
+  if(customs.length===0){ el.innerHTML=''; return; }
+  el.innerHTML = customs.map(function(c){
+    return '<span style="padding:3px 8px;background:rgba(160,96,208,.15);border:1px solid rgba(160,96,208,.3);border-radius:12px;font-size:10px;color:#c090d0">⚓ '+c.n+'</span>';
+  }).join('');
+}
+
+function refreshAllDropdowns(){
+  // Refresh main dropdown
+  var sl = document.getElementById('zS');
+  if(sl){
+    // Remove existing custom optgroup if present
+    var existing = sl.querySelector('optgroup[label="— Personalizzate —"]');
+    if(existing) sl.removeChild(existing);
+    var customs = getCustomLocs();
+    if(customs.length > 0){
+      var grp = document.createElement('optgroup');
+      grp.label = '— Personalizzate —';
+      customs.forEach(function(c){
+        var o = document.createElement('option');
+        o.value = c.n; o.text = c.n;
+        grp.appendChild(o);
+      });
+      sl.insertBefore(grp, sl.firstChild);
+    }
+  }
+  // Refresh Confronto and Rotta selects if visible
+  ['cfSelect','rtSelect'].forEach(function(id){
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    var existing = sel.querySelector('optgroup[label="— Personalizzate —"]');
+    if(existing) sel.removeChild(existing);
+    var customs = getCustomLocs();
+    if(customs.length > 0){
+      var grp = document.createElement('optgroup');
+      grp.label = '— Personalizzate —';
+      customs.forEach(function(c){
+        var o = document.createElement('option');
+        o.value = c.n; o.text = c.n;
+        grp.appendChild(o);
+      });
+      sel.insertBefore(grp, sel.firstChild);
+    }
+  });
+}
+
+// Load custom locs on startup
+(function loadCustomLocs(){
+  var customs = getCustomLocs();
+  customs.forEach(function(c){
+    if(!Z.find(function(x){return x.n===c.n;})){
+      Z.push(c);
+    }
+  });
+  // Add to dropdown after page loads
+  setTimeout(function(){
+    refreshAllDropdowns();
+    updateCustomLocsList();
+  }, 600);
+})();
+
+function toggleHelp(){
+  var el = document.getElementById('helpOverlay');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+// ===== CLOUD POPUP =====
+var CLOUD_DICT = {
+  'Sereno':   {n:'Sereno',                    d:'Cielo libero. Condizioni ottime.'},
+  'Ci,Cs':    {n:'Cirrus / Cirrostratus',      d:'Nuvole alte e sottili di ghiaccio. Spesso precursori di un fronte caldo.'},
+  'Ci,Ac cast':{n:'Cirrus / Altocumulus cast.',d:'Segnale di instabilita in quota. Possibile sviluppo temporalesco.'},
+  'Ac,As':    {n:'Altocumulus / Altostratus',  d:'Nuvole medie. Indicano umidita in quota. Possibile copertura progressiva.'},
+  'Ac cast':  {n:'Altocumulus castellanus',    d:'Nuvole medie a sviluppo verticale. Rischio temporali nelle ore calde.'},
+  'Sc,Ns':    {n:'Stratocumulus / Nimbostratus',d:'Nuvole basse e grigie. Possibile pioggia continua e moderata.'},
+  'Cu con':   {n:'Cumulus congestus',          d:'Cumuli a forte sviluppo verticale. Precursori di temporali.'},
+  'Cb':       {n:'Cumulonimbus',               d:'PERICOLO: Temporale attivo. Grandine, raffiche violente, fulmini.'},
+  'Cu/Cb':    {n:'Cumulus / Cumulonimbus',     d:'Nuvole a sviluppo convettivo. Alta probabilita di temporali locali.'},
+  'Ns,St':    {n:'Nimbostratus / Stratus',     d:'Nuvole basse con pioggia continua. Visibilita ridotta.'}
+};
+var _cloudTip = null;
+
+function showCloudTip(el, code){
+  hideCloudTip();
+  var clean = code.replace(/[^a-zA-Z,\/\. ]/g, '').trim();
+  var info = CLOUD_DICT[clean] || CLOUD_DICT[code];
+  if(!info){
+    // Try partial match
+    for(var k in CLOUD_DICT){
+      if(code.indexOf(k)>=0 || k.indexOf(clean)>=0){ info=CLOUD_DICT[k]; break; }
+    }
+  }
+  if(!info) return;
+  var tip = document.createElement('div');
+  tip.className = 'cloud-tip';
+  tip.innerHTML = '<b>'+info.n+'</b>'+info.d;
+  document.body.appendChild(tip);
+  _cloudTip = tip;
+  var r = el.getBoundingClientRect();
+  var top = r.bottom + 6;
+  var left = r.left;
+  if(left + 250 > window.innerWidth) left = window.innerWidth - 255;
+  if(top + 80 > window.innerHeight) top = r.top - 90;
+  tip.style.top = top + 'px';
+  tip.style.left = left + 'px';
+}
+
+function hideCloudTip(){
+  if(_cloudTip){ _cloudTip.remove(); _cloudTip = null; }
+}
+
+document.addEventListener('click', function(e){
+  if(e.target && !e.target.hasAttribute('onclick')) hideCloudTip();
+});
+
+/* --- Sticky header collapse/expand ---
+   Classe .hd-collapsed su <body>: deve raggiungere sia .hd sia #favsBar. */
+(function(){
+  var pill=document.getElementById('hdPill');
+  function updatePill(){
+    var ve=document.getElementById('vd');
+    if(!ve||ve.classList.contains('dn')){pill.style.display='';return}
+    var h2=ve.querySelector('h2');
+    if(!h2){pill.style.display='';return}
+    var txt=h2.textContent.trim();
+    var col=h2.style.color||'#5a8098';
+    var short='';
+    if(txt.indexOf('SI PUÒ')>=0||txt.indexOf('USCIRE ✅')>=0){short='✅ USCIRE'}
+    else if(txt.indexOf('CAUTELA')>=0){short='⚠️ CAUTELA'}
+    else if(txt.indexOf('NON USCIRE')>=0){short='⛔ NON USCIRE'}
+    else{pill.style.display='none';return}
+    pill.textContent=short;
+    pill.style.background=col+'20';
+    pill.style.color=col;
+    pill.style.border='1px solid '+col+'40';
+  }
+  var obs=new MutationObserver(updatePill);
+  obs.observe(document.getElementById('vd'),{childList:true,subtree:true});
+  updatePill();
+  var collapsed=false;
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY||window.pageYOffset;
+    if(y>80&&!collapsed){document.body.classList.add('hd-collapsed');collapsed=true}
+    else if(y<=80&&collapsed){document.body.classList.remove('hd-collapsed');collapsed=false}
+  },{passive:true});
+})();
+
+</script>
+</body></html>
