@@ -311,6 +311,44 @@ if(window._leafMarkers && window._leafMarkers[z.n]){
 }
 ve.classList.remove("dn");ve.style.cssText="background:"+g.b+";border:1px solid "+g.c+"30";ve.innerHTML='<h2 style="color:'+g.c+'">'+g.l+"</h2>"+g.is.map(x=>'<p style="color:'+g.c+'">• '+x+"</p>").join("");
 let rtg=rt!=null?'<div class="tg" style="background:'+(rt<-2?"rgba(230,80,0,.15)":rt>2?"rgba(40,120,200,.15)":"rgba(255,255,255,.04)")+";color:"+(rt<-2?"#f0a050":rt>2?"#60a8e0":"#5a7888")+'">'+(rt<-2?"🔄 Backing "+rt.toFixed(0)+"°":rt>2?"↻ Veering +"+rt.toFixed(0)+"°":"→ Stabile")+"</div>":"";
+// === Mini-tabella 6h + sparkline 48h ===
+let _mt6h='<div class="cd" style="padding:12px 14px"><div class="lb">⏱ Prossime 6 ore</div><div style="margin-top:8px"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="color:#5a8098;font-size:10px;text-align:left"><th style="padding:4px 6px">Ora</th><th style="padding:4px 6px">Vento (raff)</th><th style="padding:4px 6px">Dir</th><th style="padding:4px 6px">Mare</th><th style="padding:4px 6px;text-align:center">⚖</th></tr></thead><tbody>';
+for(let _i=vi+1;_i<Math.min(vi+7,h.time.length);_i++){
+  let _w=h.wind_speed_10m[_i]??0,_g=h.wind_gusts_10m[_i]??0,_dd=h.wind_direction_10m[_i],_wv=m?.wave_height?.[_i],_tt=new Date(h.time[_i]);
+  let _wc=_w>=25?'#ff5050':_w>=18?'#f0a040':'#b0c8d8';
+  let _gc=_g>=35?'#ff5050':'#b0c8d8',_gw=_g>=25?'700':'400';
+  let _sc=_wv==null?'#5a7888':(_wv>=2.5?'#ff5050':_wv>=1.5?'#f0a040':'#b0c8d8');
+  let _vText;
+  try{let _vs=VI(h.relative_humidity_2m[_i],h.precipitation?.[_i]??0,h.cloud_cover[_i]??0);let _gg=GG(_w,_wv??0,h.cape?.[_i]??0,_vs,h.precipitation?.[_i]??0);_vText=_gg.l.indexOf('NON')>=0?'🔴':_gg.l.indexOf('CAUTELA')>=0?'🟡':'🟢';}
+  catch(_e){_vText=(_w<18&&(_wv==null||_wv<1.5))?'🟢':(_w<25&&(_wv==null||_wv<2.5))?'🟡':'🔴';}
+  _mt6h+='<tr style="border-top:1px solid rgba(255,255,255,.05)"><td style="padding:5px 6px;white-space:nowrap"><b>'+_tt.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})+'</b></td><td style="padding:5px 6px;color:'+_wc+';font-weight:700">'+N(_w,0)+' <span style="color:'+_gc+';font-weight:'+_gw+';font-size:11px">('+N(_g,0)+')</span></td><td style="padding:5px 6px">'+WN(_dd)+'</td><td style="padding:5px 6px;color:'+_sc+'">'+(_wv!=null?_wv.toFixed(1)+'m':'—')+'</td><td style="padding:5px 6px;text-align:center;font-size:14px">'+_vText+'</td></tr>';
+}
+_mt6h+='</tbody></table></div></div>';
+let _wsA=[],_wgA=[];
+for(let _j=vi;_j<Math.min(vi+48,h.time.length);_j++){_wsA.push(h.wind_speed_10m[_j]??0);_wgA.push(h.wind_gusts_10m[_j]??0);}
+let _spH='';
+if(_wsA.length>=2){
+  let _maxWg=Math.max.apply(null,_wgA);
+  let _maxWs=Math.max.apply(null,_wsA);
+  let _maxV=Math.max(_maxWs,_maxWg)+5;
+  let _minV=Math.min.apply(null,_wsA);
+  let _iMin=_wsA.indexOf(_minV);
+  let _iMax=_wgA.indexOf(_maxWg);
+  let _W=600,_H=100,_P=4,_xS=(_W-2*_P)/(_wsA.length-1);
+  let _toPts=function(a){return a.map(function(v,k){return (_P+k*_xS).toFixed(1)+','+(_H-_P-(v/_maxV)*(_H-2*_P)).toFixed(1);}).join(' ');};
+  let _tk='';
+  for(let _t=12;_t<_wsA.length;_t+=12){let _xT=(_P+_t*_xS).toFixed(1);_tk+='<line x1="'+_xT+'" y1="0" x2="'+_xT+'" y2="'+_H+'" stroke="#ffffff10" stroke-width="1"/>';}
+  let _hhmm=function(idx){let _d=new Date(h.time[vi+idx]);return _d.getHours().toString().padStart(2,'0')+':'+_d.getMinutes().toString().padStart(2,'0');};
+  let _clamp=function(p){return p<7?'left:2px':p>93?'right:2px':'left:'+p.toFixed(2)+'%;transform:translateX(-50%)';};
+  let _xMinPct=(_P+_iMin*_xS)/_W*100;
+  let _xMaxPct=(_P+_iMax*_xS)/_W*100;
+  let _yMinPx=Math.max(2,(_H-_P-(_wsA[_iMin]/_maxV)*(_H-2*_P))-14);
+  let _yMaxPx=Math.max(2,(_H-_P-(_wgA[_iMax]/_maxV)*(_H-2*_P))-14);
+  let _lblMin='<div style="position:absolute;'+_clamp(_xMinPct)+';top:'+_yMinPx.toFixed(1)+'px;font-size:9px;color:#60a8e0;background:rgba(6,14,26,.75);padding:1px 4px;border-radius:3px;pointer-events:none;white-space:nowrap;line-height:1.2;border:1px solid rgba(96,168,224,.3)">min '+_hhmm(_iMin)+' · '+Math.round(_wsA[_iMin])+'kt</div>';
+  let _lblMax='<div style="position:absolute;'+_clamp(_xMaxPct)+';top:'+_yMaxPx.toFixed(1)+'px;font-size:9px;color:#f0a040;background:rgba(6,14,26,.75);padding:1px 4px;border-radius:3px;pointer-events:none;white-space:nowrap;line-height:1.2;border:1px solid rgba(240,160,64,.3)">max '+_hhmm(_iMax)+' · '+Math.round(_maxWg)+'kt</div>';
+  _spH='<div class="cd" style="padding:12px 14px"><div class="lb">📈 Vento prossime 48h</div><div style="position:relative;margin-top:8px"><svg viewBox="0 0 '+_W+' '+_H+'" preserveAspectRatio="none" style="width:100%;height:100px;display:block">'+_tk+'<polyline fill="none" stroke="#f0a040" stroke-width="1.5" stroke-opacity="0.7" points="'+_toPts(_wgA)+'"/><polyline fill="none" stroke="#60a8e0" stroke-width="2" points="'+_toPts(_wsA)+'"/></svg>'+_lblMin+_lblMax+'</div><div style="font-size:10px;color:#5a8098;margin-top:4px;display:flex;gap:10px;flex-wrap:wrap"><span><span style="color:#60a8e0">●</span> Vento</span><span><span style="color:#f0a040">●</span> Raffiche</span></div></div>';
+}
+let _extra='<div style="margin-top:16px;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">'+_mt6h+_spH+'</div>';
 document.getElementById("pN").innerHTML='<div class="gr">'+
 '<div class="cd"><div class="lb">💨 Vento</div><div class="rw"><div><span class="vl" style="color:'+bf.c+'">'+N(wk,0)+' kn</span> <span style="font-size:12px;color:#5a8098">F'+bf.f+'</span></div><div style="font-size:14px;font-weight:700;color:#b0c8d8">'+WN(wd)+' ('+N(wd,0)+'°)</div></div><div class="sb">'+bf.d+' — Raff: '+N(wg,0)+' kn</div>'+rtg+'</div>'+
 '<div class="cd"><div class="lb">📊 Pressione</div><div class="vl">'+N(pr,1)+' <span style="font-size:12px;font-weight:400">hPa</span></div><div class="sb" style="color:'+pt.c+'">'+pt.i+' '+pt.t+' (3h)</div></div>'+
@@ -318,7 +356,7 @@ document.getElementById("pN").innerHTML='<div class="gr">'+
 '<div class="cd"><div class="lb">☁️ Nuvolosità</div><div class="vl">'+o8+'<span style="font-size:12px;font-weight:400">/8</span></div><div class="sb">'+ct+'</div><div class="bb"><div class="bf" style="width:'+cl+'%"></div></div></div>'+
 '<div class="cd"><div class="lb">⚡ CAPE</div><div class="vl" style="color:'+(cp>=1500?"#ff5050":cp>=500?"#f0a040":"#7ecfa0")+'">'+cp+' <span style="font-size:12px;font-weight:400">J/kg</span></div><div class="sb">'+(cp>=1500?"Alto: temporali probabili":cp>=500?"Moderato":cp>=100?"Basso":"Stabile")+'</div></div>'+
 '<div class="cd"><div class="lb">👁️ Visibilità</div><div class="vl" style="color:'+vs.c+'">'+vs.t+'</div><div class="sb">'+vs.s+' — Precip: '+N(rr,1)+' mm/h</div></div>'+
-'<div class="cd"><div class="lb">🌊 Mare</div><div class="rw"><span class="vl" style="color:'+se.c+'">'+(wh!=null?wh.toFixed(1):"—")+' m</span><span style="font-size:12px;color:#5a8098">'+se.d+'</span></div><div class="sb">Per: '+(wp!=null?wp.toFixed(0):"—")+'s Dir: '+WN(wdr)+'</div>'+(swh!=null?'<div class="sb">Swell: '+swh.toFixed(1)+'m '+WN(swd)+'</div>':"")+'</div></div>';
+'<div class="cd"><div class="lb">🌊 Mare</div><div class="rw"><span class="vl" style="color:'+se.c+'">'+(wh!=null?wh.toFixed(1):"—")+' m</span><span style="font-size:12px;color:#5a8098">'+se.d+'</span></div><div class="sb">Per: '+(wp!=null?wp.toFixed(0):"—")+'s Dir: '+WN(wdr)+'</div>'+(swh!=null?'<div class="sb">Swell: '+swh.toFixed(1)+'m '+WN(swd)+'</div>':"")+'</div></div>'+_extra;
 // FC table builder
 function bFc(from,hours){let fc='<div style="overflow-x:auto"><table style="min-width:780px"><thead><tr>';
 [
