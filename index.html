@@ -135,8 +135,21 @@ body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
 </div>
 
 <div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #7ecfa0">
-<div style="font-size:13px;font-weight:700;color:#7ecfa0;margin-bottom:5px">📍 Rotta</div>
-<div style="font-size:11px;color:#5a8098;line-height:1.6">Aggiungi le tappe in sequenza → premi <b style="color:#7ecfa0">Carica meteo</b>. Mostra distanze in <b>miglia nautiche</b>, condizioni per ogni tappa e semaforo +6/+12/+24h. Imposta <b>velocità e ora di partenza</b> per vedere il meteo all'ora di arrivo stimata.</div>
+<div style="font-size:13px;font-weight:700;color:#7ecfa0;margin-bottom:5px">📍 Rotta — Pianificazione avanzata</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">
+<b>Aggiungere tappe:</b> due modi.<br>
+1) Dal menu a tendina seleziona un porto → premi <b>+ Aggiungi</b>.<br>
+2) Attiva <b>✏️ Disegna sulla mappa</b> → clicca i punti sulla mappa. Se clicchi entro <b>5 NM da un porto esistente</b>, il waypoint si aggancia automaticamente al porto. Altrimenti viene creato un waypoint libero (con coordinate in formato nautico DMS).<br><br>
+<b>Velocità & partenza:</b> imposta la velocità di crociera in nodi e l'ora di partenza. L'app calcola distanze in <b>miglia nautiche</b> e l'ora di arrivo prevista a ogni tappa.<br><br>
+<b>⏱️ Tabella tempo-step:</b> quando hai impostato l'ora di partenza, sotto compare una tabella con il <b>vento previsto, l'andatura e il mare lungo tutta la rotta</b>, una riga ogni <b>30/60/120 minuti</b> di navigazione (toggle). Per ogni punto vedi:<br>
+- 🧭 Rotta (heading in gradi e cardinale)<br>
+- 💨 Vento (con freccia direzione)<br>
+- ⛵ <b>Andatura</b>: <span style="color:#d03030">🔴 Bolina stretta</span> (&lt;32° dal vento, motore), <span style="color:#e89050">🟠 Bolina larga</span> (32-60°), <span style="color:#7ecfa0">🟢 Traverso/Lasco/Poppa</span> (>60°, andatura favorevole), <b>mura a dritta/sinistra</b><br>
+- 🌊 Onde previste<br>
+- 🚦 Semaforo (verde/giallo/rosso)<br><br>
+<b>Frecce vento sulla mappa:</b> sopra ogni waypoint compare una piccola freccia colorata che indica direzione e intensità del vento all'ora di arrivo prevista.<br><br>
+<b>Riassunto totale:</b> distanza, tempo di navigazione, <b>% di andatura favorevole</b> (quanto della rotta riesci a fare a vela bene) ed eventuale <b>% di bolina stretta</b> (quanto rischi di dover andare a motore).
+</div>
 </div>
 
 <div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #c090d0">
@@ -1108,98 +1121,503 @@ function bzRT(){
 
 function renderRottaUI(){
   var wp = _rtWaypoints;
-  var html = '';
-
-  html += '<div style="margin-bottom:12px">';
-  html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:4px">📍 Rotta Personalizzata</div>';
-  html += '<div style="font-size:11px;color:#3a6080">Aggiungi le tappe della tua rotta e carica il meteo per ognuna</div>';
-  html += '</div>';
-
-  // Controls
-  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">';
-  html += '<select id="rtSelect" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px;flex:1;min-width:160px">';
-  html += '<option value="">— Aggiungi tappa —</option>';
-  Z.forEach(function(loc){ html += '<option value="'+loc.n+'">'+loc.n+'</option>'; });
-  html += '</select>';
-  html += '<button onclick="rtAdd()" style="padding:7px 14px;background:rgba(25,110,190,.3);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">+ Aggiungi</button>';
-  html += '<button onclick="rtLoadAll()" style="padding:7px 14px;background:rgba(46,125,50,.3);color:#7ecfa0;border:1px solid rgba(46,125,50,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">🔄 Carica meteo</button>';
-  html += '<button onclick="rtClear()" style="padding:7px 14px;background:rgba(183,28,28,.2);color:#ff8080;border:1px solid rgba(183,28,28,.3);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">✕ Azzera</button>';
-  html += '</div>';
-
-  // Speed and departure time inputs
   var spd = window._rtSpeed || 6;
   var dep = window._rtDeparture || '';
-  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;align-items:center">';
-  html += '<div style="font-size:11px;color:#4a7090;font-weight:700;white-space:nowrap">⏰ Navigazione stimata</div>';
-  html += '<div style="display:flex;align-items:center;gap:6px">';
-  html += '<label style="font-size:11px;color:#4a7090">Velocità:</label>';
-  html += '<input id="rtSpeed" type="number" min="1" max="20" value="'+spd+'" onchange="window._rtSpeed=+this.value;renderRottaUI()" style="width:60px;background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 8px;font-size:13px;text-align:center"> kn</div>';
-  html += '<div style="display:flex;align-items:center;gap:6px">';
-  html += '<label style="font-size:11px;color:#4a7090">Partenza:</label>';
-  html += '<input id="rtDep" type="datetime-local" value="'+dep+'" onchange="window._rtDeparture=this.value;renderRottaUI()" style="background:rgba(255,255,255,.06);color:#e8f4ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 8px;font-size:12px">';
+  var drawMode = window._rtDrawMode ? true : false;
+  var html = '';
+  
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║   MODALITÀ FULLSCREEN — drawMode attivo                      ║
+  // ║   Posizione FIXED che copre l'intera finestra del browser    ║
+  // ║   (sopra header, tab, tutto)                                 ║
+  // ╚══════════════════════════════════════════════════════════════╝
+  if(drawMode){
+    // CSS per nascondere lo scroll della pagina mentre siamo in fullscreen
+    document.body.style.overflow = 'hidden';
+    
+    // OVERLAY FULLSCREEN che copre tutto: header app, tab, padding... tutto
+    html += '<div id="rtFullscreenOverlay" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;z-index:9999;background:linear-gradient(180deg,#060e1a,#0c1e38);display:flex;flex-direction:column;padding:0">';
+    
+    // Header sticky in alto: titolo + counter waypoint + pulsante FATTO grande
+    html += '<div style="flex-shrink:0;background:linear-gradient(180deg,rgba(6,14,26,.98),rgba(12,30,56,.95));backdrop-filter:blur(12px);padding:14px 18px;border-bottom:2px solid rgba(120,180,80,.4);box-shadow:0 4px 16px rgba(0,0,0,.5)">';
+    html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:1400px;margin:0 auto">';
+    html += '<div style="flex:1;min-width:200px">';
+    html += '<div style="font-size:20px;font-weight:800;color:#9cd870;display:flex;align-items:center;gap:8px">✏️ Disegna Rotta sulla Mappa</div>';
+    html += '<div style="font-size:13px;color:#90a8b8;margin-top:3px"><b style="color:#e8f4ff">'+wp.length+'</b> waypoint inseriti • Clicca sulla mappa per aggiungere punti</div>';
+    html += '</div>';
+    html += '<button onclick="rtToggleDrawMode()" style="padding:14px 30px;background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#ffffff;border:2px solid #7ecfa0;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(46,125,50,.5);letter-spacing:.5px">✓ FATTO</button>';
+    html += '</div>';
+    html += '<div style="font-size:12px;color:#9cd870;margin-top:8px;padding:6px 10px;background:rgba(120,180,80,.12);border-radius:6px;text-align:center;max-width:1400px;margin-left:auto;margin-right:auto">⚓ Snap automatico ai porti entro 5 NM • Coordinate libere altrove</div>';
+    html += '</div>';
+    
+    // Lista chip waypoint orizzontale (sopra la mappa)
+    if(wp.length > 0){
+      html += '<div style="flex-shrink:0;display:flex;gap:8px;overflow-x:auto;padding:10px 18px;background:rgba(6,14,26,.6);-webkit-overflow-scrolling:touch;border-bottom:1px solid rgba(255,255,255,.05)">';
+      wp.forEach(function(w, i){
+        html += '<div style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(25,110,190,.18);border:1px solid rgba(25,110,190,.4);border-radius:20px;font-size:13px">';
+        html += '<div style="width:24px;height:24px;border-radius:50%;background:rgba(25,110,190,.5);color:#e8f4ff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid rgba(255,255,255,.3)">'+(i+1)+'</div>';
+        html += '<span style="color:#e8f4ff;font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+w.name+'</span>';
+        html += '<span onclick="rtRemove('+i+')" style="cursor:pointer;color:#ff8080;padding:0 4px;font-size:14px;font-weight:700">✕</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div style="flex-shrink:0;padding:14px 18px;text-align:center;color:#9cd870;font-size:15px;font-weight:600;background:rgba(120,180,80,.08);border-bottom:1px solid rgba(120,180,80,.2)">👆 Clicca sulla mappa qui sotto per iniziare la rotta!</div>';
+    }
+    
+    // MAPPA che occupa TUTTO lo spazio rimanente (flex:1)
+    html += '<div id="rtMapContainer" style="flex:1;width:100%;background:#0a1628;cursor:crosshair;min-height:300px"></div>';
+    
+    html += '</div>'; // fine overlay fullscreen
+    
+    document.getElementById('pRT').innerHTML = html;
+    setTimeout(renderRottaMap, 100);
+    return;
+  } else {
+    // Ripristina scroll quando NON sei in drawMode
+    document.body.style.overflow = '';
+  }
+  
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║   MODALITÀ NORMALE — pianificazione e analisi                ║
+  // ╚══════════════════════════════════════════════════════════════╝
+  
+  html += '<div style="margin-bottom:14px">';
+  html += '<div style="font-size:16px;font-weight:800;color:#e8f4ff;margin-bottom:4px">📍 Rotta Personalizzata</div>';
+  html += '<div style="font-size:13px;color:#90a8b8">Pianifica la tua rotta e visualizza vento e andatura lungo il percorso</div>';
+  html += '</div>';
+
+  // ===== AGGIUNGI WAYPOINT — pulsanti grandi =====
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center">';
+  html += '<select id="rtSelect" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;font-size:14px;flex:1;min-width:180px">';
+  html += '<option value="">— Seleziona porto —</option>';
+  Z.forEach(function(loc){ html += '<option value="'+loc.n+'">'+loc.n+'</option>'; });
+  html += '</select>';
+  html += '<button onclick="rtAdd()" style="padding:10px 18px;background:rgba(25,110,190,.3);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:8px;font-size:14px;cursor:pointer;font-weight:700">+ Aggiungi</button>';
+  html += '<button onclick="rtClear()" style="padding:10px 16px;background:rgba(183,28,28,.2);color:#ff8080;border:1px solid rgba(183,28,28,.3);border-radius:8px;font-size:14px;cursor:pointer;font-weight:700">✕ Azzera</button>';
+  html += '</div>';
+
+  // ===== TOGGLE DISEGNA SULLA MAPPA - grande e prominente =====
+  html += '<button onclick="rtToggleDrawMode()" style="width:100%;padding:14px 18px;background:linear-gradient(135deg,rgba(120,180,80,.2),rgba(120,180,80,.1));color:#9cd870;border:1px solid rgba(120,180,80,.4);border-radius:10px;font-size:15px;cursor:pointer;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px">✏️ <span>Disegna rotta sulla mappa</span> <span style="font-size:11px;color:#7ecfa0;font-weight:500;background:rgba(120,180,80,.2);padding:3px 8px;border-radius:10px">apre mappa fullscreen</span></button>';
+
+  // ===== VELOCITÀ E PARTENZA — input grandi =====
+  html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;align-items:center">';
+  html += '<div style="font-size:13px;color:#c0d0e0;font-weight:700;white-space:nowrap">⏰ Navigazione</div>';
+  html += '<div style="display:flex;align-items:center;gap:8px">';
+  html += '<label style="font-size:13px;color:#90a8b8">Velocità:</label>';
+  html += '<input id="rtSpeed" type="number" min="1" max="20" value="'+spd+'" onchange="window._rtSpeed=+this.value;renderRottaUI()" style="width:70px;background:rgba(255,255,255,.08);color:#e8f4ff;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 10px;font-size:14px;text-align:center;font-weight:700"> <span style="color:#90a8b8;font-size:13px">kn</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:8px">';
+  html += '<label style="font-size:13px;color:#90a8b8">Partenza:</label>';
+  html += '<input id="rtDep" type="datetime-local" value="'+dep+'" onchange="window._rtDeparture=this.value;renderRottaUI()" style="background:rgba(255,255,255,.08);color:#e8f4ff;border:1px solid '+(dep?'rgba(74,144,96,.5)':'rgba(240,200,64,.4)')+';border-radius:6px;padding:8px 10px;font-size:13px;font-weight:600">';
   html += '</div>';
   if(dep){
-    html += '<div style="font-size:10px;color:#3a8060">&#x2705; Meteo calcolato all\'ora di arrivo stimata</div>';
+    html += '<div style="font-size:12px;color:#7ecfa0;font-weight:600">✅ Ora arrivo calcolata</div>';
   } else {
-    html += '<div style="font-size:10px;color:#3a6080">Imposta ora di partenza per vedere il meteo all\'arrivo</div>';
+    html += '<div style="font-size:12px;color:#f0c840;font-weight:600">⚠️ Imposta l\'ora per vedere il vento lungo la rotta</div>';
   }
   html += '</div>';
 
-  // Waypoints list
+  // ===== PULSANTE CARICA METEO — GROSSO E PROMINENTE in alto se ci sono waypoint =====
+  if(wp.length >= 1){
+    var hasAnyData = wp.filter(function(w){return w.D;}).length > 0;
+    var allLoaded = wp.filter(function(w){return w.D;}).length === wp.length;
+    var loadBtnLabel, loadBtnBg, loadBtnColor, loadBtnBorder, loadBtnIcon;
+    if(!hasAnyData){
+      loadBtnLabel = 'CARICA METEO della rotta';
+      loadBtnBg = 'linear-gradient(135deg,#2e7d32,#1b5e20)';
+      loadBtnColor = '#ffffff';
+      loadBtnBorder = '#4a9060';
+      loadBtnIcon = '🌬️';
+    } else if(!allLoaded){
+      loadBtnLabel = 'CARICA METEO mancante';
+      loadBtnBg = 'linear-gradient(135deg,rgba(240,160,64,.4),rgba(230,81,0,.3))';
+      loadBtnColor = '#ffd090';
+      loadBtnBorder = '#f0a040';
+      loadBtnIcon = '🔄';
+    } else {
+      loadBtnLabel = 'AGGIORNA METEO';
+      loadBtnBg = 'rgba(25,110,190,.2)';
+      loadBtnColor = '#80c0f0';
+      loadBtnBorder = 'rgba(25,110,190,.4)';
+      loadBtnIcon = '🔄';
+    }
+    html += '<button onclick="rtLoadAll()" style="width:100%;padding:16px 20px;background:'+loadBtnBg+';color:'+loadBtnColor+';border:2px solid '+loadBtnBorder+';border-radius:12px;font-size:16px;cursor:pointer;font-weight:800;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:12px;letter-spacing:.5px;'+(!hasAnyData?'box-shadow:0 4px 16px rgba(46,125,50,.4);animation:rtPulseLoad 2s ease-in-out infinite':'')+'">';
+    html += '<span style="font-size:22px">'+loadBtnIcon+'</span> '+loadBtnLabel;
+    html += '</button>';
+    html += '<style>@keyframes rtPulseLoad{0%,100%{box-shadow:0 4px 16px rgba(46,125,50,.4)}50%{box-shadow:0 4px 24px rgba(46,125,50,.7)}}</style>';
+  }
+
+  // ===== LISTA WAYPOINT — con info meteo compatte + espansione "Più dettagli" =====
   if(wp.length > 0){
-    html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">';
+    if(!window._rtExpanded) window._rtExpanded = {};
+    html += '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">';
     wp.forEach(function(w, i){
       var hasData = w.D != null;
       var score = hasData ? rtScore(w) : null;
       var colors = ["#2e7d32","#e65100","#b71c1c"];
       var icons = ["🟢","🟡","🔴"];
+      var isExpanded = !!window._rtExpanded[i];
       
-      html += '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px">';
+      // Card waypoint
+      html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden">';
+      
+      // === RIGA PRINCIPALE: numero + nome + dati compatti + pulsanti ===
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;flex-wrap:wrap">';
+      
       // Step number
-      html += '<div style="width:24px;height:24px;border-radius:50%;background:rgba(25,110,190,.3);color:#80c0f0;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div>';
-      // Arrow between waypoints
-      if(i > 0) html = html; // arrow shown via border
-      // Name and data
-      html += '<div style="flex:1">';
-      html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff">'+w.name+'</div>';
+      html += '<div style="width:36px;height:36px;border-radius:50%;background:rgba(25,110,190,.35);color:#80c0f0;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(25,110,190,.4)">'+(i+1)+'</div>';
+      
+      // Nome + verdetto
+      html += '<div style="min-width:140px;flex:0 1 auto">';
+      html += '<div style="font-size:15px;font-weight:700;color:#e8f4ff;line-height:1.3">'+w.name+'</div>';
+      if(w.custom){
+        html += '<div style="font-size:10px;color:#7090a8;font-family:ui-monospace,monospace;margin-top:2px">📍 '+toDMS(w.lat,true)+'</div>';
+      }
       if(hasData && score !== null){
-        var wk = Math.round(w.D.hourly.wind_speed_10m[w.vi]||0);
-        var wh = w.Mr ? (w.Mr.hourly.wave_height?.[w.vi]||0).toFixed(1) : '—';
-        html += '<div style="font-size:10px;color:'+colors[score.s]+'">'+icons[score.s]+' '+score.label+' • 💨'+wk+'kn • 🌊'+wh+'m</div>';
+        html += '<div style="font-size:12px;color:'+colors[score.s]+';font-weight:700;margin-top:3px">'+icons[score.s]+' '+score.label+'</div>';
       } else {
-        html += '<div style="font-size:10px;color:#3a6080">⏳ Dati non caricati</div>';
+        html += '<div style="font-size:12px;color:#90a8b8;margin-top:3px">⏳ Dati non caricati</div>';
       }
       html += '</div>';
-      // Remove button
-      html += '<span onclick="rtRemove('+i+')" style="cursor:pointer;color:#4a7090;font-size:16px;padding:4px">✕</span>';
+      
+      // ===== DATI METEO COMPATTI (riempiono lo spazio vuoto) =====
+      if(hasData){
+        html += rtRenderWpDataRow(w);
+      }
+      
+      // Pulsanti azione (Espandi + Rimuovi)
+      html += '<div style="display:flex;gap:6px;margin-left:auto;flex-shrink:0">';
+      if(hasData){
+        html += '<button onclick="rtToggleExpand('+i+')" title="Più dettagli" style="background:rgba(25,110,190,.15);color:#80c0f0;border:1px solid rgba(25,110,190,.3);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:700;white-space:nowrap">'+(isExpanded?'▲ Meno':'▼ Più dettagli')+'</button>';
+      }
+      html += '<button onclick="rtRemove('+i+')" title="Rimuovi tappa" style="background:rgba(183,28,28,.15);color:#ff8080;border:1px solid rgba(183,28,28,.25);border-radius:8px;padding:6px 12px;font-size:14px;cursor:pointer;font-weight:700">✕</button>';
       html += '</div>';
+      
+      html += '</div>'; // fine riga principale
+      
+      // ===== SEZIONE ESPANSA "Più dettagli" =====
+      if(hasData && isExpanded){
+        html += rtRenderWpExpanded(w, i);
+      }
+      
+      html += '</div>'; // fine card
       
       // Arrow connector
       if(i < wp.length - 1){
-        html += '<div style="text-align:center;color:#2a4a60;font-size:16px;margin:-2px 0">↓</div>';
+        html += '<div style="text-align:center;color:#4a7090;font-size:20px;margin:-4px 0;line-height:1">↓</div>';
       }
     });
     html += '</div>';
   } else {
-    html += '<div style="text-align:center;padding:20px;color:#2a4a60;font-size:12px">Aggiungi le tappe della tua rotta usando il menu sopra</div>';
+    html += '<div style="text-align:center;padding:30px 20px;color:#5a8098;font-size:14px;background:rgba(255,255,255,.02);border-radius:12px;border:1px dashed rgba(255,255,255,.1)">';
+    html += '<div style="font-size:32px;margin-bottom:10px">🗺️</div>';
+    html += '<div style="font-weight:700;color:#90a8b8;margin-bottom:4px">Nessuna rotta ancora</div>';
+    html += '<div style="font-size:12px;color:#5a8098">Aggiungi tappe dal menu sopra, oppure premi <b style="color:#9cd870">✏️ Disegna sulla mappa</b> per cliccare i punti direttamente.</div>';
+    html += '</div>';
   }
 
-  // Mini map showing route
-  if(wp.length >= 2){
-    html += '<div id="rtMapContainer" style="height:300px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07);margin-bottom:14px;background:#0a1628"></div>';
+  // ===== MINI MAPPA (visualizzazione, non drawMode) =====
+  if(wp.length >= 1){
+    html += '<div id="rtMapContainer" style="height:380px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07);margin-bottom:8px;background:#0a1628"></div>';
+    
+    // Legenda mappa: spiega la differenza tra card (ora attuale) e frecce (ora di arrivo)
+    var hasArrows = dep && wp.filter(function(w){return w.D;}).length >= 1;
+    if(hasArrows){
+      html += '<div style="margin-bottom:16px;padding:10px 14px;background:rgba(25,110,190,.06);border:1px solid rgba(25,110,190,.2);border-radius:8px;font-size:11px;color:#90a8b8;line-height:1.6">';
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
+      html += '<span style="font-size:14px">💡</span>';
+      html += '<b style="color:#80c0f0">Come leggere la mappa:</b>';
+      html += '<span>Le frecce mostrano il vento previsto <b style="color:#e8f4ff">all\'ora di arrivo</b> a ciascuna tappa (vedi badge 🕐 sotto la freccia).</span>';
+      html += '</div>';
+      html += '<div style="margin-top:4px;padding-left:22px;color:#7090a8">Le card meteo sopra mostrano invece le condizioni <b style="color:#c0d0e0">all\'ora attuale</b>. Per il dettaglio orario completo guarda la tabella tempo-step sotto.</div>';
+      html += '</div>';
+    } else if(wp.length >= 1 && !dep){
+      html += '<div style="margin-bottom:16px;padding:10px 14px;background:rgba(240,200,64,.06);border:1px solid rgba(240,200,64,.2);border-radius:8px;font-size:11px;color:#d0c890;line-height:1.6">';
+      html += '<span style="font-size:14px">💡</span> <b style="color:#f0c840">Suggerimento:</b> imposta l\'<b>ora di partenza</b> qui sopra ⬆️ per vedere le frecce vento previste all\'ora di arrivo a ciascuna tappa direttamente sulla mappa.';
+      html += '</div>';
+    } else {
+      html += '<div style="margin-bottom:16px"></div>'; // solo spacer
+    }
   }
 
-  // Meteo table per tappa
+  // ===== TABELLE METEO =====
   if(wp.filter(function(w){return w.D;}).length >= 1){
     html += renderRottaTable();
+  }
+
+  // ===== TABELLA TEMPO-STEP (vento+andatura lungo la rotta) =====
+  if(wp.length >= 2 && wp.filter(function(w){return w.D;}).length >= 1){
+    if(dep){
+      html += renderRottaTimeStepTable();
+    } else {
+      html += '<div style="margin-top:16px;padding:16px 20px;background:rgba(240,200,64,.1);border:2px solid rgba(240,200,64,.3);border-radius:12px">';
+      html += '<div style="font-size:15px;font-weight:800;color:#f0c840;margin-bottom:6px">⏱️ Tabella tempo-step disponibile!</div>';
+      html += '<div style="font-size:13px;color:#d0c890;line-height:1.6">Imposta l\'<b>ora di partenza</b> qui sopra ⬆️ per vedere il vento previsto, l\'andatura (bolina/traverso/lasco/poppa) e il mare <b>ogni 30/60/120 minuti</b> lungo la rotta.</div>';
+      html += '</div>';
+    }
+  } else if(wp.length >= 2){
+    html += '<div style="margin-top:16px;padding:16px 20px;background:rgba(25,110,190,.08);border:2px solid rgba(25,110,190,.25);border-radius:12px;text-align:center">';
+    html += '<div style="font-size:15px;font-weight:800;color:#80c0f0;margin-bottom:6px">⏱️ Tabella tempo-step in attesa</div>';
+    html += '<div style="font-size:13px;color:#90b0c8">Premi <b style="color:#7ecfa0">🌬️ CARICA METEO</b> qui sopra per popolare la tabella con vento e andatura lungo tutta la rotta.</div>';
+    html += '</div>';
   }
 
   document.getElementById('pRT').innerHTML = html;
 
   // Init mini map if needed
-  if(wp.length >= 2){
+  if(wp.length >= 1){
     setTimeout(renderRottaMap, 100);
   }
+}
+
+/* Toggle modalità disegno rotta sulla mappa */
+function rtToggleDrawMode(){
+  window._rtDrawMode = !window._rtDrawMode;
+  renderRottaUI();
+  // Quando si esce dal drawMode, scrolla in cima
+  if(!window._rtDrawMode){
+    setTimeout(function(){
+      var pRT = document.getElementById('pRT');
+      if(pRT) pRT.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 150);
+  }
+}
+
+/* Toggle espansione dettagli waypoint */
+function rtToggleExpand(idx){
+  if(!window._rtExpanded) window._rtExpanded = {};
+  window._rtExpanded[idx] = !window._rtExpanded[idx];
+  renderRottaUI();
+}
+
+/* === DATI METEO COMPATTI nella riga del waypoint ===
+   4 mini-card: 💨 Vento+raffiche / 🌊 Onde+periodo / 💧 Pioggia / ⚡ CAPE (se rilevante)
+   Si dispongono in fila a destra del nome; su mobile passano sotto in grid 2x2.
+*/
+function rtRenderWpDataRow(w){
+  var H = w.D.hourly, M = w.Mr ? w.Mr.hourly : null, vi = w.vi;
+  var ws = H.wind_speed_10m[vi] || 0;
+  var wd = H.wind_direction_10m[vi];
+  var wg = H.wind_gusts_10m ? (H.wind_gusts_10m[vi] || 0) : 0;
+  var rr = H.precipitation ? (H.precipitation[vi] || 0) : 0;
+  var cp = H.cape ? (H.cape[vi] || 0) : 0;
+  var wh = M && M.wave_height ? M.wave_height[vi] : null;
+  var wpd = M && M.wave_period ? M.wave_period[vi] : null;
+  
+  // Ora del dato meteo (vi è l'indice dell'ora corrente)
+  var meteoTime = H.time && H.time[vi] ? new Date(H.time[vi]) : null;
+  var meteoTimeStr = meteoTime ? meteoTime.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) : '';
+  
+  var bf = BF(ws);
+  var html = '';
+  
+  // Container grid responsivo: in linea su desktop, 2x2 su mobile
+  // L'etichetta "ORA" chiarisce che questi valori sono per l'ora corrente, NON l'ora di arrivo
+  html += '<div class="rt-wp-data" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px;justify-content:flex-end;align-items:flex-start">';
+  
+  // Badge "ORA" piccolo a sinistra delle mini-card
+  if(meteoTimeStr){
+    html += '<div title="Condizioni meteo ora attuale" style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;background:rgba(120,180,80,.08);border:1px solid rgba(120,180,80,.2);border-radius:8px;flex-shrink:0">';
+    html += '<div style="font-size:9px;color:#7ecfa0;text-transform:uppercase;letter-spacing:.5px;font-weight:700;line-height:1">🕐 ORA</div>';
+    html += '<div style="font-size:11px;font-weight:800;color:#9cd870;line-height:1.2;margin-top:2px">'+meteoTimeStr+'</div>';
+    html += '</div>';
+  }
+  
+  // 💨 Vento + raffiche + direzione cardinale
+  var gustExtra = wg > ws ? '<span style="color:#f0a040;font-weight:700"> raff.'+Math.round(wg)+'</span>' : '';
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid '+bf.c+'40;border-radius:8px;padding:6px 10px;min-width:80px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">💨 Vento</div>';
+  html += '<div style="font-size:14px;font-weight:800;color:'+bf.c+';line-height:1.2">'+Math.round(ws)+'<span style="font-size:11px;color:#90a8b8;font-weight:500">kn</span>'+gustExtra+'</div>';
+  html += '<div style="font-size:10px;color:#90a8b8">'+WN(wd)+' • '+bf.d+'</div>';
+  html += '</div>';
+  
+  // 🌊 Onde + periodo
+  if(wh != null){
+    var se = SE(wh);
+    html += '<div style="background:rgba(255,255,255,.04);border:1px solid '+se.c+'40;border-radius:8px;padding:6px 10px;min-width:80px">';
+    html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">🌊 Mare</div>';
+    html += '<div style="font-size:14px;font-weight:800;color:'+se.c+';line-height:1.2">'+wh.toFixed(1)+'<span style="font-size:11px;color:#90a8b8;font-weight:500">m</span></div>';
+    var subText = se.d;
+    if(wpd != null && wpd > 0) subText += ' • '+Math.round(wpd)+'s';
+    html += '<div style="font-size:10px;color:#90a8b8">'+subText+'</div>';
+    html += '</div>';
+  }
+  
+  // 💧 Pioggia
+  var rainColor, rainLabel;
+  if(rr < 0.1){ rainColor = '#7ecfa0'; rainLabel = 'asciutto'; }
+  else if(rr < 0.5){ rainColor = '#88d8b0'; rainLabel = 'pioviggine'; }
+  else if(rr < 2){ rainColor = '#f0d060'; rainLabel = 'leggera'; }
+  else if(rr < 5){ rainColor = '#f0a040'; rainLabel = 'moderata'; }
+  else { rainColor = '#d03030'; rainLabel = 'forte'; }
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid '+rainColor+'40;border-radius:8px;padding:6px 10px;min-width:80px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">💧 Pioggia</div>';
+  html += '<div style="font-size:14px;font-weight:800;color:'+rainColor+';line-height:1.2">'+(rr<0.1?'—':rr.toFixed(1))+(rr>=0.1?'<span style="font-size:11px;color:#90a8b8;font-weight:500">mm</span>':'')+'</div>';
+  html += '<div style="font-size:10px;color:#90a8b8">'+rainLabel+'</div>';
+  html += '</div>';
+  
+  // ⚡ CAPE — solo se rilevante (>= 500 J/kg = instabilità)
+  if(cp >= 500){
+    var capeColor, capeLabel;
+    if(cp < 1000){ capeColor = '#f0d060'; capeLabel = 'instabile'; }
+    else if(cp < 1500){ capeColor = '#f0a040'; capeLabel = 'temporali'; }
+    else { capeColor = '#d03030'; capeLabel = 'forti TS!'; }
+    html += '<div style="background:rgba(208,48,48,.08);border:1px solid '+capeColor+'60;border-radius:8px;padding:6px 10px;min-width:80px">';
+    html += '<div style="font-size:10px;color:'+capeColor+';text-transform:uppercase;letter-spacing:.5px;font-weight:700">⚡ CAPE</div>';
+    html += '<div style="font-size:14px;font-weight:800;color:'+capeColor+';line-height:1.2">'+Math.round(cp)+'<span style="font-size:10px;color:#90a8b8;font-weight:500">J/kg</span></div>';
+    html += '<div style="font-size:10px;color:'+capeColor+'">'+capeLabel+'</div>';
+    html += '</div>';
+  }
+  
+  html += '</div>';
+  
+  // CSS per layout responsivo - quando schermo è stretto, le card vanno sotto al nome
+  // (già gestito da flex-wrap, ma aggiungo regola per assicurare full-width)
+  return html;
+}
+
+/* === SEZIONE ESPANSA con tutti i dettagli del waypoint === */
+function rtRenderWpExpanded(w, idx){
+  var H = w.D.hourly, M = w.Mr ? w.Mr.hourly : null, vi = w.vi;
+  var ws = H.wind_speed_10m[vi] || 0;
+  var wd = H.wind_direction_10m[vi];
+  var wg = H.wind_gusts_10m ? (H.wind_gusts_10m[vi] || 0) : 0;
+  var tp = H.temperature_2m[vi];
+  var hm = H.relative_humidity_2m[vi];
+  var dw = H.dew_point_2m ? H.dew_point_2m[vi] : null;
+  var pr = H.pressure_msl[vi];
+  var cl = H.cloud_cover[vi] || 0;
+  var rr = H.precipitation ? (H.precipitation[vi] || 0) : 0;
+  var cp = H.cape ? (H.cape[vi] || 0) : 0;
+  var wh = M && M.wave_height ? M.wave_height[vi] : null;
+  var wpd = M && M.wave_period ? M.wave_period[vi] : null;
+  var swh = M && M.swell_wave_height ? M.swell_wave_height[vi] : null;
+  var wdr = M && M.wave_direction ? M.wave_direction[vi] : null;
+  
+  // Trend pressione: confronta con 3h prima
+  var prTrend = '=', prTrendColor = '#90a8b8', prDelta = 0;
+  if(vi >= 3 && H.pressure_msl[vi-3] != null){
+    prDelta = pr - H.pressure_msl[vi-3];
+    if(prDelta < -1.5){ prTrend = '↓↓'; prTrendColor = '#d03030'; }
+    else if(prDelta < -0.5){ prTrend = '↓'; prTrendColor = '#f0a040'; }
+    else if(prDelta > 1.5){ prTrend = '↑↑'; prTrendColor = '#7ecfa0'; }
+    else if(prDelta > 0.5){ prTrend = '↑'; prTrendColor = '#88d8b0'; }
+  }
+  
+  // Tipo nuvole (sigla)
+  var cloudCode = CT(cl, cp);
+  var cloudInfo = CLOUD_DICT[cloudCode] || CLOUD_DICT[cloudCode.replace(/[^a-zA-Z,\/\. ]/g,'').trim()];
+  
+  // Ora del meteo mostrato
+  var meteoTime = H.time && H.time[vi] ? new Date(H.time[vi]) : null;
+  var meteoTimeStr = meteoTime ? meteoTime.toLocaleString('it-IT', {weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+  
+  var html = '<div style="border-top:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015);padding:14px 16px">';
+  
+  // Ora dati
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:10px">📅 Meteo previsto per: <span style="color:#a0c8e0">'+meteoTimeStr+'</span></div>';
+  
+  // Grid di mini-card dettagliate
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px">';
+  
+  // ☁️ Copertura + tipo nuvole (cliccabile come nella tab Attuale)
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">☁️ Nuvolosità</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#c0d0e0;line-height:1.2">'+Math.round(cl)+'<span style="font-size:11px;color:#90a8b8;font-weight:500">%</span></div>';
+  if(cloudInfo){
+    var tipDataAttr = 'onclick="showCloudTip(this,\''+cloudCode.replace(/'/g,"\\'")+'\')"';
+    html += '<div '+tipDataAttr+' style="font-size:11px;color:#80c0f0;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;margin-top:2px">'+cloudCode+' 🔍</div>';
+    html += '<div style="font-size:10px;color:#90a8b8;line-height:1.3;margin-top:2px">'+cloudInfo.n+'</div>';
+  }
+  html += '</div>';
+  
+  // 🌡️ Temperatura + dew point + umidità
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">🌡️ Aria</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#f0c060;line-height:1.2">'+Math.round(tp)+'<span style="font-size:11px;color:#90a8b8;font-weight:500">°C</span></div>';
+  html += '<div style="font-size:10px;color:#90a8b8">💧 '+Math.round(hm)+'% umidità';
+  if(dw != null) html += ' • rugiada '+Math.round(dw)+'°';
+  html += '</div>';
+  html += '</div>';
+  
+  // 📊 Pressione + trend
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">📊 Pressione</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#c0d0e0;line-height:1.2">'+Math.round(pr)+'<span style="font-size:11px;color:#90a8b8;font-weight:500">hPa</span> <span style="color:'+prTrendColor+'">'+prTrend+'</span></div>';
+  if(prDelta !== 0){
+    html += '<div style="font-size:10px;color:'+prTrendColor+'">'+(prDelta>0?'+':'')+prDelta.toFixed(1)+' hPa / 3h</div>';
+  } else {
+    html += '<div style="font-size:10px;color:#90a8b8">stabile</div>';
+  }
+  html += '</div>';
+  
+  // 🌬️ Vento dettaglio (gradi + Beaufort)
+  var bf = BF(ws);
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid '+bf.c+'40;border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">🌬️ Vento dett.</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:'+bf.c+';line-height:1.2">'+Math.round(ws)+' <span style="font-size:11px;color:#90a8b8;font-weight:500">kn</span></div>';
+  html += '<div style="font-size:10px;color:#90a8b8">'+WN(wd)+' '+Math.round(wd)+'° • Force '+bf.f+'</div>';
+  if(wg > ws){
+    html += '<div style="font-size:10px;color:#f0a040;font-weight:700;margin-top:2px">raff. '+Math.round(wg)+'kn ('+Math.round(wg-ws)+'kn extra)</div>';
+  }
+  html += '</div>';
+  
+  // 🌊 Mare dettaglio (se disponibile)
+  if(wh != null){
+    var se = SE(wh);
+    html += '<div style="background:rgba(255,255,255,.04);border:1px solid '+se.c+'40;border-radius:8px;padding:9px 12px">';
+    html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">🌊 Mare dett.</div>';
+    html += '<div style="font-size:16px;font-weight:800;color:'+se.c+';line-height:1.2">'+wh.toFixed(1)+' <span style="font-size:11px;color:#90a8b8;font-weight:500">m</span></div>';
+    var marDetail = se.d;
+    if(wpd != null && wpd > 0) marDetail += ' • T='+Math.round(wpd)+'s';
+    if(wdr != null) marDetail += ' • da '+WN(wdr);
+    html += '<div style="font-size:10px;color:#90a8b8">'+marDetail+'</div>';
+    if(swh != null && swh > 0.2){
+      html += '<div style="font-size:10px;color:#80c0f0;margin-top:2px">swell '+swh.toFixed(1)+'m</div>';
+    }
+    html += '</div>';
+  }
+  
+  // 💧 Pioggia dettaglio
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">💧 Precipitazioni</div>';
+  if(rr < 0.1){
+    html += '<div style="font-size:16px;font-weight:800;color:#7ecfa0;line-height:1.2">—</div>';
+    html += '<div style="font-size:10px;color:#90a8b8">asciutto</div>';
+  } else {
+    var rainC, rainL;
+    if(rr < 0.5){ rainC = '#88d8b0'; rainL = 'pioviggine'; }
+    else if(rr < 2){ rainC = '#f0d060'; rainL = 'leggera'; }
+    else if(rr < 5){ rainC = '#f0a040'; rainL = 'moderata'; }
+    else { rainC = '#d03030'; rainL = 'forte'; }
+    html += '<div style="font-size:16px;font-weight:800;color:'+rainC+';line-height:1.2">'+rr.toFixed(1)+' <span style="font-size:11px;color:#90a8b8;font-weight:500">mm/h</span></div>';
+    html += '<div style="font-size:10px;color:'+rainC+'">'+rainL+'</div>';
+  }
+  html += '</div>';
+  
+  // ⚡ CAPE (sempre se in espansione)
+  html += '<div style="background:'+(cp>=500?'rgba(208,48,48,.08)':'rgba(255,255,255,.04)')+';border:1px solid '+(cp>=500?'#d0303060':'rgba(255,255,255,.08)')+';border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">⚡ CAPE</div>';
+  var capeCol, capeLb;
+  if(cp < 300){ capeCol = '#7ecfa0'; capeLb = 'stabile'; }
+  else if(cp < 1000){ capeCol = '#f0d060'; capeLb = 'instabile'; }
+  else if(cp < 1500){ capeCol = '#f0a040'; capeLb = 'temporali probabili'; }
+  else { capeCol = '#d03030'; capeLb = '🔴 TS forti!'; }
+  html += '<div style="font-size:16px;font-weight:800;color:'+capeCol+';line-height:1.2">'+Math.round(cp)+' <span style="font-size:11px;color:#90a8b8;font-weight:500">J/kg</span></div>';
+  html += '<div style="font-size:10px;color:'+capeCol+'">'+capeLb+'</div>';
+  html += '</div>';
+  
+  // 📍 Coordinate complete (per tutti i waypoint, non solo custom)
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 12px">';
+  html += '<div style="font-size:10px;color:#7090a8;text-transform:uppercase;letter-spacing:.5px;font-weight:700">📍 Posizione</div>';
+  html += '<div style="font-size:11px;font-weight:700;color:#a0c8e0;font-family:ui-monospace,monospace;line-height:1.4;margin-top:2px">'+toDMS(w.lat,true)+'<br>'+toDMS(w.lon,false)+'</div>';
+  html += '<div style="font-size:10px;color:#7090a8;margin-top:2px">('+w.lat.toFixed(4)+'°, '+w.lon.toFixed(4)+'°)</div>';
+  html += '</div>';
+  
+  html += '</div>'; // fine grid
+  
+  html += '</div>'; // fine sezione espansa
+  return html;
 }
 
 function rtScore(w){
@@ -1354,38 +1772,689 @@ function renderRottaTable(){
   return html;
 }
 
+/* ===== TABELLA TEMPO-STEP: vento + andatura ogni N minuti lungo rotta ===== */
+function renderRottaTimeStepTable(){
+  var stepMin = window._rtStepMin || 60;
+  var ts = rtBuildTimeSteps(stepMin);
+  if(!ts || !ts.steps || ts.steps.length === 0) return '';
+  
+  var html = '<div style="margin-top:16px">';
+  
+  // Header sezione
+  html += '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">';
+  html += '<div style="font-size:15px;font-weight:800;color:#e8f4ff">⏱️ Vento e andatura lungo la rotta</div>';
+  html += '<div style="flex:1"></div>';
+  html += '<div style="font-size:11px;color:#5a8098">Passo:</div>';
+  html += '<div style="display:inline-flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:2px;gap:2px">';
+  [30, 60, 120].forEach(function(m){
+    var active = stepMin === m;
+    html += '<button onclick="rtSetStepMin('+m+')" style="padding:6px 11px;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;background:'+(active?'rgba(25,110,190,.4)':'transparent')+';color:'+(active?'#e8f4ff':'#5a8098')+'">'+m+' min</button>';
+  });
+  html += '</div></div>';
+  
+  // Riassunto totale
+  var favCount = 0, totCount = 0, motorMinCount = 0;
+  ts.steps.forEach(function(s){
+    if(s.sail){
+      totCount++;
+      if(s.sail.favorable) favCount++;
+      if(s.sail.apparent < 32) motorMinCount++;
+    }
+  });
+  var favPct = totCount > 0 ? Math.round(favCount*100/totCount) : 0;
+  var motorPct = totCount > 0 ? Math.round(motorMinCount*100/totCount) : 0;
+  var totH = Math.floor(ts.totalH);
+  var totM = Math.round((ts.totalH - totH) * 60);
+  
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-bottom:14px">';
+  html += '<div style="padding:11px 14px;background:rgba(25,110,190,.1);border:1px solid rgba(25,110,190,.25);border-radius:10px">'+
+    '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;font-weight:700">⚓ Distanza</div>'+
+    '<div style="font-size:20px;font-weight:800;color:#80c0f0;margin-top:2px">'+ts.totalNm.toFixed(1)+' <span style="font-size:12px;font-weight:500">NM</span></div></div>';
+  html += '<div style="padding:11px 14px;background:rgba(25,110,190,.1);border:1px solid rgba(25,110,190,.25);border-radius:10px">'+
+    '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;font-weight:700">🕐 Tempo</div>'+
+    '<div style="font-size:20px;font-weight:800;color:#80c0f0;margin-top:2px">'+totH+'h '+(totM<10?'0':'')+totM+'m</div></div>';
+  html += '<div style="padding:11px 14px;background:rgba(74,144,96,.1);border:1px solid rgba(74,144,96,.3);border-radius:10px">'+
+    '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;font-weight:700">⛵ A vela</div>'+
+    '<div style="font-size:20px;font-weight:800;color:'+(favPct>=60?'#7ecfa0':favPct>=30?'#f0d060':'#e89050')+';margin-top:2px">'+favPct+'%</div></div>';
+  if(motorPct > 0){
+    html += '<div style="padding:11px 14px;background:rgba(208,48,48,.1);border:1px solid rgba(208,48,48,.3);border-radius:10px">'+
+      '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;font-weight:700">🔧 A motore?</div>'+
+      '<div style="font-size:20px;font-weight:800;color:#e89050;margin-top:2px">'+motorPct+'%</div></div>';
+  }
+  html += '</div>';
+  
+  var colors = ["#2e7d32","#e65100","#b71c1c"];
+  var icons = ["🟢","🟡","🔴"];
+  
+  // ===== LAYOUT DESKTOP (tabella) — visibile sopra 760px =====
+  html += '<div class="rt-ts-desktop" style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.07)">';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:760px">';
+  html += '<thead><tr style="background:rgba(255,255,255,.04)">';
+  ['Ora','Posizione','Rotta','Vento','⛵ Andatura','🌊','🚦'].forEach(function(h){
+    html += '<th style="text-align:left;padding:10px 12px;color:#80c0f0;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap;font-weight:700">'+h+'</th>';
+  });
+  html += '</tr></thead><tbody>';
+  
+  var prevLegIdx = -1;
+  ts.steps.forEach(function(s, idx){
+    var bg = idx%2===0 ? 'background:rgba(255,255,255,.015)' : '';
+    var isNewLeg = s.legIdx !== prevLegIdx;
+    prevLegIdx = s.legIdx;
+    var legBorder = isNewLeg && idx>0 ? 'border-top:2px solid rgba(25,110,190,.3)' : '';
+    
+    html += '<tr style="'+bg+';'+legBorder+'">';
+    
+    var timeStr = s.time.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    var dateStr = s.time.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
+    html += '<td style="padding:10px 12px;white-space:nowrap"><div style="font-weight:700;color:#e8f4ff;font-size:13px">'+timeStr+'</div><div style="font-size:9px;color:#5a8098">'+dateStr+'</div></td>';
+    
+    var posLbl;
+    if(s.fLeg < 0.05) posLbl = '🚩 <b>' + s.fromName + '</b>';
+    else if(s.fLeg > 0.95) posLbl = '🏁 <b>' + s.toName + '</b>';
+    else {
+      var pct = Math.round(s.fLeg*100);
+      posLbl = '<span style="color:#90a8b8">tra</span> '+s.fromName+' <span style="color:#90a8b8">e</span> '+s.toName+' <span style="color:#5a8098">('+pct+'%)</span>';
+    }
+    html += '<td style="padding:10px 12px;color:#c0d0e0;font-size:12px;min-width:170px">'+posLbl+'<div style="font-size:9px;color:#3a6080;font-family:ui-monospace,monospace;margin-top:2px">'+s.lat.toFixed(3)+'°, '+s.lon.toFixed(3)+'°</div></td>';
+    
+    html += '<td style="padding:10px 12px;color:#90b0c8;white-space:nowrap"><b>'+Math.round(s.course)+'°</b><div style="font-size:9px;color:#5a8098">'+WN(s.course)+'</div></td>';
+    
+    if(s.windKn != null && s.windDir != null){
+      var arrowSvg = rtWindArrowSVG(s.windDir, s.windKn, 36);
+      html += '<td style="padding:10px 12px;white-space:nowrap"><div style="display:flex;align-items:center;gap:10px"><div style="flex-shrink:0">'+arrowSvg+'</div><div><div style="color:'+BF(s.windKn).c+';font-weight:700;font-size:14px">'+Math.round(s.windKn)+' kn</div><div style="font-size:10px;color:#90a8b8">'+WN(s.windDir)+'</div></div></div></td>';
+    } else {
+      html += '<td style="padding:10px 12px;color:#3a5a70">—</td>';
+    }
+    
+    if(s.sail){
+      html += '<td style="padding:10px 12px;white-space:nowrap"><div style="font-weight:700;color:'+s.sail.color+';font-size:13px">'+s.sail.icon+' '+s.sail.name+'</div><div style="font-size:9px;color:#5a8098">'+Math.round(s.sail.apparent)+'° dal vento'+(s.sail.tack?' • '+s.sail.tack:'')+'</div></td>';
+    } else {
+      html += '<td style="padding:10px 12px;color:#3a5a70">—</td>';
+    }
+    
+    if(s.waveH != null){
+      var se = SE(s.waveH);
+      html += '<td style="padding:10px 12px;color:'+se.c+';white-space:nowrap;font-weight:700">'+s.waveH.toFixed(1)+'<span style="font-size:10px;font-weight:400">m</span></td>';
+    } else {
+      html += '<td style="padding:10px 12px;color:#3a5a70">—</td>';
+    }
+    
+    html += '<td style="padding:10px 12px;text-align:center;font-size:18px">'+icons[s.score]+'</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  
+  // ===== LAYOUT MOBILE (lista di card compatte) — visibile sotto 760px =====
+  html += '<div class="rt-ts-mobile" style="display:none;flex-direction:column;gap:10px">';
+  prevLegIdx = -1;
+  ts.steps.forEach(function(s, idx){
+    var isNewLeg = s.legIdx !== prevLegIdx;
+    prevLegIdx = s.legIdx;
+    
+    // Separator etichetta se cambia tratta
+    if(isNewLeg){
+      html += '<div style="font-size:12px;color:#80c0f0;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:6px 8px;margin-top:'+(idx>0?'8px':'0')+';background:rgba(25,110,190,.08);border-radius:6px">🧭 '+s.fromName+' → '+s.toName+'</div>';
+    }
+    
+    var scoreBgColor = ['rgba(46,125,50,.1)','rgba(230,81,0,.1)','rgba(183,28,28,.12)'][s.score];
+    var scoreBorderColor = ['rgba(46,125,50,.35)','rgba(230,81,0,.35)','rgba(183,28,28,.4)'][s.score];
+    
+    html += '<div style="padding:14px 16px;background:'+scoreBgColor+';border:1px solid '+scoreBorderColor+';border-radius:12px">';
+    
+    // Riga 1: ora + semaforo + posizione (FONT GRANDE)
+    html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">';
+    var timeStr = s.time.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    var dateStr = s.time.toLocaleDateString('it-IT',{weekday:'short',day:'numeric'});
+    html += '<div style="font-size:24px">'+icons[s.score]+'</div>';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-weight:800;color:#e8f4ff;font-size:17px;line-height:1.2">'+timeStr+' <span style="font-size:12px;color:#90a8b8;font-weight:500">'+dateStr+'</span></div>';
+    var posLbl;
+    if(s.fLeg < 0.05) posLbl = '🚩 ' + s.fromName;
+    else if(s.fLeg > 0.95) posLbl = '🏁 ' + s.toName;
+    else posLbl = Math.round(s.fLeg*100)+'% verso '+s.toName;
+    html += '<div style="font-size:13px;color:#c0d0e0;margin-top:2px">'+posLbl+'</div>';
+    html += '</div></div>';
+    
+    // Riga 2: dati in grid 2 colonne (FRECCE VENTO GRANDI)
+    html += '<div style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center">';
+    
+    if(s.windKn != null && s.windDir != null){
+      // Freccia vento BEN GRANDE (56px)
+      html += '<div style="flex-shrink:0">'+rtWindArrowSVG(s.windDir, s.windKn, 56)+'</div>';
+      html += '<div>';
+      if(s.sail){
+        // Andatura ben in evidenza
+        html += '<div style="font-weight:800;color:'+s.sail.color+';font-size:16px;line-height:1.2">'+s.sail.icon+' '+s.sail.name+'</div>';
+        html += '<div style="font-size:12px;color:#b0c8d8;margin-top:3px;line-height:1.5">';
+        html += '💨 <b>'+Math.round(s.windKn)+' kn</b> '+WN(s.windDir)+' • '+Math.round(s.sail.apparent)+'° dal vento';
+        if(s.waveH!=null) html += ' • 🌊 '+s.waveH.toFixed(1)+'m';
+        html += '</div>';
+        if(s.sail.tack){
+          html += '<div style="font-size:11px;color:#90a8b8;margin-top:2px">⚓ '+s.sail.tack+' • Rotta '+Math.round(s.course)+'° '+WN(s.course)+'</div>';
+        } else {
+          html += '<div style="font-size:11px;color:#90a8b8;margin-top:2px">⚓ Rotta '+Math.round(s.course)+'° '+WN(s.course)+'</div>';
+        }
+      } else {
+        html += '<div style="font-size:15px;font-weight:700;color:'+BF(s.windKn).c+'">'+Math.round(s.windKn)+' kn '+WN(s.windDir)+'</div>';
+        html += '<div style="font-size:12px;color:#90a8b8;margin-top:2px">Rotta '+Math.round(s.course)+'°</div>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div style="grid-column:span 2;color:#5a8098;font-size:13px">— dati vento non disponibili —</div>';
+    }
+    
+    html += '</div>'; // fine grid
+    html += '</div>'; // fine card
+  });
+  html += '</div>';
+  
+  // CSS responsive
+  html += '<style>@media(max-width:760px){.rt-ts-desktop{display:none!important}.rt-ts-mobile{display:flex!important}}</style>';
+  
+  // Legenda andature
+  html += '<div style="margin-top:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;font-size:11px;color:#90a8b8;line-height:1.7">';
+  html += '<b style="color:#80c0f0">💡 Come leggere</b><br>';
+  html += '<b>Andatura</b> = angolo tra il vento e la prua della barca. ';
+  html += '<span style="color:#d03030;font-weight:700">🔴 Bolina stretta</span> (&lt;32°): difficile a vela, considera il motore. ';
+  html += '<span style="color:#e89050;font-weight:700">🟠 Bolina larga</span> (32-60°): vela stretta, ok ma faticoso. ';
+  html += '<span style="color:#7ecfa0;font-weight:700">🟢 Traverso/Lasco/Poppa</span> (&gt;60°): andature comode e veloci.';
+  html += '</div>';
+  
+  html += '</div>';
+  return html;
+}
+
+/* Cambia passo temporale e ri-rendera */
+function rtSetStepMin(m){
+  window._rtStepMin = m;
+  renderRottaUI();
+}
+
 function renderRottaMap(){
   var wp = _rtWaypoints;
-  if(wp.length < 2) return;
   var container = document.getElementById('rtMapContainer');
   if(!container) return;
+  var drawMode = window._rtDrawMode ? true : false;
   
+  // Cleanup mappa precedente
   if(_rtMap){ _rtMap.remove(); _rtMap=null; }
   
-  var lats = wp.map(function(w){return w.lat;});
-  var lons = wp.map(function(w){return w.lon;});
-  var centerLat = (Math.max.apply(null,lats)+Math.min.apply(null,lats))/2;
-  var centerLon = (Math.max.apply(null,lons)+Math.min.apply(null,lons))/2;
+  // Determina centro/zoom iniziale
+  var centerLat, centerLon, zoom;
+  if(wp.length === 0){
+    centerLat = 41.5; centerLon = 12.5; zoom = 5; // Mediterraneo
+  } else if(wp.length === 1){
+    centerLat = wp[0].lat; centerLon = wp[0].lon; zoom = 8;
+  } else {
+    var lats = wp.map(function(w){return w.lat;});
+    var lons = wp.map(function(w){return w.lon;});
+    centerLat = (Math.max.apply(null,lats)+Math.min.apply(null,lats))/2;
+    centerLon = (Math.max.apply(null,lons)+Math.min.apply(null,lons))/2;
+    zoom = 6;
+  }
   
-  _rtMap = L.map('rtMapContainer',{center:[centerLat,centerLon],zoom:6,zoomControl:true});
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri'}).addTo(_rtMap);
+  _rtMap = L.map('rtMapContainer',{center:[centerLat,centerLon],zoom:zoom,zoomControl:true});
+  // In modalità disegno uso una mappa con etichette/riferimenti visibili (nomi città, isole, porti).
+  // Altrimenti uso il dark gray classico per coerenza con l'app.
+  if(drawMode){
+    // OpenStreetMap standard: ricco di etichette, ottimo per orientarsi
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap',
+      maxZoom: 19
+    }).addTo(_rtMap);
+  } else {
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri'}).addTo(_rtMap);
+  }
   
-  // Draw polyline
-  var latlngs = wp.map(function(w){return [w.lat,w.lon];});
-  L.polyline(latlngs,{color:'#4090d0',weight:2,dashArray:'6,4',opacity:0.8}).addTo(_rtMap);
+  // Draw polyline (solo se >= 2 waypoint)
+  if(wp.length >= 2){
+    var latlngs = wp.map(function(w){return [w.lat,w.lon];});
+    L.polyline(latlngs,{color:'#4090d0',weight:3,dashArray:'6,4',opacity:0.85}).addTo(_rtMap);
+  }
   
-  // Markers
-  wp.forEach(function(w,i){
+  // ===== MARKER WAYPOINT — design unificato =====
+  // Per ogni waypoint creo UN SOLO marker che contiene (in colonna verticale):
+  //   - Freccia vento + nodi (in alto, piccola) — SOLO se dati+orario disponibili
+  //   - Numero waypoint (al centro, in evidenza)
+  //   - Badge orario di arrivo (in basso, piccolo) — SOLO se dati+orario disponibili
+  // Questo elimina il problema di "elementi galleggianti scollegati".
+  
+  var dep = window._rtDeparture;
+  var depTs = dep ? new Date(dep).getTime() : null;
+  var spd = window._rtSpeed || 6;
+  var cumH = 0;
+  
+  wp.forEach(function(w, i){
+    // Calcola tempo cumulato per il waypoint corrente
+    if(i > 0){
+      cumH += nmDistance(wp[i-1].lat, wp[i-1].lon, w.lat, w.lon) / spd;
+    }
+    
+    // Determina colore del waypoint in base allo score
     var score = w.D ? rtScore(w) : null;
-    var color = score ? ["#2e7d32","#e65100","#b71c1c"][score.s] : '#4a90c0';
-    var icon = L.divIcon({className:'',
-      html:'<div style="width:22px;height:22px;border-radius:50%;background:'+color+';border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white">'+(i+1)+'</div>',
-      iconSize:[22,22],iconAnchor:[11,11]
+    var color = score ? ["#2e7d32","#e65100","#b71c1c"][score.s] : (w.custom?'#c090d0':'#4a90c0');
+    
+    // Vento previsto all'ora di arrivo (se dati disponibili)
+    var arrowHtml = '', timeBadge = '';
+    if(depTs != null){
+      var arrivalTs = depTs + cumH*3600000;
+      var src = w.D ? w : (i>0 && wp[i-1].D ? wp[i-1] : null);
+      if(src && src.D){
+        var idx = rtFindHourIdx(src.D, arrivalTs);
+        if(idx){
+          var ws = rtInterp(src.D.hourly.wind_speed_10m, idx, false);
+          var wd = rtInterp(src.D.hourly.wind_direction_10m, idx, true);
+          if(ws != null && wd != null){
+            // Freccia piccola (40px) sopra il numero
+            arrowHtml = rtWindArrowSVG(wd, ws, 40);
+            // Badge orario di arrivo
+            var arrivalDate = new Date(arrivalTs);
+            var depDate = new Date(depTs);
+            var timeLbl = arrivalDate.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+            var sameDay = arrivalDate.toDateString() === depDate.toDateString();
+            var dayLbl = sameDay ? '' : ' ' + arrivalDate.toLocaleDateString('it-IT',{weekday:'short',day:'numeric'});
+            timeBadge = '<div style="background:rgba(6,14,26,.92);color:#e8f4ff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.5);font-family:ui-monospace,monospace;white-space:nowrap;letter-spacing:.3px;margin-top:3px">🕐 '+timeLbl+dayLbl+'</div>';
+          }
+        }
+      }
+    }
+    
+    // Componi il marker unificato: freccia + numero + badge, in colonna centrata
+    // Il numero del waypoint resta il "perno" geografico, posizionato esattamente sul punto
+    var unifiedHtml = '<div style="display:flex;flex-direction:column;align-items:center;line-height:1">';
+    
+    // Freccia in alto (se presente)
+    if(arrowHtml){
+      unifiedHtml += '<div style="margin-bottom:2px;pointer-events:none">'+arrowHtml+'</div>';
+    }
+    
+    // Numero waypoint — più grande se ci sono dati, più piccolo se è solo un waypoint senza dati
+    var hasMeteoArrow = !!arrowHtml;
+    var dotSize = hasMeteoArrow ? 32 : 26;
+    var dotFontSize = hasMeteoArrow ? 14 : 11;
+    unifiedHtml += '<div style="width:'+dotSize+'px;height:'+dotSize+'px;border-radius:50%;background:'+color+';border:2.5px solid white;display:flex;align-items:center;justify-content:center;font-size:'+dotFontSize+'px;font-weight:800;color:white;box-shadow:0 2px 8px rgba(0,0,0,.6);flex-shrink:0">'+(i+1)+'</div>';
+    
+    // Badge orario in basso (se presente)
+    if(timeBadge){
+      unifiedHtml += timeBadge;
+    }
+    
+    unifiedHtml += '</div>';
+    
+    // Calcola dimensioni totali e anchor (il "perno" è il centro del cerchio numerato)
+    var totalH = dotSize;
+    var anchorY = dotSize/2;
+    if(arrowHtml){
+      totalH += 42; // freccia 40px + 2px margin
+      anchorY += 42;
+    }
+    if(timeBadge){
+      totalH += 22; // badge ~22px
+    }
+    var totalW = 80; // larghezza fissa per il blocco
+    
+    var icon = L.divIcon({
+      className: '',
+      html: unifiedHtml,
+      iconSize: [totalW, totalH],
+      iconAnchor: [totalW/2, anchorY]  // il perno è sul cerchio numerato
     });
-    L.marker([w.lat,w.lon],{icon:icon}).bindPopup('<b>'+w.name+'</b>').addTo(_rtMap);
+    
+    var popupContent = '<b>'+w.name+'</b>';
+    if(w.custom){
+      popupContent += '<br><span style="font-family:monospace;font-size:11px;color:#80c0f0">📍 '+toDMS(w.lat,true)+'<br>&nbsp;&nbsp;&nbsp;'+toDMS(w.lon,false)+'</span>';
+    }
+    L.marker([w.lat,w.lon],{icon:icon}).bindPopup(popupContent).addTo(_rtMap);
   });
   
-  _rtMap.fitBounds(latlngs, {padding:[20,20]});
+  // ===== CLICK HANDLER PER DRAWMODE =====
+  if(drawMode){
+    _rtMap.on('click', function(e){
+      var lat = e.latlng.lat;
+      var lon = e.latlng.lng;
+      // Prova snap a porto vicino entro 5 NM
+      var snap = rtSnapToPort(lat, lon, 5);
+      if(snap){
+        // Aggiungi il porto esistente (se non già presente)
+        if(_rtWaypoints.find(function(w){return w.name===snap.loc.n;})){
+          alert('"'+snap.loc.n+'" è già nella rotta');
+          return;
+        }
+        _rtWaypoints.push({
+          name: snap.loc.n,
+          lat: snap.loc.a, lon: snap.loc.o,
+          D: null, Mr: null, vi: 0,
+          custom: false
+        });
+        // Feedback visivo
+        rtShowToast('⚓ Agganciato a "'+snap.loc.n+'" ('+snap.distNm.toFixed(1)+' NM)', '#7ecfa0');
+        renderRottaUI();
+      } else {
+        // Coordinate libere: crea waypoint personalizzato
+        var num = _rtWaypoints.filter(function(w){return w.custom;}).length + 1;
+        var defaultName = 'WP-'+num;
+        // Chiedi nome via popup leaflet
+        var popupHtml = '<div style="font-family:system-ui,sans-serif;min-width:220px">'+
+          '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:8px">📍 Nuovo waypoint</div>'+
+          '<div style="font-size:12px;color:#80c0f0;margin-bottom:4px;font-family:ui-monospace,monospace;font-weight:700;line-height:1.5">'+
+            toDMS(lat,true)+'<br>'+toDMS(lon,false)+'</div>'+
+          '<div style="font-size:10px;color:#5a8098;margin-bottom:8px">('+lat.toFixed(4)+'°, '+lon.toFixed(4)+'°)</div>'+
+          '<input id="rtWpName" type="text" value="'+defaultName+'" placeholder="Nome waypoint" '+
+            'style="width:100%;background:rgba(255,255,255,.08);color:#e8f4ff;border:1px solid rgba(255,255,255,.2);'+
+            'border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:8px;box-sizing:border-box">'+
+          '<button onclick="rtSaveCustomWp('+lat+','+lon+')" '+
+            'style="width:100%;padding:7px 10px;background:rgba(25,110,190,.5);color:#e8f4ff;'+
+            'border:1px solid rgba(25,110,190,.6);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">'+
+            '➕ Aggiungi al percorso</button>'+
+          '</div>';
+        L.popup({maxWidth:280})
+          .setLatLng(e.latlng)
+          .setContent(popupHtml)
+          .openOn(_rtMap);
+        setTimeout(function(){
+          var inp = document.getElementById('rtWpName');
+          if(inp){ inp.focus(); inp.select(); }
+        }, 200);
+      }
+    });
+  }
+  
+  // FitBounds solo se >=2 waypoint
+  if(wp.length >= 2){
+    var latlngsFit = wp.map(function(w){return [w.lat,w.lon];});
+    _rtMap.fitBounds(latlngsFit, {padding:[40,40]});
+  }
+}
+
+/* Toast di feedback temporaneo */
+function rtShowToast(msg, color){
+  color = color || '#80c0f0';
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(6,14,26,.95);color:'+color+';padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,.5);border:1px solid '+color+'60';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; }, 2200);
+  setTimeout(function(){ t.remove(); }, 2700);
+}
+
+/* Salva waypoint custom dal popup di disegno */
+function rtSaveCustomWp(lat, lon){
+  var inp = document.getElementById('rtWpName');
+  var name = inp ? inp.value.trim() : '';
+  if(!name){
+    alert('Inserisci un nome per il waypoint');
+    if(inp) inp.focus();
+    return;
+  }
+  // Verifica duplicato
+  if(_rtWaypoints.find(function(w){return w.name===name;})){
+    alert('Esiste già un waypoint con questo nome nella rotta');
+    return;
+  }
+  _rtWaypoints.push({
+    name: name,
+    lat: lat, lon: lon,
+    D: null, Mr: null, vi: 0,
+    custom: true
+  });
+  if(_rtMap) _rtMap.closePopup();
+  rtShowToast('✅ Waypoint "'+name+'" aggiunto', '#9cd870');
+  renderRottaUI();
+}
+
+/* ============================================================
+   ===== ROTTA+ — UTILITY E LOGICA AVANZATA ===================
+   ============================================================
+   - rtBearing()  : calcola rotta vera tra due punti (great-circle)
+   - rtPointAt()  : interpola un punto a frazione f tra A e B
+   - rtSailAngle(): angolo apparente vento/rotta + andatura
+   - rtWindArrowSVG(): freccia vento da disegnare su mappa
+   - rtSnapToPort(): snap a porto entro raggio NM
+   - rtBuildTimeSteps(): genera righe ogni N minuti lungo rotta
+   ============================================================ */
+
+/* Rotta vera (initial bearing) tra due punti, in gradi 0-360.
+   Formula great-circle standard. */
+function rtBearing(lat1, lon1, lat2, lon2){
+  var phi1 = lat1 * Math.PI/180;
+  var phi2 = lat2 * Math.PI/180;
+  var lam1 = lon1 * Math.PI/180;
+  var lam2 = lon2 * Math.PI/180;
+  var y = Math.sin(lam2-lam1) * Math.cos(phi2);
+  var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lam2-lam1);
+  var theta = Math.atan2(y, x);
+  var deg = (theta*180/Math.PI + 360) % 360;
+  return deg;
+}
+
+/* Interpolazione lineare tra due punti (sufficiente per tratte brevi NM scala) */
+function rtPointAt(lat1, lon1, lat2, lon2, f){
+  return {
+    lat: lat1 + (lat2-lat1)*f,
+    lon: lon1 + (lon2-lon1)*f
+  };
+}
+
+/* Calcola l'angolo apparente vento/rotta e l'andatura.
+   windDirFrom = direzione DA CUI viene il vento (convenzione meteo)
+   courseDir   = rotta che stiamo facendo (direzione verso cui andiamo)
+   Restituisce:
+     - apparent : angolo tra vento e prua (0=vento in faccia, 180=vento in poppa)
+     - name     : nome andatura
+     - icon     : icona/emoji
+     - color    : colore semaforo
+     - tack     : 'mura a dritta' / 'mura a sinistra' / null per poppa stretta
+*/
+function rtSailAngle(windDirFrom, courseDir){
+  // Per calcolare l'angolo "in faccia alla barca", confronto la direzione DA cui viene
+  // il vento con la prua. Es: rotta 90 (E), vento da 90 (E) -> vento in faccia = bolina di vento.
+  var diff = ((windDirFrom - courseDir + 540) % 360) - 180; // -180..+180
+  var abs = Math.abs(diff);
+  var name, icon, color, tip;
+  if(abs < 32){       name='Bolina stretta'; icon='🔴'; color='#d03030'; tip='Difficile/impossibile a vela — motore o virate'; }
+  else if(abs < 60){  name='Bolina larga';   icon='🟠'; color='#e89050'; tip='Andatura vento contrario — vela stretta'; }
+  else if(abs < 100){ name='Traverso';       icon='🟢'; color='#7ecfa0'; tip='Andatura comoda, veloce'; }
+  else if(abs < 150){ name='Lasco';          icon='🟢'; color='#88d8b0'; tip='Andatura veloce con vento al giardinetto'; }
+  else if(abs < 170){ name='Gran lasco';     icon='🟢'; color='#a0e8c0'; tip='Vento quasi in poppa, andatura piacevole'; }
+  else {              name='Poppa';          icon='🟢'; color='#7ecfa0'; tip='Vento in poppa — attento al fil di ruota'; }
+  var tack = null;
+  if(abs >= 32 && abs < 170){
+    tack = (diff > 0) ? 'Mura a dritta' : 'Mura a sinistra';
+  }
+  return {apparent: abs, signed: diff, name: name, icon: icon, color: color, tip: tip, tack: tack, favorable: abs >= 60};
+}
+
+/* Restituisce SVG di una freccia vento (puntata nella direzione VERSO cui soffia,
+   quindi opposta a windDirFrom). Colore proporzionato all'intensità. */
+function rtWindArrowSVG(windDirFrom, windKn, size){
+  size = size || 36;
+  // La freccia punta dove va il vento (= direzione da cui viene + 180)
+  var dirTo = (windDirFrom + 180) % 360;
+  // Colore in base ai nodi
+  var color;
+  if(windKn < 6) color = '#88d8b0';
+  else if(windKn < 12) color = '#a0d890';
+  else if(windKn < 18) color = '#f0d060';
+  else if(windKn < 25) color = '#f0a040';
+  else color = '#d03030';
+  
+  var s = size;
+  var c = s/2;
+  // Freccia verticale base, ruotata di dirTo (in SVG, rotate è in senso orario partendo da nord)
+  var svg = '<svg viewBox="0 0 '+s+' '+s+'" width="'+s+'" height="'+s+'" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))">';
+  svg += '<g transform="rotate('+dirTo+' '+c+' '+c+')">';
+  // Linea (coda)
+  svg += '<line x1="'+c+'" y1="'+(s*0.85)+'" x2="'+c+'" y2="'+(s*0.25)+'" stroke="'+color+'" stroke-width="'+(s*0.13)+'" stroke-linecap="round"/>';
+  // Punta a freccia
+  svg += '<polygon points="'+c+','+(s*0.1)+' '+(c-s*0.22)+','+(s*0.4)+' '+(c+s*0.22)+','+(s*0.4)+'" fill="'+color+'"/>';
+  svg += '</g>';
+  // Nodi al centro (piccoli)
+  svg += '<circle cx="'+c+'" cy="'+c+'" r="'+(s*0.22)+'" fill="rgba(6,14,26,.85)" stroke="'+color+'" stroke-width="1"/>';
+  svg += '<text x="'+c+'" y="'+(c+s*0.07)+'" text-anchor="middle" fill="#e8f4ff" font-size="'+(s*0.32)+'" font-weight="bold" font-family="system-ui,sans-serif">'+Math.round(windKn)+'</text>';
+  svg += '</svg>';
+  return svg;
+}
+
+/* Snap a porto vicino entro maxNm. Restituisce {loc, distNm} oppure null. */
+function rtSnapToPort(lat, lon, maxNm){
+  maxNm = maxNm || 5;
+  var nearest = null, minDist = Infinity;
+  Z.forEach(function(loc){
+    var d = nmDistance(lat, lon, loc.a, loc.o);
+    if(d < minDist){ minDist = d; nearest = loc; }
+  });
+  if(nearest && minDist <= maxNm) return {loc: nearest, distNm: minDist};
+  return null;
+}
+
+/* Trova l'indice orario in un dataset Open-Meteo che corrisponde a un timestamp.
+   Restituisce sia l'indice che la frazione tra ora-i e ora-i+1 per interpolazione. */
+function rtFindHourIdx(data, ts){
+  if(!data || !data.hourly || !data.hourly.time) return null;
+  var times = data.hourly.time;
+  for(var i = 0; i < times.length-1; i++){
+    var t1 = new Date(times[i]).getTime();
+    var t2 = new Date(times[i+1]).getTime();
+    if(ts >= t1 && ts <= t2){
+      return {i: i, f: (ts-t1)/(t2-t1)};
+    }
+  }
+  // Fuori range: clamp
+  if(ts < new Date(times[0]).getTime()) return {i:0, f:0};
+  return {i: times.length-1, f:0};
+}
+
+/* Interpola un valore tra h[i] e h[i+1] usando frazione f. Gestisce angoli per le direzioni. */
+function rtInterp(arr, idx, isAngle){
+  if(!arr) return null;
+  var a = arr[idx.i], b = arr[idx.i+1];
+  if(a == null) return b;
+  if(b == null) return a;
+  if(isAngle){
+    // Interpolazione angolare (gestisce il salto 0/360)
+    var diff = ((b-a+540) % 360) - 180;
+    return (a + diff*idx.f + 360) % 360;
+  }
+  return a + (b-a)*idx.f;
+}
+
+/* Costruisce le righe time-step per la tabella tempo-step.
+   stepMin: minuti tra una riga e la successiva.
+   Per ogni step, calcola:
+     - posizione interpolata (lat,lon) lungo la rotta corrente
+     - ora prevista
+     - dataset meteo del waypoint di partenza della tratta (piu vicino in distanza)
+     - vento interpolato all'ora prevista
+     - andatura rispetto alla rotta della tratta
+     - onde, semaforo
+   Restituisce array di {time, lat, lon, fromName, toName, fLeg, windKn, windDir, andatura, waveH, score, cumNm}
+*/
+function rtBuildTimeSteps(stepMin){
+  var wp = _rtWaypoints;
+  var loaded = wp.filter(function(w){return w.D;});
+  if(loaded.length === 0 || wp.length < 2) return null;
+  var spd = window._rtSpeed || 6;
+  var dep = window._rtDeparture;
+  if(!dep) return null;
+  var depTs = new Date(dep).getTime();
+  
+  // Calcola distanze tratta per tratta + cumulati
+  var legs = []; // {from, to, distNm, course, durationH, ...}
+  var totalNm = 0, totalH = 0;
+  for(var i = 0; i < wp.length-1; i++){
+    var a = wp[i], b = wp[i+1];
+    var d = nmDistance(a.lat, a.lon, b.lat, b.lon);
+    var c = rtBearing(a.lat, a.lon, b.lat, b.lon);
+    var durH = d / spd;
+    legs.push({
+      from: a, to: b, fromIdx: i, toIdx: i+1,
+      distNm: d, course: c, durationH: durH,
+      startTs: depTs + totalH*3600000,
+      endTs: depTs + (totalH+durH)*3600000,
+      cumNmStart: totalNm,
+      cumNmEnd: totalNm + d
+    });
+    totalNm += d;
+    totalH += durH;
+  }
+  
+  // Genera step
+  var steps = [];
+  var stepMs = stepMin * 60 * 1000;
+  var nowTs = depTs;
+  var endTs = depTs + totalH*3600000;
+  var maxSteps = 200; // safety
+  
+  while(nowTs <= endTs + 60000 && steps.length < maxSteps){
+    // Trova la tratta corrente
+    var currentLeg = null;
+    for(var li = 0; li < legs.length; li++){
+      if(nowTs >= legs[li].startTs && nowTs <= legs[li].endTs){
+        currentLeg = legs[li];
+        break;
+      }
+    }
+    if(!currentLeg){
+      // Edge case: ultimo punto
+      currentLeg = legs[legs.length-1];
+    }
+    // Frazione lungo la tratta corrente
+    var legDurMs = currentLeg.endTs - currentLeg.startTs;
+    var fLeg = legDurMs > 0 ? (nowTs - currentLeg.startTs)/legDurMs : 0;
+    fLeg = Math.max(0, Math.min(1, fLeg));
+    // Interpolazione posizione
+    var pos = rtPointAt(currentLeg.from.lat, currentLeg.from.lon, currentLeg.to.lat, currentLeg.to.lon, fLeg);
+    
+    // Usa il dataset del waypoint di partenza della tratta (e' la migliore approssimazione locale)
+    // Se non c'e' D, prova quello di arrivo
+    var sourceWp = currentLeg.from.D ? currentLeg.from : (currentLeg.to.D ? currentLeg.to : null);
+    var ws = null, wd = null, wh = null, rr = 0, cp = 0, hm = 0, cl = 0;
+    if(sourceWp && sourceWp.D){
+      var idx = rtFindHourIdx(sourceWp.D, nowTs);
+      if(idx){
+        var H = sourceWp.D.hourly;
+        ws = rtInterp(H.wind_speed_10m, idx, false);
+        wd = rtInterp(H.wind_direction_10m, idx, true);
+        rr = rtInterp(H.precipitation, idx, false) || 0;
+        cp = rtInterp(H.cape, idx, false) || 0;
+        hm = rtInterp(H.relative_humidity_2m, idx, false) || 0;
+        cl = rtInterp(H.cloud_cover, idx, false) || 0;
+        if(sourceWp.Mr){
+          var Mh = sourceWp.Mr.hourly;
+          wh = rtInterp(Mh.wave_height, idx, false);
+        }
+      }
+    }
+    
+    // Andatura
+    var sail = (ws != null && wd != null) ? rtSailAngle(wd, currentLeg.course) : null;
+    
+    // Semaforo
+    var vs = (hm != null) ? VI(hm, rr, cl) : null;
+    var g = (ws != null) ? GG(ws, wh||0, cp, vs, rr) : null;
+    var scoreNum = 0;
+    if(g){
+      if(g.l.indexOf('USCIRE')>=0) scoreNum = 0;
+      else if(g.l.indexOf('CAUTELA')>=0) scoreNum = 1;
+      else scoreNum = 2;
+    }
+    
+    steps.push({
+      time: new Date(nowTs),
+      lat: pos.lat, lon: pos.lon,
+      fromName: currentLeg.from.name, toName: currentLeg.to.name,
+      fLeg: fLeg, legIdx: legs.indexOf(currentLeg),
+      course: currentLeg.course,
+      windKn: ws, windDir: wd,
+      waveH: wh, cape: cp, rain: rr,
+      sail: sail, score: scoreNum, scoreLabel: g ? g.l : '—',
+      cumNm: currentLeg.cumNmStart + (currentLeg.distNm * fLeg)
+    });
+    
+    nowTs += stepMs;
+  }
+  
+  return {steps: steps, legs: legs, totalNm: totalNm, totalH: totalH};
 }
 
 function rtAdd(){
@@ -1733,7 +2802,18 @@ function hideCloudTip(){
 }
 
 document.addEventListener('click', function(e){
-  if(e.target && !e.target.hasAttribute('onclick')) hideCloudTip();
+  // Chiudi popup nuvole solo se il click NON è dentro il popup stesso
+  // e NON è sull'elemento trigger (che ha onmouseover/onclick="showCloudTip(...)")
+  if(_cloudTip && !_cloudTip.contains(e.target)){
+    var t = e.target;
+    var isTrigger = false;
+    while(t && t !== document.body){
+      var attr = t.getAttribute && (t.getAttribute('onclick')||'') || '';
+      if(attr.indexOf('showCloudTip') >= 0){ isTrigger = true; break; }
+      t = t.parentElement;
+    }
+    if(!isTrigger) hideCloudTip();
+  }
 });
 
 /* --- Sticky header collapse/expand ---
@@ -2002,7 +3082,13 @@ var CLOUD_VISUALS = {
   }
 };
 
-/* Sovrascrivo showCloudTip per includere SVG e link Wikipedia */
+/* Sovrascrivo showCloudTip per includere SVG e link Wikipedia, con UX migliorata:
+   - Popup più grande e leggibile
+   - X di chiusura sempre visibile in alto a destra
+   - Pulsante "📷 Foto su Wikipedia" GRANDE e ben visibile
+   - Il popup resta aperto finché clicchi X o fuori
+   - pointer-events:auto su tutti gli elementi interni
+*/
 window.showCloudTip = function(el, code){
   hideCloudTip();
   var clean = code.replace(/[^a-zA-Z,\/\. ]/g, '').trim();
@@ -2018,30 +3104,53 @@ window.showCloudTip = function(el, code){
   
   var tip = document.createElement('div');
   tip.className = 'cloud-tip';
-  tip.style.maxWidth = '280px';
+  // Override per renderlo più ricco e cliccabile
+  tip.style.maxWidth = '320px';
+  tip.style.minWidth = '260px';
+  tip.style.padding = '14px 16px 14px 16px';
+  tip.style.fontSize = '12px';
+  tip.style.lineHeight = '1.5';
+  tip.style.pointerEvents = 'auto'; // garantisce che TUTTO al suo interno sia cliccabile
   
-  var html = '<b>'+info.n+'</b>';
+  var html = '';
+  
+  // Header con titolo + X di chiusura grossa
+  html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px">';
+  html += '<div style="flex:1"><b style="color:#e8f4ff;font-size:14px;display:block;margin-bottom:2px">'+info.n+'</b>';
+  html += '<div style="font-size:11px;color:#7090a8;font-family:ui-monospace,monospace">codice '+visualKey+'</div></div>';
+  html += '<button onclick="hideCloudTip()" style="flex-shrink:0;width:28px;height:28px;background:rgba(255,255,255,.08);color:#c0d0e0;border:1px solid rgba(255,255,255,.15);border-radius:6px;font-size:14px;cursor:pointer;font-weight:700;padding:0;line-height:1">✕</button>';
+  html += '</div>';
+  
+  // SVG visuale della nuvola
   if(visual && visual.svg){
-    html += '<div style="margin:6px 0;padding:6px;background:rgba(255,255,255,.04);border-radius:6px;text-align:center">'+
-            '<div style="width:120px;height:60px;margin:0 auto">'+visual.svg+'</div></div>';
+    html += '<div style="margin:8px 0;padding:8px;background:rgba(255,255,255,.04);border-radius:6px;text-align:center;border:1px solid rgba(255,255,255,.05)">'+
+            '<div style="width:140px;height:70px;margin:0 auto">'+visual.svg+'</div></div>';
   }
-  html += '<div style="margin-bottom:4px">'+info.d+'</div>';
+  
+  // Descrizione
+  html += '<div style="margin-bottom:10px;color:#b8d0e0">'+info.d+'</div>';
+  
+  // Pulsante Wikipedia GROSSO e ben visibile
   if(visual && visual.wiki){
     html += '<a href="'+visual.wiki+'" target="_blank" rel="noopener" '+
-            'style="display:inline-block;margin-top:5px;padding:3px 8px;background:rgba(25,110,190,.25);'+
-            'color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:5px;font-size:10px;text-decoration:none;font-weight:700">'+
-            '📷 Foto su Wikipedia ↗</a>';
+            'style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;background:linear-gradient(135deg,rgba(25,110,190,.4),rgba(25,110,190,.25));'+
+            'color:#e8f4ff;border:1px solid rgba(25,110,190,.5);border-radius:8px;font-size:13px;text-decoration:none;font-weight:700;'+
+            'box-shadow:0 2px 8px rgba(25,110,190,.2);cursor:pointer">'+
+            '<span style="font-size:18px">📷</span> Vedi foto e dettagli su Wikipedia <span style="font-size:14px">↗</span></a>';
   }
+  
   tip.innerHTML = html;
   
   document.body.appendChild(tip);
   _cloudTip = tip;
   var r = el.getBoundingClientRect();
-  var top = r.bottom + 6;
-  var left = r.left;
-  if(left + 290 > window.innerWidth) left = window.innerWidth - 295;
-  if(left < 5) left = 5;
-  if(top + 180 > window.innerHeight) top = Math.max(5, r.top - 190);
+  // Centra il popup orizzontalmente rispetto all'elemento cliccato, ma rimane dentro lo schermo
+  var pw = 330; // larghezza approssimata
+  var top = r.bottom + 8;
+  var left = r.left + (r.width/2) - (pw/2);
+  if(left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+  if(left < 8) left = 8;
+  if(top + 280 > window.innerHeight) top = Math.max(8, r.top - 290);
   tip.style.top = top + 'px';
   tip.style.left = left + 'px';
 };
@@ -2912,12 +4021,13 @@ function renderSynopticUI(){
   html += '</div>';
   
   // Help info
-  html += '<div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;font-size:11px;color:#5a8098;line-height:1.5">';
-  html += '💡 <b style="color:#80c0f0">Come leggere:</b> le linee continue sono isobare (linee di pari pressione, ogni 4 hPa). <b style="color:#c62828">L</b> indica zone di bassa pressione (perturbato), <b style="color:#1565c0">H</b> di alta pressione (stabile). I simboli sui fronti mostrano la direzione di movimento — vedi la tab <b style="color:#c090d0">🌀 Fronti</b> per dettagli.';
+  html += '<div style="margin-top:14px;padding:14px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;color:#a0bcd0;line-height:1.6">';
+  html += '<div style="font-size:11px;color:#80c0f0;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">💡 Come leggere la carta</div>';
+  html += 'Le linee continue sono <b style="color:#e8f4ff">isobare</b> (linee di pari pressione, ogni 4 hPa). <b style="color:#ff7070;font-size:15px">L</b> indica zone di <b style="color:#ff9090">bassa pressione</b> (tempo perturbato), <b style="color:#70a0ff;font-size:15px">H</b> di <b style="color:#90b8ff">alta pressione</b> (tempo stabile). I simboli sui fronti mostrano la direzione di movimento — vedi la tab <b style="color:#c090d0">🌀 Fronti</b> per dettagli sui tipi.';
   html += '</div>';
   
   // Disclaimer
-  html += '<div style="margin-top:10px;text-align:center;font-size:10px;color:#3a5a70">Carte © Crown Copyright UK Met Office — solo riferimento, consultare avvisi ufficiali</div>';
+  html += '<div style="margin-top:12px;padding:10px 14px;text-align:center;font-size:12px;color:#6a90b0;background:rgba(255,255,255,.02);border-radius:8px;line-height:1.5">Carte © <b style="color:#90b0c8">Crown Copyright UK Met Office</b> — Solo riferimento, consultare sempre gli avvisi meteo ufficiali prima di navigare</div>';
   
   el.innerHTML = html;
   _syState.builtOnce = true;
