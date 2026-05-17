@@ -20,12 +20,13 @@ select{background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,
 .st{margin:10px 16px;padding:12px 16px;border-radius:10px;font-size:13px;text-align:center}
 .vd{margin:10px 16px;padding:12px 16px;border-radius:12px}
 .vd h2{font-size:19px;font-weight:900}.vd p{font-size:12px;margin-top:1px;opacity:.85}
-.tb{display:flex;gap:2px;padding:8px 16px 0;flex-wrap:wrap}
-.t{padding:8px 14px;font-size:12px;background:0 0;border:none;cursor:pointer;border-radius:8px 8px 0 0;color:#4a7090;border-bottom:2px solid transparent;font-family:inherit;white-space:nowrap}
+.tb{display:flex;gap:3px;padding:10px 16px 0;flex-wrap:wrap}
+.t{padding:11px 18px;font-size:14px;background:0 0;border:none;cursor:pointer;border-radius:9px 9px 0 0;color:#4a7090;border-bottom:2px solid transparent;font-family:inherit;white-space:nowrap;font-weight:500;letter-spacing:.2px}
+.t:hover{color:#80c0f0;background:rgba(25,110,190,.06)}
 .t.a{font-weight:700;color:#80c0f0;background:rgba(25,110,190,.12);border-bottom-color:#3090d0}
 @media(max-width:600px){
-  .tb{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px 8px 0}
-  .tb .t{padding:7px 4px;font-size:10px;text-align:center;border-radius:6px 6px 0 0}
+  .tb{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:8px 8px 0}
+  .tb .t{padding:9px 5px;font-size:11px;text-align:center;border-radius:7px 7px 0 0;font-weight:600}
   .tb .t:nth-child(n+9){grid-column:span 2}
 }
 .cn{padding:12px 16px}
@@ -63,6 +64,12 @@ body.hd-collapsed #favsBar{opacity:0;max-height:0;padding:0;border:none;min-heig
 body.hd-collapsed #vd{display:none!important}
 #hdPill{display:none;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;transition:opacity .25s ease}
 body.hd-collapsed #hdPill{display:inline-flex!important}
+/* === BANNER ALLARME FRONTE === */
+#frontAlertBanner{padding:10px 16px;border-top:1px solid rgba(255,255,255,.05);transition:max-height .25s ease,opacity .25s ease,padding .25s ease;max-height:80px;overflow:hidden}
+#frontAlertBanner:hover{filter:brightness(1.15)}
+body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
+.front-alert-pulse{animation:frontPulse 2.4s ease-in-out infinite}
+@keyframes frontPulse{0%,100%{opacity:1}50%{opacity:.7}}
 </style>
 <style>
 
@@ -90,12 +97,14 @@ body.hd-collapsed #hdPill{display:inline-flex!important}
 </style>
 </head><body>
 <div class="hd" id="mainHd"><div class="rw"><div><div style="font-size:10px;color:rgba(64,144,208,.7);letter-spacing:2px;font-weight:700" id="hdBrand">⚓ METEO PRE-PARTENZA</div><h1>Check Navigazione <span id="hdPill"></span></h1></div>
-<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select id="zS"></select><button id="favBtn" onclick="toggleFav()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:16px;cursor:pointer" title="Aggiungi ai preferiti">☆</button><button class="bt" id="go">🔄 Carica Dati Live</button><button id="installBtn" onclick="installPWA()" style="display:none;align-items:center;gap:5px;background:rgba(255,200,50,.15);color:#f0c040;border:1px solid rgba(255,200,50,.3);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:700">📲 Installa App</button><button onclick="toggleHelp()" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;font-weight:700" title="Guida">❓</button></div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select id="zS"></select><button id="geoBtn" onclick="findNearestPort()" style="background:rgba(120,180,80,.15);color:#9cd870;border:1px solid rgba(120,180,80,.3);border-radius:8px;padding:7px 10px;font-size:14px;cursor:pointer;font-weight:700" title="Trova porto più vicino alla mia posizione">📍</button><button id="favBtn" onclick="toggleFav()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:16px;cursor:pointer" title="Aggiungi ai preferiti">☆</button><button class="bt" id="go">🔄 Carica Dati Live</button><button id="installBtn" onclick="installPWA()" style="display:none;align-items:center;gap:5px;background:rgba(255,200,50,.15);color:#f0c040;border:1px solid rgba(255,200,50,.3);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:700">📲 Installa App</button><button onclick="toggleHelp()" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;font-weight:700" title="Guida">❓</button></div></div>
 <div style="font-size:11px;color:#3a6080;margin-top:5px" id="nf">Premi "Carica Dati Live"</div></div>
 <div id="favsBar" style="padding:6px 16px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:36px">
 <span style="font-size:10px;color:#2a4a60;white-space:nowrap">★ Preferiti:</span>
 <div id="favsList" style="display:flex;gap:6px;flex-wrap:wrap"></div>
 </div>
+<!-- Banner allarme fronte (popolato dinamicamente, nascosto di default) -->
+<div id="frontAlertBanner" style="display:none;cursor:pointer"></div>
 <!-- Help Modal -->
 <div id="helpOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;overflow-y:auto" onclick="if(event.target===this)toggleHelp()">
 <div style="max-width:600px;margin:40px auto;background:#0c1e38;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:24px;position:relative">
@@ -107,7 +116,7 @@ body.hd-collapsed #hdPill{display:inline-flex!important}
 
 <div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #4090d0">
 <div style="font-size:13px;font-weight:700;color:#80c0f0;margin-bottom:5px">📊 Attuale</div>
-<div style="font-size:11px;color:#5a8098;line-height:1.6">Seleziona una località dal menu → premi <b style="color:#80c0f0">Carica Dati Live</b>. Mostra vento, mare, pressione, CAPE e visibilità in tempo reale. Clicca una riga nelle previsioni per vedere il dettaglio di quell'ora. Nella colonna <b style="color:#88c0d8">Tipo</b> puoi cliccare sulla sigla delle nuvole per vedere il nome completo e la descrizione. La colonna <b style="color:#88c0d8">↺↻</b> indica la rotazione del vento: <span style="color:#f0a050">↺ Backing</span> = il vento ruota in senso antiorario, segnale di fronte in avvicinamento; <span style="color:#60a8e0">↻ Veering</span> = il vento ruota in senso orario, indica miglioramento o passaggio di una perturbazione.</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Seleziona una località dal menu → premi <b style="color:#80c0f0">Carica Dati Live</b>. Mostra vento, mare, pressione, CAPE e visibilità in tempo reale. Clicca una riga nelle previsioni per vedere il dettaglio di quell'ora. Nella colonna <b style="color:#88c0d8">Tipo</b> puoi cliccare sulla sigla delle nuvole per vedere il nome completo, un'<b>icona stilizzata</b> e un link a <b>📷 Foto su Wikipedia</b>. La colonna <b style="color:#88c0d8">↺↻</b> indica la rotazione del vento: <span style="color:#f0a050">↺ Backing</span> = il vento ruota in senso antiorario, segnale di fronte in avvicinamento; <span style="color:#60a8e0">↻ Veering</span> = il vento ruota in senso orario, indica miglioramento o passaggio di una perturbazione.</div>
 </div>
 
 <div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #4090d0">
@@ -132,19 +141,29 @@ body.hd-collapsed #hdPill{display:inline-flex!important}
 
 <div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #c090d0">
 <div style="font-size:13px;font-weight:700;color:#c090d0;margin-bottom:5px">🌀 Fronti &nbsp;|&nbsp; 📡 Quota 5500m</div>
-<div style="font-size:11px;color:#5a8098;line-height:1.6"><b>Fronti:</b> analisi della rotazione del vento, backing/veering, firma dei fronti meteorologici e grafico pressione 72h.<br><b>Grafico Pressione 72h:</b> le barre <b style="color:#3090d0">BLU</b> indicano l'ora attuale, le barre <b style="color:rgba(220,70,40,.85)">ROSSE</b> indicano pressione nel 30% più basso del range (zona di bassa pressione), le barre <b style="color:rgba(255,255,255,.4)">GRIGIE</b> indicano pressione nella fascia normale o alta.<br><b>Quota 5500m:</b> analisi del geopotenziale Z500 per valutare la stabilità atmosferica a lungo termine.</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6"><b>Allarme Fronte:</b> quando viene rilevato un fronte (Freddo, Caldo, Occlusione Fredda o Calda) nelle prossime 48h, appare un <b>banner colorato in alto</b> sotto i preferiti con il tipo e il tempo stimato di arrivo. È cliccabile e porta direttamente alla tab Fronti. Nella tab <b>📊 Attuale</b> trovi anche una card dettagliata con suggerimento operativo (es. "prepara i terzaroli"). I simboli usano lo <b>standard meteorologico internazionale</b>: 🔵 triangoli blu = freddo, 🔴 semicerchi rossi = caldo, 🟣 alternati = occlusione.<br><b>Tab Fronti:</b> analisi della rotazione del vento, backing/veering, firma dei fronti e grafico pressione 72h.<br><b>Grafico Pressione 72h:</b> le barre <b style="color:#3090d0">BLU</b> indicano l'ora attuale, le barre <b style="color:rgba(220,70,40,.85)">ROSSE</b> indicano pressione nel 30% più basso del range (zona di bassa pressione), le barre <b style="color:rgba(255,255,255,.4)">GRIGIE</b> indicano pressione nella fascia normale o alta.<br><b>Quota 5500m:</b> analisi del geopotenziale Z500 per valutare la stabilità atmosferica a lungo termine.</div>
 </div>
 
 <div style="padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid #f0a040">
-<div style="font-size:13px;font-weight:700;color:#f0a040;margin-bottom:5px">★ Preferiti</div>
-<div style="font-size:11px;color:#5a8098;line-height:1.6">Premi <b>☆</b> accanto al menu per salvare una località tra i preferiti (max 10). I preferiti appaiono sempre in cima come chip cliccabili. I dati sono salvati nel browser.</div>
+<div style="font-size:13px;font-weight:700;color:#f0a040;margin-bottom:5px">⭐ Preferiti & Dashboard</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Premi <b>☆</b> accanto al menu per salvare una località tra i preferiti (max 10). Appaiono come chip cliccabili sotto l'header. Nella tab <b>⭐ Preferiti</b> trovi la dashboard con tutti i preferiti come card (vento, mare, pressione, CAPE, semaforo). <b>Trascina le card</b> con drag & drop per riordinarle — l'ordine viene salvato automaticamente. Premi <b>🔄 Aggiorna tutti</b> per caricare i dati meteo di tutti i preferiti insieme.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(120,180,80,.08);border-radius:10px;border-left:3px solid #9cd870">
+<div style="font-size:13px;font-weight:700;color:#9cd870;margin-bottom:5px">📍 La mia posizione</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Premi il pulsante <b>📍</b> accanto al menu località per usare la geolocalizzazione del dispositivo. L'app trova il porto più vicino tra quelli in elenco e ti chiede se vuoi caricarne i dati meteo. Funziona su qualsiasi dispositivo con GPS o stima Wi-Fi (potrebbe servire concedere il permesso al browser la prima volta).</div>
 </div>
 
 </div>
 
 <div style="padding:12px 14px;background:rgba(160,96,208,.08);border-radius:10px;border-left:3px solid #c090d0">
 <div style="font-size:13px;font-weight:700;color:#c090d0;margin-bottom:5px">➕ Aggiungi Località Personalizzata</div>
-<div style="font-size:11px;color:#5a8098;line-height:1.6">Nella tab <b>🗺️ Mappa</b>, sotto la cartina, trovi il pannello <b>"Aggiungi Località Personalizzata"</b>. Inserisci nome, latitudine e longitudine di qualsiasi punto del Mediterraneo — il porto del tuo cantiere, il tuo ormeggio abituale, una cala preferita. La località viene <b>salvata nel browser</b> e appare in tutti i menu (Attuale, Confronto, Rotta) con un marker viola sulla mappa.</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Tre modi per aggiungere una località personalizzata:<br>1) Nella tab <b>🗺️ Mappa</b>, <b>clicca direttamente sulla mappa</b> nel punto che vuoi salvare: si apre un popup con coordinate precompilate, dai un nome e premi Salva.<br>2) Sotto la mappa, usa il pannello <b>"Aggiungi Località Personalizzata"</b> inserendo nome, lat, lon manualmente.<br>Le località vengono <b>salvate nel browser</b> e appaiono in tutti i menu con un marker viola sulla mappa.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(74,144,208,.08);border-radius:10px;border-left:3px solid #4a90d0">
+<div style="font-size:13px;font-weight:700;color:#80c0f0;margin-bottom:5px">🗺️ Carte Sinottiche Met Office</div>
+<div style="font-size:11px;color:#5a8098;line-height:1.6">Le carte sinottiche del <b>UK Met Office</b> mostrano la pressione superficiale del Nord Atlantico ed Europa con i fronti meteorologici disegnati a mano dagli analisti professionisti. Sono il riferimento standard per la meteorologia marina.<br>Nella tab <b>🗺️ Sinottica</b> trovi 8 carte: <b>Analisi (T+0)</b>, <b>T+24, +36, +48, +60, +72, +96, +120</b> ore. Aggiornate ogni 12 ore dal Met Office.<br>Usa il toggle <b>Colore/B&N</b>, naviga con le frecce <b>◀ ▶</b> o cliccando i puntini, oppure <b>scorri orizzontalmente</b> (touch). Da tastiera funzionano anche le frecce <b>← →</b>.<br><b>Come leggere:</b> linee continue = isobare (pari pressione), <b style="color:#c62828">L</b> = bassa pressione, <b style="color:#1565c0">H</b> = alta pressione. Triangoli blu = fronte freddo, semicerchi rossi = fronte caldo, simboli misti viola = occlusioni.</div>
 </div>
 
 <div style="margin-top:14px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;font-size:10px;color:#2a4a60;text-align:center">
@@ -155,7 +174,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
 <div class="st" id="ss" style="background:rgba(25,110,190,.1);border:1px solid rgba(25,110,190,.2);color:#80c0f0">⏳ Premi il pulsante per caricare i dati meteo</div>
 <div class="dn" id="mu">
 <div class="vd dn" id="vd"></div>
-<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📡 Quota 5500m</button></div>
+<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📡 Quota 5500m</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button></div>
 <div class="cn" id="pN"></div><div class="cn" id="pM" style="height:0;overflow:hidden;padding:0">
 <div id="mapContainer" style="position:relative;width:100%;height:480px;background:#0a1628;border-radius:12px;border:1px solid rgba(255,255,255,.1);overflow:hidden"></div>
 <div id="addLocPanel" style="margin-top:10px;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px">
@@ -185,7 +204,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
   <div style="font-size:15px;font-weight:700;color:#e8f4ff" id="mapInfoName">—</div>
   <button id="mapInfoBtn" style="padding:8px 18px;background:rgba(25,110,190,.5);color:#80c0f0;border:1px solid rgba(25,110,190,.5);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 Carica dati meteo</button>
 </div>
-</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div></div>
+</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="pSy"></div></div>
 <div class="ft">Dati: Open-Meteo API — Stime indicative — Consultare previsioni ufficiali<br><span style="color:#2a4a60">Progetto: Ernesto Faraco &amp; Claude Sonnet 🤖 — 2025</span></div>
 <script>
 const Z=[{n:"Capo dell'Arma",a:43.8461,o:7.9367},{n:"Capo di Vado",a:44.27,o:8.44},{n:"Capo Mele",a:43.96,o:8.17},{n:"Capo Noli",a:44.1956,o:8.4253},{n:"Portofino",a:44.3039,o:9.2078},{n:"Punta Mesco (Cinque Terre)",a:44.1333,o:9.65},{n:"Cala Galera",a:42.43,o:11.12},{n:"Capel Rosso (Giglio)",a:42.3589,o:10.9211},{n:"Capo d'Argentario",a:42.3833,o:11.15},{n:"Capo d'Enfola (Elba)",a:42.8333,o:10.2667},{n:"Capo d'Orso (Elba)",a:42.45,o:10.4},{n:"Capo d'Uomo (Argentario)",a:42.4,o:11.1},{n:"Capo Linaro (Civitavecchia)",a:42.08,o:11.79},{n:"Isola di Capraia",a:43.0511,o:9.8444},{n:"Livorno (Fanale dei Pisani)",a:43.5439,o:10.2947},{n:"Porto Santo Stefano",a:42.4347,o:11.1197},{n:"Portoferraio (Elba)",a:42.8164,o:10.3342},{n:"Punta del Fenaio (Giglio)",a:42.3667,o:10.8667},{n:"Talamone",a:42.5572,o:11.1394},{n:"Viareggio",a:43.8667,o:10.2333},{n:"Nettuno",a:41.46,o:12.66},{n:"Ponza",a:40.9,o:12.97},{n:"Ventotene",a:40.8,o:13.43},{n:"Capo Miseno",a:40.7778,o:14.0894},{n:"Capo Palinuro",a:40.0264,o:15.275},{n:"Isola d'Ischia",a:40.7333,o:13.95},{n:"Isola di Capri",a:40.55,o:14.2333},{n:"Isola di Stromboli",a:38.8,o:15.2167},{n:"Isola di Ustica",a:38.7078,o:13.1775},{n:"Isole Eolie (centro)",a:38.5333,o:14.9},{n:"Punta Campanella",a:40.5694,o:14.325},{n:"Punta di Posillipo",a:40.8219,o:14.2156},{n:"Punta Licosa",a:40.25,o:14.9},{n:"Capo Colonna (Crotone)",a:39.0333,o:17.2},{n:"Capo dell'Armi",a:37.95,o:15.7},{n:"Capo Peloro (Messina)",a:38.2664,o:15.6531},{n:"Capo Rizzuto",a:38.9667,o:17.2167},{n:"Capo Spartivento (Calabria)",a:37.9167,o:16.0667},{n:"Capo Vaticano",a:38.6194,o:15.8286},{n:"Punta Pellaro",a:38.0183,o:15.6369},{n:"Scilla",a:38.2506,o:15.7189},{n:"Capo Boeo (Marsala)",a:37.8,o:12.4333},{n:"Capo Gallo (Palermo)",a:38.2233,o:13.3167},{n:"Capo Milazzo",a:38.2706,o:15.2311},{n:"Capo Passero",a:36.685,o:15.14},{n:"Capo Zafferano",a:38.1122,o:13.5375},{n:"Isola di Favignana (Egadi)",a:37.9333,o:12.3333},{n:"Isola di Lampedusa",a:35.5086,o:12.5931},{n:"Isola di Pantelleria",a:36.7875,o:11.9925},{n:"Isola di Vulcano",a:38.4,o:14.9667},{n:"San Vito lo Capo",a:38.175,o:12.7333},{n:"Capo di Leuca",a:39.7833,o:18.3667},{n:"Punta della Testa (Gargano)",a:41.95,o:15.9667},{n:"Punta Palascia (Capo d'Otranto)",a:40.1075,o:18.52},{n:"Santa Maria di Leuca",a:39.7994,o:18.355},{n:"Vieste (Gargano)",a:41.8833,o:16.1667},{n:"Cagliari",a:39.22,o:9.12},{n:"Capo Caccia",a:40.57,o:8.16},{n:"Capo Carbonara",a:39.10,o:9.52},{n:"Capo Falcone",a:40.97,o:8.20},{n:"Capo Ferro",a:41.15,o:9.52},{n:"Capo Mannu",a:40.035,o:8.3781},{n:"Capo Marrangiu",a:40.3,o:8.4},{n:"Capo Pecora",a:39.4489,o:8.3917},{n:"Capo Pertusato (Bonifacio)",a:41.3678,o:9.1844},{n:"Capo San Marco",a:39.8583,o:8.4358},{n:"Capo Spartivento",a:38.8789,o:8.8936},{n:"Capo Testa",a:41.25,o:9.14},{n:"Capo Teulada",a:38.8667,o:8.6333},{n:"Carloforte",a:39.14,o:8.28},{n:"Faro della Chiappa",a:41.595,o:9.365},{n:"Olbia",a:40.92,o:9.5},{n:"P.ta Scorno (Asinara)",a:41.12,o:8.32},{n:"Pointe Cacavento",a:41.3883,o:9.1503},{n:"Porto Vecchio (Corsica)",a:41.59,o:9.28},{n:"Punta di u Cappiciolu",a:41.4281,o:9.2647},{n:"Punta Sardegna",a:41.1914,o:9.3608},{n:"Punta Scorno (Asinara)",a:41.1194,o:8.3183},{n:"Îles Lavezzi",a:41.325,o:9.25},{n:"Bastia",a:42.6944,o:9.4539},{n:"Cap Corse",a:42.8333,o:9.4167},{n:"Capu Fenu (Ajaccio)",a:41.9622,o:8.5933},{n:"Giraglia",a:43.03,o:9.41},{n:"Solenzara",a:41.8589,o:9.3997},{n:"Formentera - Cap de Barbaria",a:38.6333,o:1.4},{n:"Ibiza - Cap des Falcó",a:38.8667,o:1.2},{n:"Mahon (Minorca)",a:39.89,o:4.27},{n:"Mallorca - Cap de Formentor",a:39.9667,o:3.2167},{n:"Mallorca - Cap de ses Salines",a:39.2667,o:3.05},{n:"Menorca - Cap de Cavalleria",a:40.0667,o:4.0833},{n:"Palma Mallorca",a:39.57,o:2.65},{n:"Corfù",a:39.62,o:19.92},{n:"Cap Couronne",a:43.3333,o:5.05},{n:"Cap Croisette (Marsiglia)",a:43.2142,o:5.3375},{n:"Cap d'Antibes (Faro Garoupe)",a:43.5583,o:7.125},{n:"Cap Ferrat",a:43.6883,o:7.3289},{n:"Pointe d'Agde",a:43.3089,o:3.4769},{n:"Îles du Frioul (Marsiglia)",a:43.275,o:5.3},{n:"Cabo de Gata",a:36.8303,o:-2.0061},{n:"Cabo de la Nao",a:38.7333,o:0.2167},{n:"Cabo de Palos",a:37.6333,o:-0.7},{n:"Cap de Creus (Costa Brava)",a:42.3167,o:3.3167},{n:"Delta dell'Ebro",a:40.72,o:0.8631},{n:"Punta de Tarifa",a:36.0042,o:-5.6103},{n:"Sitges",a:41.235,o:1.8119}];
@@ -231,7 +250,7 @@ document.getElementById("go").onclick=ld;
 function st(id,b){
   document.querySelectorAll(".t").forEach(x=>x.classList.remove("a"));
   b.classList.add("a");
-  ["pN","pF","p24","p48","pR","pZ","pS","pC","pRT"].forEach(x=>document.getElementById(x).classList.add("dn"));
+  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","pSy"].forEach(x=>document.getElementById(x).classList.add("dn"));
   if(id==="mp"){
     document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
     setTimeout(function(){
@@ -267,7 +286,7 @@ function st(id,b){
   } else {
     document.getElementById("pM").style.cssText="height:0;overflow:hidden;padding:0";
     document.getElementById("mapInfo").style.display='none';
-    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
+    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
   }
 }
 
@@ -388,9 +407,52 @@ document.getElementById("p48").innerHTML=bFc(vi,48);
 // FR tab
 let fr='<div style="font-size:10px;color:#3a6080;margin-bottom:10px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05)">Analisi frontale e rotazione vento: dati relativi all\'ora selezionata. Grafico pressione: evoluzione 72h.</div>';
 fr+='<div class="cd" style="margin-bottom:10px"><div class="lb" style="margin-bottom:8px">🌀 ANALISI FRONTALE — '+ts+'</div>';
-if(fa){if(fa.fr)fr+='<div style="padding:10px 12px;border-radius:8px;margin-bottom:8px;background:'+fa.fr.c+'15;border:1px solid '+fa.fr.c+'30"><div style="font-size:16px;font-weight:900;color:'+fa.fr.c+'">'+fa.lv+' '+fa.fr.t+'</div><div style="font-size:11px;color:#b0c8d8;margin-top:3px">'+fa.fr.d+'</div></div>';fa.sg.forEach(s=>fr+='<div class="sg">'+s+'</div>');
-let eta=fa.pd<-3?"~6h":fa.pd<-1.5?"~12-24h":"oltre 24h";fr+='<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(48,144,208,.08);border:1px solid rgba(48,144,208,.15);font-size:11px;color:#80c0f0">⏱️ Fronte stimato entro <b>'+eta+'</b> <span style="color:#5a8098;font-size:9px">(stima indicativa basata sulla tendenza barica)</span></div>'}
-else fr+='<div style="font-size:13px;color:#4a8a60">🟢 Nessun segnale frontale.</div>';
+if(fa){
+  if(fa.fr){
+    // Determina il tipo di fronte per scegliere il simbolo SVG
+    var _frT=fa.fr.t.toUpperCase();
+    var _frSvg=FRONT_SVG(_frT, 60);
+    var _eta=fa.pd<-3?"~6h":fa.pd<-1.5?"~12-24h":"oltre 24h";
+    var _etaColor=fa.pd<-3?"#ff6060":fa.pd<-1.5?"#f0a040":"#80c0f0";
+    var _advice=FRONT_ADVICE(_frT);
+    // Card GRANDE con simbolo SVG e dettagli
+    fr+='<div style="padding:18px 20px;border-radius:14px;margin-bottom:10px;background:linear-gradient(135deg,'+fa.fr.c+'25,'+fa.fr.c+'10);border:2px solid '+fa.fr.c+'70;box-shadow:0 4px 20px '+fa.fr.c+'20">';
+    fr+='<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">';
+    fr+='<div style="flex-shrink:0">'+_frSvg+'</div>';
+    fr+='<div style="flex:1;min-width:200px">';
+    fr+='<div style="font-size:11px;color:'+fa.fr.c+';letter-spacing:2px;font-weight:700;margin-bottom:2px">'+fa.lv+' FRONTE RILEVATO</div>';
+    fr+='<div style="font-size:24px;font-weight:900;color:'+fa.fr.c+';line-height:1.1;margin-bottom:6px">'+fa.fr.t+'</div>';
+    fr+='<div style="font-size:13px;color:#d0dce8;line-height:1.4">'+fa.fr.d+'</div>';
+    fr+='</div></div>';
+    // ETA
+    fr+='<div style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid '+_etaColor+'40;display:flex;align-items:center;gap:10px;flex-wrap:wrap">';
+    fr+='<div style="font-size:20px">⏱️</div>';
+    fr+='<div style="flex:1;min-width:160px"><div style="font-size:10px;color:#5a8098;text-transform:uppercase;letter-spacing:1px">Tempo stimato di arrivo</div>';
+    fr+='<div style="font-size:18px;font-weight:800;color:'+_etaColor+'">'+_eta+'</div></div>';
+    fr+='<div style="font-size:9px;color:#5a8098;font-style:italic">(stima basata sulla tendenza barica)</div>';
+    fr+='</div>';
+    // Suggerimento operativo
+    if(_advice){
+      fr+='<div style="margin-top:8px;padding:10px 14px;border-radius:10px;background:rgba(240,160,64,.1);border:1px solid rgba(240,160,64,.3);display:flex;align-items:flex-start;gap:10px">';
+      fr+='<div style="font-size:18px;flex-shrink:0">⚓</div>';
+      fr+='<div style="flex:1"><div style="font-size:10px;color:#f0a040;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px">Cosa fare</div>';
+      fr+='<div style="font-size:12px;color:#e8d0a0;line-height:1.5">'+_advice+'</div></div></div>';
+    }
+    fr+='</div>';
+    // Segnali individuati
+    if(fa.sg.length){
+      fr+='<div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05)">';
+      fr+='<div style="font-size:10px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700">📡 Segnali rilevati</div>';
+      fa.sg.forEach(s=>{fr+='<div class="sg" style="margin-bottom:4px;font-size:12px">'+s+'</div>';});
+      fr+='</div>';
+    }
+  } else {
+    // Solo segnali, no fronte conclamato
+    fa.sg.forEach(s=>fr+='<div class="sg">'+s+'</div>');
+  }
+} else {
+  fr+='<div style="padding:20px;border-radius:12px;background:rgba(74,144,96,.1);border:1px solid rgba(74,144,96,.3);text-align:center"><div style="font-size:32px;margin-bottom:8px">🟢</div><div style="font-size:15px;font-weight:700;color:#4a9060">Nessun segnale frontale</div><div style="font-size:11px;color:#5a8098;margin-top:4px">Condizioni stabili — nessuna perturbazione in vista</div></div>';
+}
 fr+='</div>';
 // Rotation
 fr+='<div class="cd"><div class="lb" style="margin-bottom:8px">🔄 ROTAZIONE VENTO</div><div style="display:flex;gap:2px;flex-wrap:wrap">';
@@ -403,9 +465,26 @@ let ps=h.pressure_msl.filter((_,i)=>i%2===0),mn=Math.min(...ps),mx=Math.max(...p
 fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:4px">📈 PRESSIONE 72h</div><div style="display:flex;align-items:flex-end;gap:1px;height:50px">';
 ps.forEach((p,i)=>{let pc=((p-mn)/rg)*100;fr+='<div style="flex:1;max-width:5px;height:'+Math.max(2,pc*.5)+'px;background:'+(Math.abs(i*2-vi)<=1?"#3090d0":p<mn+rg*.3?"rgba(220,70,40,.45)":"rgba(255,255,255,.1)")+';border-radius:1px"></div>'});
 fr+='</div><div style="display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:#3a5a70"><span>Min:'+mn.toFixed(1)+'</span><span>Max:'+mx.toFixed(1)+'</span></div></div>';
-// Reference
-fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:6px">📚 FRONTI</div><div style="display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(155px,1fr))">';
-[["🔵 Fr.Freddo","Backing→Veer BRUSCO<br>Rovesci,Cb,calo T","21,101,192"],["🔴 Fr.Caldo","Backing lento→Veer grad<br>Pioggia cont,Ns","198,40,40"],["🟣 Occl.Fredda","Pioggia→rovesci NO pausa<br>Veer brusco,doppio calo","123,31,162"],["🟣 Occl.Calda","Sembra caldo MA temporali<br>⚠️ Il più insidioso","192,64,160"]].forEach(([t,d,rgb])=>{fr+='<div class="rx" style="background:rgba('+rgb+',.08);border:1px solid rgba('+rgb+',.15)"><strong style="color:rgba('+rgb.split(",").map(x=>Math.min(255,+x+80)).join(",")+',1)">'+t+'</strong><br><span style="font-size:9px">'+d+'</span></div>'});
+// Reference - LEGENDA TIPI DI FRONTE con simboli SVG
+fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:10px">📚 TIPI DI FRONTE — RICONOSCIMENTO</div>';
+fr+='<div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">';
+[
+  ['FRONTE FREDDO','21,101,192','Aria fredda spinge sotto quella calda','Veering brusco<br>Rovesci, Cb, calo termico rapido<br>Passaggio rapido (1-3h)'],
+  ['FRONTE CALDO','198,40,40','Aria calda scivola sopra quella fredda','Backing lento → Veering graduale<br>Pioggia continua, Ns<br>Passaggio lento (6-12h)'],
+  ['OCCLUSIONE FREDDA','123,31,162','Il fronte freddo raggiunge il caldo','Pioggia → rovesci senza pausa<br>Veering brusco, doppio calo P<br>Tipica di sistemi maturi'],
+  ['OCCLUSIONE CALDA','192,64,160','Il fronte caldo scivola su masse più fredde','Sembra caldo ma con temporali<br>⚠️ Il più insidioso<br>Difficile da leggere'],
+].forEach(function(item){
+  var t=item[0], rgb=item[1], sub=item[2], d=item[3];
+  var brightColor='rgba('+rgb.split(',').map(function(x){return Math.min(255,+x+80);}).join(',')+',1)';
+  fr+='<div style="padding:14px;border-radius:10px;background:rgba('+rgb+',.1);border:1px solid rgba('+rgb+',.3)">';
+  fr+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  fr+='<div style="flex-shrink:0">'+FRONT_SVG(t,42)+'</div>';
+  fr+='<div style="flex:1"><div style="font-size:13px;font-weight:900;color:'+brightColor+';line-height:1.1">'+t+'</div>';
+  fr+='<div style="font-size:9px;color:#90a8b8;margin-top:2px;font-style:italic">'+sub+'</div></div>';
+  fr+='</div>';
+  fr+='<div style="font-size:10px;color:#b0c8d8;line-height:1.5">'+d+'</div>';
+  fr+='</div>';
+});
 fr+='</div></div>';
 document.getElementById("pR").innerHTML=fr}catch(e){console.error("Errore rendering:",e);document.getElementById("ss").className="st";document.getElementById("ss").style.cssText="background:rgba(183,28,28,.1);border:1px solid rgba(183,28,28,.3);color:#ff6060";document.getElementById("ss").innerHTML="⚠️ Errore rendering: "+e.message;document.getElementById("ss").classList.remove("dn")}}
 var zBuilt=false;
@@ -1688,6 +1767,1281 @@ document.addEventListener('click', function(e){
     else if(y<=80&&collapsed){document.body.classList.remove('hd-collapsed');collapsed=false}
   },{passive:true});
 })();
+
+/* ============================================================
+   ===== STEP 1 — NUOVE FUNZIONALITÀ ==========================
+   ============================================================
+   1) Geolocalizzazione → porto più vicino
+   2) Click sulla mappa → aggiungi località
+   3) Tooltip nuvole con SVG + link Wikipedia
+   4) Dashboard "I miei preferiti" con drag & drop
+   ============================================================ */
+
+/* ===== UTILITY: COORDINATE FORMAT NAUTICO ===== */
+/* Converte gradi decimali in formato nautico DMS (gradi°minuti'secondi"N/S o E/W).
+   Es: 43.8461 → "43° 50' 46\" N"  |  -5.6103 → "5° 36' 37\" W" */
+function toDMS(deg, isLat){
+  var dir = isLat ? (deg >= 0 ? 'N' : 'S') : (deg >= 0 ? 'E' : 'W');
+  var abs = Math.abs(deg);
+  var d = Math.floor(abs);
+  var minFloat = (abs - d) * 60;
+  var m = Math.floor(minFloat);
+  var s = Math.round((minFloat - m) * 60);
+  // Gestione carry-over (es. 59.6" → 60" → 0" + m+1)
+  if(s === 60){ s = 0; m += 1; }
+  if(m === 60){ m = 0; d += 1; }
+  return d + '° ' + String(m).padStart(2,'0') + "' " + String(s).padStart(2,'0') + '" ' + dir;
+}
+
+/* ===== 1) GEOLOCALIZZAZIONE → PORTO PIÙ VICINO ===== */
+function findNearestPort(){
+  var btn = document.getElementById('geoBtn');
+  if(!navigator.geolocation){
+    alert('Geolocalizzazione non supportata dal tuo browser.');
+    return;
+  }
+  var origText = btn.textContent;
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var myLat = pos.coords.latitude;
+    var myLon = pos.coords.longitude;
+    var accuracy = pos.coords.accuracy; // metri
+    
+    // Trova il porto più vicino tra Z (usa nmDistance già esistente)
+    var nearest = null, minDist = Infinity;
+    Z.forEach(function(loc){
+      var d = nmDistance(myLat, myLon, loc.a, loc.o);
+      if(d < minDist){ minDist = d; nearest = loc; }
+    });
+    
+    btn.textContent = origText;
+    btn.disabled = false;
+    
+    if(!nearest){
+      alert('Nessuna località trovata.');
+      return;
+    }
+    
+    // Mostra conferma con distanza
+    var distStr = minDist < 1 ? (minDist*1852).toFixed(0)+' m' : minDist.toFixed(1)+' NM';
+    var accStr = accuracy < 1000 ? Math.round(accuracy)+' m' : (accuracy/1000).toFixed(1)+' km';
+    var msg = '📍 La tua posizione:\n'+toDMS(myLat,true)+'\n'+toDMS(myLon,false)+
+              '\n(precisione: ±'+accStr+')\n\n'+
+              '⚓ Porto più vicino: '+nearest.n+
+              '\nDistanza: '+distStr+
+              '\n\nCaricare i dati meteo di '+nearest.n+'?';
+    
+    if(confirm(msg)){
+      z = nearest;
+      document.getElementById('zS').value = nearest.n;
+      updateFavBtn();
+      ld(); // carica dati
+    }
+  }, function(err){
+    btn.textContent = origText;
+    btn.disabled = false;
+    var msg = 'Errore geolocalizzazione: ';
+    if(err.code === 1) msg += 'permesso negato. Vai nelle impostazioni del browser e abilita la posizione per questo sito.';
+    else if(err.code === 2) msg += 'posizione non disponibile.';
+    else if(err.code === 3) msg += 'timeout. Riprova.';
+    else msg += err.message;
+    alert(msg);
+  }, {
+    enableHighAccuracy: true,
+    timeout: 15000,
+    maximumAge: 60000
+  });
+}
+
+/* ===== 2) CLICK SULLA MAPPA → AGGIUNGI LOCALITÀ ===== */
+/* Hook che si attiva quando la mappa Leaflet viene inizializzata.
+   Aggiunge un listener sul click che apre un popup con coordinate
+   precompilate e campo nome. */
+(function setupMapClickHandler(){
+  // Polling: aspetta che la mappa sia pronta
+  var tries = 0;
+  var interval = setInterval(function(){
+    tries++;
+    if(window._leafMap && !window._mapClickAttached){
+      window._mapClickAttached = true;
+      window._leafMap.on('click', function(e){
+        // Ignora se il click è su un marker (Leaflet gestisce a parte)
+        var lat = e.latlng.lat;
+        var lon = e.latlng.lng;
+        
+        // Costruisci popup con form per nuova località
+        var dmsLat = toDMS(lat, true);
+        var dmsLon = toDMS(lon, false);
+        var popupHtml = '<div style="font-family:system-ui,sans-serif;min-width:240px">'+
+          '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:8px">➕ Aggiungi località</div>'+
+          '<div style="font-size:13px;color:#80c0f0;margin-bottom:4px;font-family:ui-monospace,monospace;font-weight:700;line-height:1.5">'+
+            '📍 '+dmsLat+'<br>&nbsp;&nbsp;&nbsp;&nbsp;'+dmsLon+'</div>'+
+          '<div style="font-size:10px;color:#5a8098;margin-bottom:8px;font-family:ui-monospace,monospace">'+
+            '('+lat.toFixed(4)+'°, '+lon.toFixed(4)+'°)</div>'+
+          '<input id="mapClickName" type="text" placeholder="Nome (es. Cala Mare)" '+
+            'style="width:100%;background:rgba(255,255,255,.08);color:#e8f4ff;border:1px solid rgba(255,255,255,.2);'+
+            'border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:8px;box-sizing:border-box">'+
+          '<button onclick="saveMapClickLoc('+lat+','+lon+')" '+
+            'style="width:100%;padding:7px 10px;background:rgba(25,110,190,.5);color:#e8f4ff;'+
+            'border:1px solid rgba(25,110,190,.6);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">'+
+            '💾 Salva località</button>'+
+          '</div>';
+        
+        L.popup({maxWidth:300})
+          .setLatLng(e.latlng)
+          .setContent(popupHtml)
+          .openOn(window._leafMap);
+        
+        // Focus sul campo nome dopo apertura
+        setTimeout(function(){
+          var inp = document.getElementById('mapClickName');
+          if(inp) inp.focus();
+        }, 200);
+      });
+      clearInterval(interval);
+    }
+    if(tries > 100) clearInterval(interval); // dopo 10s smetti di provare
+  }, 100);
+})();
+
+function saveMapClickLoc(lat, lon){
+  var inp = document.getElementById('mapClickName');
+  var name = inp ? inp.value.trim() : '';
+  if(!name){
+    alert('Inserisci un nome per la località');
+    if(inp) inp.focus();
+    return;
+  }
+  if(Z.find(function(x){return x.n===name;})){
+    alert('Esiste già una località con questo nome');
+    return;
+  }
+  
+  var newLoc = {n:name, a:lat, o:lon};
+  Z.push(newLoc);
+  
+  // Salva in localStorage
+  var customs = getCustomLocs();
+  customs.push(newLoc);
+  saveCustomLocs(customs);
+  
+  // Aggiungi marker viola sulla mappa
+  if(window._leafMap && window._leafMarkers){
+    var icon = L.divIcon({className:'',
+      html:'<div style="width:14px;height:14px;border-radius:50%;background:#c090d0;border:2px solid rgba(255,255,255,.7);box-shadow:0 0 5px #c090d0"></div>',
+      iconSize:[14,14], iconAnchor:[7,7], popupAnchor:[0,-8]});
+    var m = L.marker([lat,lon],{icon:icon});
+    m.locName = name;
+    m.on('click', function(){
+      document.getElementById('mapInfo').style.display='block';
+      document.getElementById('mapInfoName').textContent=name;
+      window._selectedMapLoc=name;
+    });
+    m.addTo(window._leafMap);
+    window._leafMarkers[name] = m;
+  }
+  
+  window._leafMap.closePopup();
+  refreshAllDropdowns();
+  updateCustomLocsList();
+  
+  // Feedback visivo
+  var fb = document.createElement('div');
+  fb.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(46,125,50,.95);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,.5)';
+  fb.textContent = '✅ "'+name+'" aggiunto!';
+  document.body.appendChild(fb);
+  setTimeout(function(){ fb.remove(); }, 2500);
+}
+
+/* ===== 3) NUVOLE: SVG STILIZZATE + LINK WIKIPEDIA ===== */
+/* Estende il CLOUD_DICT con SVG inline e link Wikipedia.
+   Il tooltip esistente (showCloudTip) viene esteso per mostrarli. */
+
+var CLOUD_VISUALS = {
+  'Sereno': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="25" r="14" fill="#f0d060" opacity="0.9"/><circle cx="50" cy="25" r="20" fill="none" stroke="#f0d060" stroke-width="1" opacity="0.4" stroke-dasharray="2,3"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Cielo_sereno'
+  },
+  'Ci,Cs': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><path d="M10,15 Q30,8 50,15 T90,15" stroke="#e8f4ff" stroke-width="1.5" fill="none" opacity="0.8"/><path d="M5,25 Q25,18 45,25 T85,25" stroke="#e8f4ff" stroke-width="1.5" fill="none" opacity="0.7"/><path d="M15,35 Q35,28 55,35 T95,35" stroke="#e8f4ff" stroke-width="1.5" fill="none" opacity="0.6"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Cirrus'
+  },
+  'Ci,Ac cast': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><path d="M10,12 Q30,6 50,12 T90,12" stroke="#e8f4ff" stroke-width="1.2" fill="none" opacity="0.7"/><ellipse cx="25" cy="30" rx="8" ry="4" fill="#c0d0e0" opacity="0.8"/><ellipse cx="45" cy="28" rx="10" ry="5" fill="#c0d0e0" opacity="0.8"/><ellipse cx="68" cy="30" rx="8" ry="4" fill="#c0d0e0" opacity="0.8"/><path d="M25,30 L25,38 M45,28 L45,40 M68,30 L68,38" stroke="#c0d0e0" stroke-width="1" opacity="0.5"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Altocumulus_castellanus'
+  },
+  'Ac,As': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="20" rx="14" ry="6" fill="#a0b0c0" opacity="0.85"/><ellipse cx="50" cy="22" rx="16" ry="7" fill="#a0b0c0" opacity="0.85"/><ellipse cx="78" cy="20" rx="14" ry="6" fill="#a0b0c0" opacity="0.85"/><rect x="5" y="32" width="90" height="6" fill="#90a0b0" opacity="0.5"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Altostratus'
+  },
+  'Ac cast': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><path d="M15,35 Q15,20 22,18 Q25,12 32,15 Q38,8 45,12 Q50,18 50,35 Z" fill="#b0c0d0" opacity="0.9"/><path d="M55,35 Q55,22 62,20 Q66,14 72,17 Q78,10 84,15 Q88,20 88,35 Z" fill="#b0c0d0" opacity="0.85"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Altocumulus_castellanus'
+  },
+  'Sc,Ns': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><ellipse cx="30" cy="22" rx="20" ry="9" fill="#708090" opacity="0.9"/><ellipse cx="65" cy="20" rx="22" ry="10" fill="#708090" opacity="0.9"/><line x1="25" y1="38" x2="22" y2="46" stroke="#80a0c0" stroke-width="1.5"/><line x1="40" y1="40" x2="37" y2="48" stroke="#80a0c0" stroke-width="1.5"/><line x1="55" y1="38" x2="52" y2="46" stroke="#80a0c0" stroke-width="1.5"/><line x1="70" y1="40" x2="67" y2="48" stroke="#80a0c0" stroke-width="1.5"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Nimbostratus'
+  },
+  'Cu con': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><path d="M20,42 Q15,25 25,20 Q28,8 42,10 Q50,2 60,8 Q72,5 75,18 Q85,20 82,32 Q85,42 75,42 Z" fill="#e0e8f0" opacity="0.95"/><path d="M20,42 L82,42" stroke="#90a0b0" stroke-width="1"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Cumulus_congestus'
+  },
+  'Cb': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><path d="M15,45 Q8,30 20,22 Q22,12 35,12 Q40,2 55,5 Q70,2 75,15 Q88,15 85,28 Q92,38 80,42 L85,42 L88,32 L82,32 Q90,30 85,22 Q80,8 65,10 Q55,0 42,8 Q28,10 25,20 Q12,25 15,42 Z" fill="#5a6a7a" opacity="0.95"/><polyline points="35,30 32,38 38,38 33,46" stroke="#f0d030" stroke-width="2" fill="none"/><line x1="60" y1="44" x2="58" y2="49" stroke="#80a0c0" stroke-width="1.5"/><line x1="68" y1="44" x2="66" y2="49" stroke="#80a0c0" stroke-width="1.5"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Cumulonimbus'
+  },
+  'Cu/Cb': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><path d="M18,42 Q12,28 22,22 Q25,12 38,12 Q45,4 55,8 Q68,5 72,18 Q82,22 78,35 Q80,42 70,42 Z" fill="#a0b0c0" opacity="0.95"/><polyline points="40,28 37,36 43,36 39,44" stroke="#f0d030" stroke-width="1.8" fill="none" opacity="0.9"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Cumulonimbus'
+  },
+  'Ns,St': {
+    svg: '<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="12" width="90" height="22" fill="#607080" opacity="0.9" rx="2"/><line x1="15" y1="36" x2="13" y2="46" stroke="#80a0c0" stroke-width="1.5"/><line x1="30" y1="36" x2="28" y2="48" stroke="#80a0c0" stroke-width="1.5"/><line x1="45" y1="36" x2="43" y2="46" stroke="#80a0c0" stroke-width="1.5"/><line x1="60" y1="36" x2="58" y2="48" stroke="#80a0c0" stroke-width="1.5"/><line x1="75" y1="36" x2="73" y2="46" stroke="#80a0c0" stroke-width="1.5"/></svg>',
+    wiki: 'https://it.wikipedia.org/wiki/Nimbostratus'
+  }
+};
+
+/* Sovrascrivo showCloudTip per includere SVG e link Wikipedia */
+window.showCloudTip = function(el, code){
+  hideCloudTip();
+  var clean = code.replace(/[^a-zA-Z,\/\. ]/g, '').trim();
+  var info = CLOUD_DICT[clean] || CLOUD_DICT[code];
+  var visualKey = clean;
+  if(!info){
+    for(var k in CLOUD_DICT){
+      if(code.indexOf(k)>=0 || k.indexOf(clean)>=0){ info=CLOUD_DICT[k]; visualKey=k; break; }
+    }
+  }
+  if(!info) return;
+  var visual = CLOUD_VISUALS[visualKey] || CLOUD_VISUALS[clean];
+  
+  var tip = document.createElement('div');
+  tip.className = 'cloud-tip';
+  tip.style.maxWidth = '280px';
+  
+  var html = '<b>'+info.n+'</b>';
+  if(visual && visual.svg){
+    html += '<div style="margin:6px 0;padding:6px;background:rgba(255,255,255,.04);border-radius:6px;text-align:center">'+
+            '<div style="width:120px;height:60px;margin:0 auto">'+visual.svg+'</div></div>';
+  }
+  html += '<div style="margin-bottom:4px">'+info.d+'</div>';
+  if(visual && visual.wiki){
+    html += '<a href="'+visual.wiki+'" target="_blank" rel="noopener" '+
+            'style="display:inline-block;margin-top:5px;padding:3px 8px;background:rgba(25,110,190,.25);'+
+            'color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:5px;font-size:10px;text-decoration:none;font-weight:700">'+
+            '📷 Foto su Wikipedia ↗</a>';
+  }
+  tip.innerHTML = html;
+  
+  document.body.appendChild(tip);
+  _cloudTip = tip;
+  var r = el.getBoundingClientRect();
+  var top = r.bottom + 6;
+  var left = r.left;
+  if(left + 290 > window.innerWidth) left = window.innerWidth - 295;
+  if(left < 5) left = 5;
+  if(top + 180 > window.innerHeight) top = Math.max(5, r.top - 190);
+  tip.style.top = top + 'px';
+  tip.style.left = left + 'px';
+};
+
+/* ===== 4) DASHBOARD "I MIEI PREFERITI" CON DRAG & DROP ===== */
+/* Aggiunge una nuova tab che mostra tutti i preferiti come card
+   con semaforo, vento, mare, pressione. Le card sono riordinabili
+   via drag & drop (touch + mouse). L'ordine viene salvato in
+   localStorage (la stessa chiave 'navFavs' usata da getFavs/saveFavs). */
+
+// Cache dei dati meteo per la dashboard preferiti
+var _favDashData = {};
+
+function bzFavs(){
+  try{
+    renderFavsDashboard();
+  }catch(e){
+    document.getElementById('pFav').innerHTML = '<div style="color:#ff6060;padding:20px">Errore dashboard: '+e.message+'</div>';
+    console.error('bzFavs error:', e);
+  }
+}
+
+function renderFavsDashboard(){
+  var favs = getFavs();
+  var el = document.getElementById('pFav');
+  if(!el) return;
+  
+  var html = '<div style="margin-bottom:12px">';
+  html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:4px">⭐ Dashboard Preferiti</div>';
+  html += '<div style="font-size:11px;color:#3a6080">Tutti i tuoi porti preferiti a colpo d\'occhio. Trascina le card per riordinare.</div>';
+  html += '</div>';
+  
+  if(favs.length === 0){
+    html += '<div style="text-align:center;padding:40px 20px;background:rgba(255,255,255,.02);border-radius:12px;border:1px dashed rgba(255,255,255,.1)">'+
+            '<div style="font-size:32px;margin-bottom:10px">⭐</div>'+
+            '<div style="font-size:13px;color:#5a8098;margin-bottom:6px">Nessun preferito ancora.</div>'+
+            '<div style="font-size:11px;color:#3a6080">Seleziona una località dal menu e premi <b style="color:#f0c040">☆</b> per aggiungerla.</div>'+
+            '</div>';
+    el.innerHTML = html;
+    return;
+  }
+  
+  // Toolbar
+  html += '<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">';
+  html += '<button onclick="loadAllFavsData()" style="padding:7px 14px;background:rgba(46,125,50,.3);color:#7ecfa0;border:1px solid rgba(46,125,50,.4);border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">🔄 Aggiorna tutti</button>';
+  html += '<div style="font-size:11px;color:#3a6080;align-self:center">'+favs.length+'/10 preferiti</div>';
+  html += '</div>';
+  
+  // Cards grid - drag & drop enabled
+  html += '<div id="favCardsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">';
+  favs.forEach(function(name, i){
+    html += renderFavCard(name, i);
+  });
+  html += '</div>';
+  
+  el.innerHTML = html;
+  attachDragHandlers();
+}
+
+function renderFavCard(name, idx){
+  var loc = Z.find(function(x){return x.n===name;});
+  var data = _favDashData[name];
+  // Escape per attributi HTML (no apostrofi/quote che rompono il parsing)
+  var nameAttr = name.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  var nameDisp = name.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var html = '<div class="fav-card" data-name="'+nameAttr+'" data-idx="'+idx+'" '+
+             'style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;transition:all .15s ease;position:relative;user-select:none">';
+  
+  // Drag handle - questo è l'UNICO elemento draggable
+  html += '<div class="fav-drag-handle" draggable="true" title="Trascina per riordinare" '+
+          'style="position:absolute;top:6px;right:8px;color:#5a8098;font-size:18px;cursor:grab;padding:4px 6px;border-radius:4px;line-height:1;user-select:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">⋮⋮</div>';
+  
+  // Header
+  html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-right:36px">';
+  html += '<span style="color:#f0c040">★</span>';
+  html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nameDisp+'</div>';
+  html += '</div>';
+  
+  if(!loc){
+    html += '<div style="font-size:11px;color:#ff6060">⚠️ Località non trovata</div>';
+    html += '</div>';
+    return html;
+  }
+  
+  if(!data || !data.D){
+    html += '<div style="font-size:11px;color:#3a6080;padding:14px 0;text-align:center">⏳ Premi "Aggiorna tutti" per caricare i dati</div>';
+    html += '<div style="display:flex;gap:6px;margin-top:6px">';
+    html += '<button data-action="open" data-name="'+nameAttr+'" style="flex:1;padding:6px 10px;background:rgba(25,110,190,.2);color:#80c0f0;border:1px solid rgba(25,110,190,.3);border-radius:6px;font-size:11px;cursor:pointer;font-weight:700">📊 Apri</button>';
+    html += '<button data-action="remove" data-name="'+nameAttr+'" style="padding:6px 10px;background:rgba(183,28,28,.15);color:#ff8080;border:1px solid rgba(183,28,28,.25);border-radius:6px;font-size:11px;cursor:pointer">✕</button>';
+    html += '</div></div>';
+    return html;
+  }
+  
+  // Render dati
+  var h = data.D.hourly, m = data.Mr ? data.Mr.hourly : null, vi = data.vi;
+  var wk = h.wind_speed_10m[vi]||0;
+  var wg = h.wind_gusts_10m[vi]||0;
+  var wd = h.wind_direction_10m[vi];
+  var wh = m ? m.wave_height?.[vi] : null;
+  var pr = h.pressure_msl[vi]||0;
+  var cp = h.cape?.[vi]||0;
+  var rr = h.precipitation?.[vi]||0;
+  var cl = h.cloud_cover[vi]||0;
+  var bf = BF(wk);
+  var se = SE(wh);
+  var pt = PT(h.pressure_msl, vi);
+  var vs = VI(h.relative_humidity_2m[vi], rr, cl);
+  var g = GG(wk, wh||0, cp, vs, rr);
+  
+  // Verdetto/semaforo
+  html += '<div style="background:'+g.b+';border:1px solid '+g.c+'30;border-radius:8px;padding:6px 10px;margin-bottom:8px;font-size:11px;font-weight:700;color:'+g.c+'">'+g.l+'</div>';
+  
+  // Mini stats grid
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">';
+  
+  // Vento
+  html += '<div style="background:rgba(255,255,255,.03);padding:6px 8px;border-radius:6px">'+
+          '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">💨 Vento</div>'+
+          '<div style="font-size:14px;font-weight:700;color:'+bf.c+'">'+Math.round(wk)+' kn <span style="font-size:10px;color:#5a8098;font-weight:400">'+WN(wd)+'</span></div>'+
+          '<div style="font-size:9px;color:#5a8098">F'+bf.f+' • raff '+Math.round(wg)+'kn</div>'+
+          '</div>';
+  
+  // Mare
+  html += '<div style="background:rgba(255,255,255,.03);padding:6px 8px;border-radius:6px">'+
+          '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">🌊 Mare</div>'+
+          '<div style="font-size:14px;font-weight:700;color:'+se.c+'">'+(wh!=null?wh.toFixed(1)+' m':'—')+'</div>'+
+          '<div style="font-size:9px;color:#5a8098">'+se.d+'</div>'+
+          '</div>';
+  
+  // Pressione
+  html += '<div style="background:rgba(255,255,255,.03);padding:6px 8px;border-radius:6px">'+
+          '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">📊 hPa</div>'+
+          '<div style="font-size:14px;font-weight:700;color:#e4f0fa">'+pr.toFixed(0)+'</div>'+
+          '<div style="font-size:9px;color:'+pt.c+'">'+pt.i+' '+pt.t.split('(')[0].trim()+'</div>'+
+          '</div>';
+  
+  // CAPE
+  html += '<div style="background:rgba(255,255,255,.03);padding:6px 8px;border-radius:6px">'+
+          '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">⚡ CAPE</div>'+
+          '<div style="font-size:14px;font-weight:700;color:'+(cp>=1500?"#ff5050":cp>=500?"#f0a040":"#7ecfa0")+'">'+cp+'</div>'+
+          '<div style="font-size:9px;color:#5a8098">'+(cp>=1500?"Temporali":cp>=500?"Moderato":"Stabile")+'</div>'+
+          '</div>';
+  
+  html += '</div>';
+  
+  // Footer con pulsanti
+  html += '<div style="display:flex;gap:6px;margin-top:8px">';
+  html += '<button data-action="open" data-name="'+nameAttr+'" style="flex:1;padding:6px 10px;background:rgba(25,110,190,.2);color:#80c0f0;border:1px solid rgba(25,110,190,.3);border-radius:6px;font-size:11px;cursor:pointer;font-weight:700">📊 Dettagli</button>';
+  html += '<button data-action="remove" data-name="'+nameAttr+'" style="padding:6px 10px;background:rgba(183,28,28,.15);color:#ff8080;border:1px solid rgba(183,28,28,.25);border-radius:6px;font-size:11px;cursor:pointer">✕</button>';
+  html += '</div>';
+  
+  html += '</div>'; // fine .fav-card
+  return html;
+}
+
+function selectFavAndLoad(name){
+  z = Z.find(function(x){return x.n===name;});
+  if(!z) return;
+  document.getElementById('zS').value = name;
+  updateFavBtn();
+  // Vai alla tab Attuale e carica
+  document.querySelectorAll('.t')[0].click();
+  setTimeout(function(){ ld(); }, 100);
+}
+
+function removeFav(name){
+  var favs = getFavs();
+  var idx = favs.indexOf(name);
+  if(idx >= 0){
+    favs.splice(idx, 1);
+    saveFavs(favs);
+    delete _favDashData[name];
+    updateFavBtn();
+    updateFavsList();
+    renderFavsDashboard();
+  }
+}
+
+async function loadAllFavsData(){
+  var favs = getFavs();
+  if(favs.length === 0) return;
+  
+  var btn = document.querySelector('[onclick="loadAllFavsData()"]');
+  var origText = btn ? btn.textContent : '';
+  if(btn){ btn.textContent = '⏳ Caricamento...'; btn.disabled = true; }
+  
+  var promises = favs.map(function(name){
+    var loc = Z.find(function(x){return x.n===name;});
+    if(!loc) return Promise.resolve();
+    return fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.a+'&longitude='+loc.o+'&hourly=temperature_2m,relative_humidity_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape&forecast_days=2&wind_speed_unit=kn&timezone=Europe%2FRome')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        return fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+loc.a+'&longitude='+loc.o+'&hourly=wave_height,wave_direction,wave_period&forecast_days=2&timezone=Europe%2FRome')
+          .then(function(r2){ return r2.ok ? r2.json() : null; })
+          .catch(function(){ return null; })
+          .then(function(mrData){
+            var now = new Date(), viIdx = 0;
+            for(var i=0;i<data.hourly.time.length;i++){
+              if(new Date(data.hourly.time[i]) <= now) viIdx = i;
+            }
+            _favDashData[name] = {D: data, Mr: mrData, vi: viIdx};
+          });
+      })
+      .catch(function(e){ console.error('Errore caricamento '+name, e); });
+  });
+  
+  await Promise.all(promises);
+  if(btn){ btn.textContent = origText; btn.disabled = false; }
+  renderFavsDashboard();
+}
+
+/* === Drag & Drop per riordinare le card === */
+var _dragSrc = null;
+
+function attachDragHandlers(){
+  // Event delegation per i pulsanti azione (Apri/Dettagli/✕)
+  // Usa data-action + data-name → evita problemi con apostrofi nei nomi
+  var grid = document.getElementById('favCardsGrid');
+  if(!grid) return;
+  
+  if(!grid._actionAttached){
+    grid._actionAttached = true;
+    grid.addEventListener('click', function(e){
+      var btn = e.target.closest('button[data-action]');
+      if(!btn) return;
+      e.stopPropagation();
+      var action = btn.dataset.action;
+      var name = btn.dataset.name;
+      // Decodifica HTML entities (es. &#39; → ')
+      var ta = document.createElement('textarea');
+      ta.innerHTML = name;
+      name = ta.value;
+      if(action === 'open') selectFavAndLoad(name);
+      else if(action === 'remove') removeFav(name);
+    });
+  }
+  
+  // ===== DRAG & DROP =====
+  // Strategia: il drag PARTE solo dall'handle "⋮⋮" (è l'unico draggable=true),
+  // ma il DROP avviene su tutta la card (target più ampio, più facile da usare).
+  
+  var handles = grid.querySelectorAll('.fav-drag-handle');
+  var cards = grid.querySelectorAll('.fav-card');
+  
+  handles.forEach(function(handle){
+    var card = handle.closest('.fav-card');
+    if(!card) return;
+    
+    // ---- DESKTOP: HTML5 Drag & Drop API (parte dall'handle) ----
+    handle.addEventListener('dragstart', function(e){
+      _dragSrc = card;
+      card.style.opacity = '0.4';
+      card.style.borderColor = 'rgba(80,160,240,.4)';
+      handle.style.cursor = 'grabbing';
+      e.dataTransfer.effectAllowed = 'move';
+      try{ e.dataTransfer.setData('text/plain', card.dataset.name); }catch(_){}
+    });
+    
+    handle.addEventListener('dragend', function(){
+      card.style.opacity = '';
+      handle.style.cursor = 'grab';
+      grid.querySelectorAll('.fav-card').forEach(function(c){
+        c.style.borderColor = '';
+        c.style.transform = '';
+      });
+      _dragSrc = null;
+    });
+  });
+  
+  cards.forEach(function(card){
+    // ---- DROP TARGET (su tutta la card) ----
+    card.addEventListener('dragover', function(e){
+      if(!_dragSrc) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if(card !== _dragSrc){
+        card.style.borderColor = 'rgba(80,160,240,.7)';
+        card.style.transform = 'scale(1.02)';
+      }
+    });
+    
+    card.addEventListener('dragleave', function(e){
+      // Evita reset se il mouse passa sopra figli interni
+      if(e.relatedTarget && card.contains(e.relatedTarget)) return;
+      card.style.borderColor = '';
+      card.style.transform = '';
+    });
+    
+    card.addEventListener('drop', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      card.style.borderColor = '';
+      card.style.transform = '';
+      if(_dragSrc && _dragSrc !== card){
+        reorderFavs(_dragSrc.dataset.name, card.dataset.name);
+      }
+      return false;
+    });
+    
+    // ---- TOUCH: drag con dito SOLO dall'handle ----
+    var handle = card.querySelector('.fav-drag-handle');
+    if(!handle) return;
+    
+    var touchStartY = 0, touchStartX = 0;
+    var ghostEl = null;
+    var touchActive = false;
+    
+    handle.addEventListener('touchstart', function(e){
+      var t = e.touches[0];
+      touchStartY = t.clientY;
+      touchStartX = t.clientX;
+      _dragSrc = card;
+      touchActive = true;
+    }, {passive: true});
+    
+    handle.addEventListener('touchmove', function(e){
+      if(!touchActive || !_dragSrc) return;
+      var t = e.touches[0];
+      var dy = t.clientY - touchStartY;
+      var dx = t.clientX - touchStartX;
+      // Solo dopo 6px di movimento attiva drag
+      if(Math.abs(dy) < 6 && Math.abs(dx) < 6) return;
+      e.preventDefault();
+      
+      if(!ghostEl){
+        card.style.opacity = '0.3';
+        ghostEl = card.cloneNode(true);
+        ghostEl.style.cssText += ';position:fixed;pointer-events:none;z-index:9999;width:'+card.offsetWidth+'px;opacity:0.9;transform:rotate(2deg);box-shadow:0 8px 24px rgba(0,0,0,.6)';
+        document.body.appendChild(ghostEl);
+      }
+      ghostEl.style.left = (t.clientX - card.offsetWidth/2) + 'px';
+      ghostEl.style.top = (t.clientY - 30) + 'px';
+      
+      // Trova card sotto il dito
+      ghostEl.style.display = 'none';
+      var elBelow = document.elementFromPoint(t.clientX, t.clientY);
+      ghostEl.style.display = '';
+      var cardBelow = elBelow ? elBelow.closest('.fav-card') : null;
+      grid.querySelectorAll('.fav-card').forEach(function(c){
+        c.style.borderColor = '';
+        c.style.transform = '';
+      });
+      if(cardBelow && cardBelow !== card){
+        cardBelow.style.borderColor = 'rgba(80,160,240,.7)';
+        cardBelow.style.transform = 'scale(1.02)';
+      }
+    }, {passive: false});
+    
+    handle.addEventListener('touchend', function(e){
+      if(ghostEl){
+        var t = e.changedTouches[0];
+        ghostEl.style.display = 'none';
+        var elBelow = document.elementFromPoint(t.clientX, t.clientY);
+        ghostEl.style.display = '';
+        var cardBelow = elBelow ? elBelow.closest('.fav-card') : null;
+        if(cardBelow && cardBelow !== card){
+          reorderFavs(card.dataset.name, cardBelow.dataset.name);
+        }
+        ghostEl.remove();
+        ghostEl = null;
+        card.style.opacity = '';
+      }
+      grid.querySelectorAll('.fav-card').forEach(function(c){
+        c.style.borderColor = '';
+        c.style.transform = '';
+      });
+      _dragSrc = null;
+      touchActive = false;
+    });
+    
+    handle.addEventListener('touchcancel', function(){
+      if(ghostEl){ ghostEl.remove(); ghostEl = null; }
+      card.style.opacity = '';
+      grid.querySelectorAll('.fav-card').forEach(function(c){
+        c.style.borderColor = '';
+        c.style.transform = '';
+      });
+      _dragSrc = null;
+      touchActive = false;
+    });
+  });
+}
+
+function reorderFavs(srcName, dstName){
+  var favs = getFavs();
+  var srcIdx = favs.indexOf(srcName);
+  var dstIdx = favs.indexOf(dstName);
+  if(srcIdx < 0 || dstIdx < 0) return;
+  // Sposta srcName dalla sua posizione a quella di dstName
+  favs.splice(srcIdx, 1);
+  favs.splice(dstIdx, 0, srcName);
+  saveFavs(favs);
+  updateFavsList();
+  renderFavsDashboard();
+}
+
+/* ============================================================
+   ===== SUB-STEP 2a — ALLARME FRONTE + FRONTI MIGLIORATI =====
+   ============================================================
+   1) FRONT_SVG()     → simboli meteorologici SVG (standard ICAO/WMO)
+   2) FRONT_ADVICE()  → suggerimento operativo per ogni tipo
+   3) detectIncomingFront() → scansiona 48h per trovare il primo fronte
+   4) updateFrontAlertBanner() → banner sticky cliccabile
+   ============================================================ */
+
+/* ===== SIMBOLI METEOROLOGICI SVG ===== */
+/* Restituisce SVG inline del simbolo standard per ogni tipo di fronte.
+   - Fronte FREDDO  → triangoli blu rivolti verso il basso
+   - Fronte CALDO   → semicerchi rossi rivolti verso il basso
+   - OCCLUSIONE FREDDA → triangoli blu + semicerchi blu alternati (linea viola)
+   - OCCLUSIONE CALDA  → triangoli rossi + semicerchi rossi (linea viola)
+   Convenzione: i simboli sono nella direzione di movimento del fronte. */
+function FRONT_SVG(typeStr, size){
+  typeStr = (typeStr||'').toUpperCase();
+  size = size || 50;
+  var w = size * 1.6, h = size;
+  // Calcolo proporzioni
+  var lineY = h * 0.6;
+  var symbolY = lineY;
+  var triH = h * 0.32;
+  var semR = h * 0.22;
+  
+  var svg = '<svg viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" style="display:block;width:'+w+'px;height:'+h+'px">';
+  
+  if(typeStr.indexOf('OCCLUS') >= 0){
+    // OCCLUSIONE: linea viola con triangoli e semicerchi alternati
+    var isWarm = typeStr.indexOf('CALDA') >= 0;
+    var sym1Color = isWarm ? '#c62828' : '#1565c0';
+    var sym2Color = sym1Color;
+    var lineColor = '#7b1fa2';
+    // Linea base
+    svg += '<line x1="2" y1="'+lineY+'" x2="'+(w-2)+'" y2="'+lineY+'" stroke="'+lineColor+'" stroke-width="3.5" stroke-linecap="round"/>';
+    // Triangolo a sinistra
+    var x1 = w * 0.18;
+    svg += '<polygon points="'+(x1-triH*0.7)+','+lineY+' '+(x1+triH*0.7)+','+lineY+' '+x1+','+(lineY-triH)+'" fill="'+sym1Color+'"/>';
+    // Semicerchio a destra
+    var x2 = w * 0.62;
+    svg += '<path d="M '+(x2-semR)+','+lineY+' A '+semR+' '+semR+' 0 0 1 '+(x2+semR)+','+lineY+'" fill="'+sym2Color+'"/>';
+    // Triangolo all'estrema destra (più piccolo)
+    var x3 = w * 0.88;
+    var triH2 = triH*0.85;
+    svg += '<polygon points="'+(x3-triH2*0.6)+','+lineY+' '+(x3+triH2*0.6)+','+lineY+' '+x3+','+(lineY-triH2)+'" fill="'+sym1Color+'"/>';
+  }
+  else if(typeStr.indexOf('FREDDO') >= 0 || typeStr.indexOf('COLD') >= 0){
+    // FRONTE FREDDO: triangoli blu
+    svg += '<line x1="2" y1="'+lineY+'" x2="'+(w-2)+'" y2="'+lineY+'" stroke="#1565c0" stroke-width="3.5" stroke-linecap="round"/>';
+    var xs = [w*0.18, w*0.45, w*0.72];
+    xs.forEach(function(x){
+      svg += '<polygon points="'+(x-triH*0.7)+','+lineY+' '+(x+triH*0.7)+','+lineY+' '+x+','+(lineY-triH)+'" fill="#1565c0"/>';
+    });
+  }
+  else if(typeStr.indexOf('CALDO') >= 0 || typeStr.indexOf('WARM') >= 0){
+    // FRONTE CALDO: semicerchi rossi
+    svg += '<line x1="2" y1="'+lineY+'" x2="'+(w-2)+'" y2="'+lineY+'" stroke="#c62828" stroke-width="3.5" stroke-linecap="round"/>';
+    var xs2 = [w*0.18, w*0.45, w*0.72];
+    xs2.forEach(function(x){
+      svg += '<path d="M '+(x-semR)+','+lineY+' A '+semR+' '+semR+' 0 0 1 '+(x+semR)+','+lineY+'" fill="#c62828"/>';
+    });
+  }
+  else {
+    // Fallback: solo linea grigia con punto interrogativo
+    svg += '<line x1="2" y1="'+lineY+'" x2="'+(w-2)+'" y2="'+lineY+'" stroke="#5a8098" stroke-width="2.5" stroke-dasharray="5,4"/>';
+    svg += '<text x="'+(w/2)+'" y="'+(lineY-6)+'" text-anchor="middle" fill="#5a8098" font-size="'+(h*0.4)+'" font-weight="bold">?</text>';
+  }
+  
+  svg += '</svg>';
+  return svg;
+}
+
+/* ===== SUGGERIMENTI OPERATIVI ===== */
+function FRONT_ADVICE(typeStr){
+  typeStr = (typeStr||'').toUpperCase();
+  if(typeStr.indexOf('OCCLUSIONE CALDA') >= 0)
+    return 'Il più insidioso: l\'aspetto è "caldo" ma può nascondere temporali embedded. <b>Massima cautela</b>, non fidarti della pressione che sale. Stai in radio, ritarda la partenza.';
+  if(typeStr.indexOf('OCCLUSIONE FREDDA') >= 0)
+    return 'Aspetta che passi: rovesci intensi senza pausa e raffiche violente. <b>Rinvia l\'uscita</b> di 6-12h finché il vento non gira stabilmente.';
+  if(typeStr.indexOf('FRONTE FREDDO') >= 0 || typeStr.indexOf('POSS.FRONTE FREDDO') >= 0)
+    return 'Passaggio rapido ma intenso: <b>riduci vela, prepara i terzaroli</b>, controlla che tutto sia sicuro sopra coperta. Dopo il passaggio (1-3h) il tempo migliora rapidamente.';
+  if(typeStr.indexOf('FRONTE CALDO') >= 0 || typeStr.indexOf('POSS.FRONTE CALDO') >= 0)
+    return 'Peggioramento graduale ma prolungato: <b>visibilità ridotta</b> per molte ore (Ns). Se devi partire, fallo prima dell\'arrivo, altrimenti aspetta.';
+  return null;
+}
+
+/* ===== RILEVAMENTO FRONTE NELLE PROSSIME 48h ===== */
+/* Scansiona i dati orari dalla posizione attuale (vi) fino a +48h.
+   Per ogni ora calcola AF() e tiene traccia del PRIMO fronte rilevato.
+   Restituisce: null se nessun fronte, altrimenti
+   { type, color, advice, hoursAhead, atTime, severity } */
+function detectIncomingFront(){
+  if(!D || !D.hourly) return null;
+  var h = D.hourly;
+  var maxHours = Math.min(48, h.time.length - vi - 1);
+  // 1) Cerca fronte conclamato (fa.fr presente)
+  for(var off = 0; off <= maxHours; off++){
+    var i = vi + off;
+    var fa = AF(h, i);
+    if(fa && fa.fr){
+      var t = new Date(h.time[i]);
+      var sev = fa.lv === '🔴' ? 'high' : fa.lv === '🟡' ? 'medium' : 'low';
+      return {
+        type: fa.fr.t,
+        description: fa.fr.d,
+        color: fa.fr.c,
+        advice: FRONT_ADVICE(fa.fr.t),
+        hoursAhead: off,
+        atTime: t,
+        atTimeStr: t.toLocaleString('it-IT',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+        severity: sev,
+        signals: fa.sg
+      };
+    }
+  }
+  return null;
+}
+
+/* ===== BANNER STICKY ALLARME FRONTE ===== */
+function updateFrontAlertBanner(){
+  var banner = document.getElementById('frontAlertBanner');
+  if(!banner) return;
+  
+  var front = detectIncomingFront();
+  if(!front){
+    banner.style.display = 'none';
+    banner.innerHTML = '';
+    return;
+  }
+  
+  // Calcola "tempo umano" (oggi/domani + ora)
+  var humanTime;
+  if(front.hoursAhead === 0) humanTime = 'ora';
+  else if(front.hoursAhead <= 2) humanTime = '~'+front.hoursAhead+'h';
+  else if(front.hoursAhead <= 6) humanTime = 'tra ~'+front.hoursAhead+'h';
+  else if(front.hoursAhead <= 12) humanTime = 'tra ~12h';
+  else if(front.hoursAhead <= 24) humanTime = 'entro 24h';
+  else if(front.hoursAhead <= 36) humanTime = 'tra 24-36h';
+  else humanTime = 'tra '+front.hoursAhead+'h';
+  
+  // Colore intensità in base a quanto è vicino il fronte
+  var bgIntensity, pulseClass = '';
+  if(front.hoursAhead <= 6){ bgIntensity = '40'; pulseClass = ' front-alert-pulse'; }
+  else if(front.hoursAhead <= 24) bgIntensity = '25';
+  else bgIntensity = '15';
+  
+  var svg = FRONT_SVG(front.type, 32);
+  
+  var html = '<div onclick="goToFrontiTab()" class="'+pulseClass.trim()+'" style="display:flex;align-items:center;gap:12px;padding:8px 14px;background:linear-gradient(90deg,'+front.color+bgIntensity+','+front.color+'15);border:1px solid '+front.color+'60;border-radius:10px;cursor:pointer">';
+  html += '<div style="flex-shrink:0;display:flex;align-items:center">'+svg+'</div>';
+  html += '<div style="flex:1;min-width:0">';
+  html += '<div style="font-size:10px;color:'+front.color+';font-weight:700;letter-spacing:1.5px;text-transform:uppercase;line-height:1">⚠️ Allarme fronte</div>';
+  html += '<div style="font-size:14px;font-weight:800;color:#e8f4ff;line-height:1.2;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:'+front.color+'">'+front.type+'</span> <span style="color:#90a8b8;font-weight:500">·</span> '+humanTime+'</div>';
+  html += '</div>';
+  html += '<div style="flex-shrink:0;font-size:11px;color:'+front.color+';font-weight:700;white-space:nowrap">Dettagli ›</div>';
+  html += '</div>';
+  
+  banner.innerHTML = html;
+  banner.style.display = 'block';
+}
+
+/* Helper: clicca sulla tab Fronti */
+function goToFrontiTab(){
+  var tabs = document.querySelectorAll('.t');
+  for(var i = 0; i < tabs.length; i++){
+    if(tabs[i].textContent.indexOf('Fronti') >= 0){
+      tabs[i].click();
+      // Scrolla in cima alla tab
+      setTimeout(function(){ window.scrollTo({top: 0, behavior: 'smooth'}); }, 100);
+      return;
+    }
+  }
+}
+
+/* Hook: aggiorna banner ogni volta che vengono caricati nuovi dati.
+   Si aggancia alla funzione rn() esistente con un MutationObserver leggero
+   sull'elemento #vd, che viene aggiornato a ogni ld()/rn(). */
+(function setupFrontAlertHook(){
+  var tryInit = setInterval(function(){
+    var vd = document.getElementById('vd');
+    if(!vd) return;
+    clearInterval(tryInit);
+    var obs = new MutationObserver(function(){
+      try{ updateFrontAlertBanner(); }catch(e){ console.warn('Front alert update error:', e); }
+    });
+    obs.observe(vd, {childList: true, subtree: true});
+    // Tenta anche un primo update iniziale (se i dati sono già caricati)
+    setTimeout(function(){ try{ updateFrontAlertBanner(); }catch(_){} }, 500);
+  }, 200);
+})();
+
+/* ===== DETTAGLIO ALLARME FRONTE NELLA TAB ATTUALE ===== */
+/* Inserisce, in alto alla tab Attuale, una card grande con i dettagli
+   completi del fronte rilevato. Si aggancia al rendering di pN. */
+(function setupFrontDetailCard(){
+  var tryInit = setInterval(function(){
+    var pN = document.getElementById('pN');
+    if(!pN) return;
+    clearInterval(tryInit);
+    var obs = new MutationObserver(function(mut){
+      // Evita loop: skippa se l'osservatore stesso ha appena inserito la card
+      var hasCard = pN.querySelector('#frontDetailCard');
+      if(hasCard) return;
+      try{ injectFrontDetailCard(); }catch(e){ console.warn('Front detail inject error:', e); }
+    });
+    obs.observe(pN, {childList: true});
+  }, 200);
+})();
+
+function injectFrontDetailCard(){
+  var front = detectIncomingFront();
+  var pN = document.getElementById('pN');
+  if(!pN) return;
+  var existing = pN.querySelector('#frontDetailCard');
+  if(existing) existing.remove();
+  if(!front) return;
+  
+  var humanTime;
+  if(front.hoursAhead === 0) humanTime = 'ORA';
+  else if(front.hoursAhead <= 6) humanTime = 'TRA ~'+front.hoursAhead+'h';
+  else if(front.hoursAhead <= 12) humanTime = 'TRA ~12h';
+  else if(front.hoursAhead <= 24) humanTime = 'ENTRO 24h';
+  else if(front.hoursAhead <= 36) humanTime = 'TRA 24-36h';
+  else humanTime = 'TRA '+front.hoursAhead+'h';
+  
+  var svg = FRONT_SVG(front.type, 56);
+  
+  var html = '<div id="frontDetailCard" style="margin-bottom:14px;padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,'+front.color+'30,'+front.color+'10);border:2px solid '+front.color+'70;box-shadow:0 4px 20px '+front.color+'20">';
+  
+  // Header con icona e titolo
+  html += '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">';
+  html += '<div style="flex-shrink:0">'+svg+'</div>';
+  html += '<div style="flex:1;min-width:200px">';
+  html += '<div style="font-size:11px;color:'+front.color+';font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">⚠️ Allarme fronte in avvicinamento</div>';
+  html += '<div style="font-size:22px;font-weight:900;color:'+front.color+';line-height:1.1">'+front.type+'</div>';
+  html += '<div style="font-size:12px;color:#d0dce8;margin-top:4px;line-height:1.4">'+front.description+'</div>';
+  html += '</div></div>';
+  
+  // Riga ETA + ora stimata
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">';
+  html += '<div style="flex:1;min-width:140px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid '+front.color+'40">';
+  html += '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Quando</div>';
+  html += '<div style="font-size:17px;font-weight:800;color:'+front.color+'">'+humanTime+'</div>';
+  html += '<div style="font-size:10px;color:#90a8b8;margin-top:2px">'+front.atTimeStr+'</div>';
+  html += '</div>';
+  html += '<div style="flex:1;min-width:140px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)">';
+  html += '<div style="font-size:9px;color:#5a8098;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Severità stimata</div>';
+  var sevLabel = front.severity==='high'?'🔴 Alta':front.severity==='medium'?'🟡 Media':'🟢 Bassa';
+  var sevColor = front.severity==='high'?'#ff6060':front.severity==='medium'?'#f0a040':'#7ecfa0';
+  html += '<div style="font-size:17px;font-weight:800;color:'+sevColor+'">'+sevLabel+'</div>';
+  html += '<div style="font-size:10px;color:#90a8b8;margin-top:2px">'+front.signals.length+' segnali rilevati</div>';
+  html += '</div>';
+  html += '</div>';
+  
+  // Suggerimento operativo
+  if(front.advice){
+    html += '<div style="padding:10px 14px;border-radius:10px;background:rgba(240,160,64,.12);border:1px solid rgba(240,160,64,.3);display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">';
+    html += '<div style="font-size:18px;flex-shrink:0">⚓</div>';
+    html += '<div style="flex:1"><div style="font-size:10px;color:#f0a040;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px">Cosa fare</div>';
+    html += '<div style="font-size:12px;color:#e8d0a0;line-height:1.5">'+front.advice+'</div></div></div>';
+  }
+  
+  // Pulsante azione
+  html += '<div style="text-align:right"><button onclick="goToFrontiTab()" style="padding:8px 16px;background:'+front.color+'30;color:#e8f4ff;border:1px solid '+front.color+'60;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">🌀 Vai all\'analisi completa</button></div>';
+  
+  html += '</div>';
+  
+  // Inserisci all'inizio di pN
+  var temp = document.createElement('div');
+  temp.innerHTML = html;
+  pN.insertBefore(temp.firstChild, pN.firstChild);
+}
+
+/* ============================================================
+   ===== SUB-STEP 2b — CARTE SINOTTICHE MET OFFICE UK =========
+   ============================================================
+   Carica le carte di pressione superficiale dal CDN ufficiale
+   del UK Met Office (data.consumer-digital.api.metoffice.gov.uk).
+   
+   URL pattern dedotti dalla pagina ufficiale:
+     COLORE: .../v1/surface-pressure/colour/{YYYY-MM-DD}T{HHMM}/FSXX00T_{NN}.gif
+     B&N:    .../v1/surface-pressure/bw/{YYYY-MM-DD}T{HHMM}/0000_ASXX_Assistant_FC{NNN}.gif
+   
+   Dove:
+     {YYYY-MM-DD}T{HHMM} = emissione (00:00 o 12:00 UTC) più recente
+     {NN}  = ore previsione: 00 (analisi), 12, 24, 36, 48, 60, 72, 96, 120
+     {NNN} = come {NN} ma a 3 cifre: 000, 012, 024, 036, 048, 060, 072, 096, 120
+   
+   Aggiornamenti Met Office: ogni 12h alle 07:30 e 19:30 UTC.
+   
+   Strategia: l'utente vede l'immagine via <img src>. Se fallisce
+   il caricamento, proviamo automaticamente l'emissione precedente.
+   ============================================================ */
+
+/* Stato globale Sinottica */
+var _syState = {
+  mode: 'colour',      // 'colour' o 'bw' (default colore)
+  idx: 0,              // indice corrente (0 = T+0 analisi)
+  issueOffset: 0,      // 0 = emissione più recente; +1 = quella precedente (fallback)
+  builtOnce: false
+};
+
+/* Ore di previsione disponibili sul Met Office */
+var SY_FORECAST_HOURS = [0, 24, 36, 48, 60, 72, 96, 120];
+
+/* Etichette user-friendly */
+var SY_LABELS = {
+  0:   'Analisi (ora attuale)',
+  24:  'Previsione +24h',
+  36:  'Previsione +36h',
+  48:  'Previsione +48h',
+  60:  'Previsione +60h',
+  72:  'Previsione +72h (3 giorni)',
+  96:  'Previsione +96h (4 giorni)',
+  120: 'Previsione +120h (5 giorni)'
+};
+
+/* Calcola l'emissione Met Office più recente da usare.
+   Il Met Office aggiorna alle 07:30 UTC (emissione 00z) e alle 19:30 UTC (emissione 12z).
+   offset 0 = ultima disponibile, +1 = precedente (fallback se 0 non c'è ancora), ecc. */
+function getMetOfficeIssue(offset){
+  offset = offset || 0;
+  var now = new Date();
+  var utcH = now.getUTCHours();
+  var utcM = now.getUTCMinutes();
+  var utcD = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  
+  // Determina l'emissione più recente "disponibile"
+  // 07:30 UTC → emissione 00z di oggi
+  // 19:30 UTC → emissione 12z di oggi
+  var issues = [];
+  // Aggiungo le ultime 6 emissioni possibili (per fallback robusto)
+  for(var d = 0; d <= 3; d++){
+    var dayMs = utcD.getTime() - d * 86400000;
+    var dayDate = new Date(dayMs);
+    var Y = dayDate.getUTCFullYear();
+    var M = String(dayDate.getUTCMonth()+1).padStart(2,'0');
+    var D = String(dayDate.getUTCDate()).padStart(2,'0');
+    // 12z
+    issues.push({y:Y, m:M, d:D, h:'1200', ts: dayMs + 12*3600000});
+    // 00z
+    issues.push({y:Y, m:M, d:D, h:'0000', ts: dayMs});
+  }
+  // Ordina dal più recente al più vecchio
+  issues.sort(function(a,b){ return b.ts - a.ts; });
+  // Filtra solo quelle che dovrebbero essere già pubblicate (con margine 30 min)
+  var nowTs = now.getTime();
+  var available = issues.filter(function(iss){
+    // Emissione 00z pubblicata ~07:30 UTC dello stesso giorno
+    // Emissione 12z pubblicata ~19:30 UTC dello stesso giorno
+    var publishTs = iss.ts + (iss.h === '0000' ? 7.5 : 7.5) * 3600000;
+    return publishTs <= nowTs;
+  });
+  return available[offset] || available[0] || issues[0];
+}
+
+/* Costruisce URL Met Office per una data emissione + ore previsione + modo */
+function buildSynopticUrl(issue, fHours, mode){
+  var datePart = issue.y + '-' + issue.m + '-' + issue.d + 'T' + issue.h;
+  if(mode === 'bw'){
+    var fff = String(fHours).padStart(3,'0');
+    return 'https://data.consumer-digital.api.metoffice.gov.uk/v1/surface-pressure/bw/' + datePart + '/0000_ASXX_Assistant_FC' + fff + '.gif';
+  } else {
+    var ff = String(fHours).padStart(2,'0');
+    return 'https://data.consumer-digital.api.metoffice.gov.uk/v1/surface-pressure/colour/' + datePart + '/FSXX00T_' + ff + '.gif';
+  }
+}
+
+/* Formatta emissione per visualizzazione utente */
+function formatIssue(issue){
+  return issue.d + '/' + issue.m + '/' + issue.y + ' ' + issue.h.substring(0,2) + ':' + issue.h.substring(2) + ' UTC';
+}
+
+/* Costruisce il timestamp di validità della carta (emissione + ore previsione) */
+function formatValidTime(issue, fHours){
+  var baseTs = Date.UTC(
+    parseInt(issue.y), parseInt(issue.m)-1, parseInt(issue.d),
+    parseInt(issue.h.substring(0,2)), parseInt(issue.h.substring(2))
+  );
+  var validTs = baseTs + fHours * 3600000;
+  var d = new Date(validTs);
+  // Format italiano con timezone locale dell'utente
+  return d.toLocaleString('it-IT', {
+    weekday: 'short', day: 'numeric', month: 'short',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+/* Entry point quando si clicca sulla tab Sinottica */
+function bzSy(){
+  try{
+    renderSynopticUI();
+  } catch(e){
+    document.getElementById('pSy').innerHTML = '<div style="color:#ff6060;padding:20px">Errore: '+e.message+'</div>';
+    console.error('bzSy error:', e);
+  }
+}
+
+/* Rendering principale UI Sinottica */
+function renderSynopticUI(){
+  var el = document.getElementById('pSy');
+  if(!el) return;
+  
+  var fHours = SY_FORECAST_HOURS[_syState.idx];
+  var issue = getMetOfficeIssue(_syState.issueOffset);
+  var url = buildSynopticUrl(issue, fHours, _syState.mode);
+  var label = SY_LABELS[fHours] || ('T+' + fHours);
+  var validTime = formatValidTime(issue, fHours);
+  var issueStr = formatIssue(issue);
+  
+  var html = '';
+  
+  // Intro
+  html += '<div style="margin-bottom:14px">';
+  html += '<div style="font-size:13px;font-weight:700;color:#e8f4ff;margin-bottom:4px">🗺️ Carte Sinottiche — UK Met Office</div>';
+  html += '<div style="font-size:11px;color:#3a6080">Pressione superficiale del Nord Atlantico ed Europa con fronti meteorologici disegnati a mano dagli analisti del Met Office. Aggiornamento ogni 12 ore.</div>';
+  html += '</div>';
+  
+  // Toolbar: switch colore/B&N + selettore tempo
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center">';
+  
+  // Switch colore/B&N
+  html += '<div style="display:inline-flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:2px;gap:2px">';
+  html += '<button onclick="syToggleMode(\'colour\')" style="padding:6px 12px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;background:'+(_syState.mode==='colour'?'rgba(25,110,190,.4)':'transparent')+';color:'+(_syState.mode==='colour'?'#e8f4ff':'#5a8098')+'">🎨 Colore</button>';
+  html += '<button onclick="syToggleMode(\'bw\')" style="padding:6px 12px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;background:'+(_syState.mode==='bw'?'rgba(25,110,190,.4)':'transparent')+';color:'+(_syState.mode==='bw'?'#e8f4ff':'#5a8098')+'">⚫ B&N</button>';
+  html += '</div>';
+  
+  // Selettore tempo (tendina)
+  html += '<select id="sySelect" onchange="syGoTo(parseInt(this.value))" style="background:rgba(255,255,255,.06);color:#a0c8e0;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px;flex:1;min-width:200px;max-width:300px">';
+  SY_FORECAST_HOURS.forEach(function(h, i){
+    html += '<option value="'+i+'"'+(i===_syState.idx?' selected':'')+'>'+SY_LABELS[h]+'</option>';
+  });
+  html += '</select>';
+  
+  // Pulsante apri originale
+  html += '<a href="https://weather.metoffice.gov.uk/maps-and-charts/surface-pressure" target="_blank" rel="noopener" style="padding:6px 12px;background:rgba(255,255,255,.04);color:#80c0f0;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:11px;text-decoration:none;font-weight:700;white-space:nowrap">Met Office ↗</a>';
+  
+  html += '</div>';
+  
+  // Info validità
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;background:rgba(25,110,190,.08);border:1px solid rgba(25,110,190,.2);border-radius:8px;margin-bottom:12px">';
+  html += '<div><div style="font-size:10px;color:#5a8098;text-transform:uppercase;letter-spacing:1px">Valida per</div>';
+  html += '<div style="font-size:14px;font-weight:700;color:#e8f4ff">'+validTime+'</div></div>';
+  html += '<div style="text-align:right"><div style="font-size:10px;color:#5a8098;text-transform:uppercase;letter-spacing:1px">Emissione</div>';
+  html += '<div style="font-size:12px;color:#90b0c8">'+issueStr+'</div></div>';
+  html += '</div>';
+  
+  // Navigazione: frecce ◀ ▶ + indicatore posizione
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">';
+  var canPrev = _syState.idx > 0;
+  var canNext = _syState.idx < SY_FORECAST_HOURS.length - 1;
+  html += '<button onclick="syPrev()" '+(canPrev?'':'disabled')+' style="padding:10px 16px;background:rgba(25,110,190,'+(canPrev?'.25':'.08')+');color:'+(canPrev?'#80c0f0':'#3a5a70')+';border:1px solid rgba(25,110,190,'+(canPrev?'.4':'.15')+');border-radius:8px;font-size:14px;font-weight:700;cursor:'+(canPrev?'pointer':'not-allowed')+'">◀ Indietro</button>';
+  
+  // Indicatore step
+  html += '<div style="flex:1;display:flex;justify-content:center;gap:4px">';
+  SY_FORECAST_HOURS.forEach(function(h, i){
+    var active = i === _syState.idx;
+    html += '<div onclick="syGoTo('+i+')" title="'+SY_LABELS[h]+'" style="width:'+(active?'24px':'8px')+';height:8px;border-radius:4px;background:'+(active?'#3090d0':'rgba(255,255,255,.15)')+';cursor:pointer;transition:all .2s ease"></div>';
+  });
+  html += '</div>';
+  
+  html += '<button onclick="syNext()" '+(canNext?'':'disabled')+' style="padding:10px 16px;background:rgba(25,110,190,'+(canNext?'.25':'.08')+');color:'+(canNext?'#80c0f0':'#3a5a70')+';border:1px solid rgba(25,110,190,'+(canNext?'.4':'.15')+');border-radius:8px;font-size:14px;font-weight:700;cursor:'+(canNext?'pointer':'not-allowed')+'">Avanti ▶</button>';
+  html += '</div>';
+  
+  // Container immagine con loader + gestione errori
+  html += '<div id="syImgWrap" style="position:relative;background:#0a1628;border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden;min-height:300px;text-align:center">';
+  // Loader
+  html += '<div id="syLoader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#5a8098;font-size:12px;z-index:1"><div style="font-size:32px;margin-bottom:8px">⏳</div>Caricamento carta...</div>';
+  // Immagine (background bianco per le carte che hanno sfondo trasparente o bianco)
+  html += '<img id="syImg" src="'+url+'" alt="'+label+'" style="max-width:100%;height:auto;display:block;margin:0 auto;background:#ffffff;border-radius:8px;position:relative;z-index:2" onload="syOnImgLoad()" onerror="syOnImgError()">';
+  html += '</div>';
+  
+  // Help info
+  html += '<div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;font-size:11px;color:#5a8098;line-height:1.5">';
+  html += '💡 <b style="color:#80c0f0">Come leggere:</b> le linee continue sono isobare (linee di pari pressione, ogni 4 hPa). <b style="color:#c62828">L</b> indica zone di bassa pressione (perturbato), <b style="color:#1565c0">H</b> di alta pressione (stabile). I simboli sui fronti mostrano la direzione di movimento — vedi la tab <b style="color:#c090d0">🌀 Fronti</b> per dettagli.';
+  html += '</div>';
+  
+  // Disclaimer
+  html += '<div style="margin-top:10px;text-align:center;font-size:10px;color:#3a5a70">Carte © Crown Copyright UK Met Office — solo riferimento, consultare avvisi ufficiali</div>';
+  
+  el.innerHTML = html;
+  _syState.builtOnce = true;
+  
+  // Touch swipe support
+  attachSyTouchHandlers();
+}
+
+/* Cambia modalità colore/B&N */
+function syToggleMode(mode){
+  if(_syState.mode === mode) return;
+  _syState.mode = mode;
+  _syState.issueOffset = 0; // reset fallback
+  renderSynopticUI();
+}
+
+/* Naviga avanti */
+function syNext(){
+  if(_syState.idx < SY_FORECAST_HOURS.length - 1){
+    _syState.idx++;
+    _syState.issueOffset = 0;
+    renderSynopticUI();
+  }
+}
+
+/* Naviga indietro */
+function syPrev(){
+  if(_syState.idx > 0){
+    _syState.idx--;
+    _syState.issueOffset = 0;
+    renderSynopticUI();
+  }
+}
+
+/* Vai a un indice specifico */
+function syGoTo(i){
+  if(i < 0 || i >= SY_FORECAST_HOURS.length) return;
+  _syState.idx = i;
+  _syState.issueOffset = 0;
+  renderSynopticUI();
+}
+
+/* Callback caricamento immagine OK */
+function syOnImgLoad(){
+  var loader = document.getElementById('syLoader');
+  if(loader) loader.style.display = 'none';
+}
+
+/* Callback errore caricamento immagine: prova emissione precedente */
+function syOnImgError(){
+  if(_syState.issueOffset < 5){
+    // Prova emissione precedente
+    _syState.issueOffset++;
+    console.log('Synoptic image not found, trying older issue (offset '+_syState.issueOffset+')');
+    var fHours = SY_FORECAST_HOURS[_syState.idx];
+    var issue = getMetOfficeIssue(_syState.issueOffset);
+    var newUrl = buildSynopticUrl(issue, fHours, _syState.mode);
+    var img = document.getElementById('syImg');
+    if(img){
+      img.src = newUrl;
+      // Aggiorna anche il display dell'emissione
+      // (in modo discreto: il prossimo render completo è on-demand)
+    }
+  } else {
+    // Tutti i fallback esauriti
+    var loader = document.getElementById('syLoader');
+    if(loader){
+      loader.innerHTML = '<div style="font-size:32px;margin-bottom:8px">⚠️</div>' +
+        '<div style="color:#f0a040;font-weight:700;margin-bottom:6px">Carta non disponibile</div>' +
+        '<div style="font-size:11px;color:#5a8098;max-width:300px;line-height:1.5">L\'immagine non è raggiungibile in questo momento. Verifica la connessione, oppure apri direttamente il sito ufficiale.</div>' +
+        '<a href="https://weather.metoffice.gov.uk/maps-and-charts/surface-pressure" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;padding:6px 12px;background:rgba(25,110,190,.3);color:#80c0f0;border:1px solid rgba(25,110,190,.4);border-radius:6px;font-size:11px;text-decoration:none;font-weight:700">Met Office ↗</a>';
+      loader.style.display = 'block';
+    }
+    var img = document.getElementById('syImg');
+    if(img) img.style.display = 'none';
+  }
+}
+
+/* Touch swipe per cambiare carta */
+function attachSyTouchHandlers(){
+  var wrap = document.getElementById('syImgWrap');
+  if(!wrap || wrap._touchAttached) return;
+  wrap._touchAttached = true;
+  
+  var startX = 0, startY = 0, isDragging = false;
+  
+  wrap.addEventListener('touchstart', function(e){
+    var t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    isDragging = true;
+  }, {passive: true});
+  
+  wrap.addEventListener('touchend', function(e){
+    if(!isDragging) return;
+    isDragging = false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
+    // Solo swipe orizzontale (assicurati che non sia uno scroll verticale)
+    if(Math.abs(dx) > 50 && Math.abs(dy) < 40){
+      if(dx > 0) syPrev();
+      else syNext();
+    }
+  });
+  
+  wrap.addEventListener('touchcancel', function(){
+    isDragging = false;
+  });
+  
+  // Keyboard arrows (desktop)
+  if(!window._sySyKeyAttached){
+    window._sySyKeyAttached = true;
+    document.addEventListener('keydown', function(e){
+      // Solo se la tab Sinottica è attiva
+      var pSy = document.getElementById('pSy');
+      if(!pSy || pSy.classList.contains('dn')) return;
+      // Ignora se l'utente sta scrivendo in un input
+      if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); syPrev(); }
+      else if(e.key === 'ArrowRight'){ e.preventDefault(); syNext(); }
+    });
+  }
+}
 
 </script>
 </body></html>
