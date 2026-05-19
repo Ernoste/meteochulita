@@ -556,7 +556,156 @@ const VI=(h,r,c)=>{if(r>5)return{t:"Scarsa",s:"<2km",c:"var(--wind-gale)"};if(r>
 const CT=(v,p)=>{let o=Math.round(v/12.5);if(o<=1)return"Sereno";if(o<=3&&p<200)return"Ci,Cs";if(o<=3)return"Ci,Ac cast⚠️";if(o<=5&&p<500)return"Ac,As";if(o<=5)return"Ac cast";if(o<=7&&p<800)return"Sc,Ns";if(o<=7)return"Cu con";if(p>=1500)return"Cb⚡";if(p>=500)return"Cu/Cb";return"Ns,St"};
 const PT=(p,i)=>{if(!p||i<3)return{t:"N/D",i:"—",c:"#666"};let d=p[i]-p[i-3];if(d<-3)return{t:"Forte calo("+d.toFixed(1)+")",i:"⬇️⬇️",c:"var(--wind-gale)"};if(d<-1.5)return{t:"Calo("+d.toFixed(1)+")",i:"⬇️",c:"var(--wind-strong-2)"};if(d<-.5)return{t:"Lieve calo",i:"↘️",c:"var(--wind-mod-2)"};if(d>3)return{t:"Forte rialzo",i:"⬆️⬆️",c:"var(--success-strong)"};if(d>1.5)return{t:"Rialzo",i:"⬆️",c:"var(--status-go-2)"};if(d>.5)return{t:"Lieve rialzo",i:"↗️",c:"var(--wind-light)"};return{t:"Stabile",i:"➡️",c:"#5a90a0"}};
 const WR=(d,i)=>{if(!d||i<1||d[i]==null||d[i-1]==null)return null;let x=d[i]-d[i-1];if(x>180)x-=360;if(x<-180)x+=360;return x};
-function AF(h,x){if(!h||x<3)return null;let pd=h.pressure_msl[x]-h.pressure_msl[Math.max(0,x-3)],rs=[],i;for(i=Math.max(1,x-5);i<=x;i++){let r=WR(h.wind_direction_10m,i);if(r!=null)rs.push(r)}let ar=rs.length?rs.reduce((a,b)=>a+b)/rs.length:0,cp=h.cape?.[x]??0,cl=h.cloud_cover?.[x]??0,rr=h.precipitation?.[x]??0,td=x>=3?h.temperature_2m[x]-h.temperature_2m[x-3]:0,sg=[],sv=0,fr=null;if(ar<-3){sg.push("🔄 Backing: sistema avvic.");sv++}if(pd<-3){sg.push("📉 Press. forte calo");sv+=2}else if(pd<-1.5){sg.push("📉 Press. in calo");sv++}if(cp>=1500){sg.push("⚡ CAPE "+cp);sv+=2}else if(cp>=500){sg.push("⛈️ CAPE "+cp);sv++}if(td<-3){sg.push("🌡️ Calo termico rapido");sv++}if(rr>2&&cl>87&&cp>=1000){sg.push("🌧️⚡ Poss. occlusione");sv+=2}if(pd<-2&&ar<-2&&cl>60){if(cp>=1000&&rr>1)fr=cp>=1500||td>0?{t:"OCCLUSIONE CALDA",d:"Temporali embedded insidiosi — il più pericoloso per la navigazione.",c:"#c040a0"}:{t:"OCCLUSIONE FREDDA",d:"Rovesci intensi senza pausa, brusco veering e doppio calo di pressione.",c:"#7b1fa2"};else if(td<-2)fr={t:"FRONTE FREDDO",d:"Veering brusco.",c:"var(--highlight-blue)"};else if(rr>.5&&cl>75)fr={t:"FRONTE CALDO",d:"Pioggia continua.",c:"var(--error-strong)"}}else if(pd<-1&&cl>50&&ar<-1)fr=td<-1?{t:"POSS.FRONTE FREDDO",d:"Monitorare.",c:"var(--highlight-blue-2)"}:{t:"POSS.FRONTE CALDO",d:"Monitorare.",c:"#d32f2f"};if(!sg.length)return null;return{sg,fr,pd,lv:sv>=4?"🔴":sv>=2?"🟡":"🟢"}}
+function AF(h,x){if(!h||x<3)return null;let pd=h.pressure_msl[x]-h.pressure_msl[Math.max(0,x-3)],rs=[],i;for(i=Math.max(1,x-5);i<=x;i++){let r=WR(h.wind_direction_10m,i);if(r!=null)rs.push(r)}let ar=rs.length?rs.reduce((a,b)=>a+b)/rs.length:0,cp=h.cape?.[x]??0,cl=h.cloud_cover?.[x]??0,rr=h.precipitation?.[x]??0,td=x>=3?h.temperature_2m[x]-h.temperature_2m[x-3]:0,sg=[],sv=0,fr=null;if(ar<-3){sg.push("🔄 Backing: sistema avvic.");sv++}if(pd<-3){sg.push("📉 Press. forte calo");sv+=2}else if(pd<-1.5){sg.push("📉 Press. in calo");sv++}if(cp>=1500){sg.push("⚡ CAPE "+cp);sv+=2}else if(cp>=500){sg.push("⛈️ CAPE "+cp);sv++}if(td<-3){sg.push("🌡️ Calo termico rapido");sv++}if(rr>2&&cl>87&&cp>=1000){sg.push("🌧️⚡ Poss. occlusione");sv+=2}if(pd<-2&&ar<-2&&cl>60){if(cp>=1000&&rr>1)fr=cp>=1500||td>0?{t:"OCCLUSIONE CALDA",d:"Temporali embedded insidiosi — il più pericoloso per la navigazione.",c:"#c040a0"}:{t:"OCCLUSIONE FREDDA",d:"Rovesci intensi senza pausa, brusco veering e doppio calo di pressione.",c:"#7b1fa2"};else if(td<-2)fr={t:"FRONTE FREDDO",d:"Veering brusco.",c:"var(--highlight-blue)"};else if(rr>.5&&cl>75)fr={t:"FRONTE CALDO",d:"Pioggia continua.",c:"var(--error-strong)"}}else{
+// POSS.FRONTE: richiede almeno 2 segnali significativi (non al minimo).
+// Conta i segnali "forti": pressione in calo deciso, backing marcato, nuvole alte.
+let strong = 0;
+if(pd < -1.5) strong++;       // pressione: calo deciso (non solo -1)
+if(ar < -2)  strong++;        // backing: rotazione marcata (non solo -1°/h)
+if(cl > 65)  strong++;        // nuvolosità: cielo prevalentemente coperto (non solo 50%)
+if(strong >= 2 && pd < -1 && cl > 50 && ar < -1){
+  fr = td<-1 ? {t:"POSS.FRONTE FREDDO",d:"Monitorare.",c:"var(--highlight-blue-2)"} : {t:"POSS.FRONTE CALDO",d:"Monitorare.",c:"#d32f2f"};
+}
+}if(!sg.length)return null;return{sg,fr,pd,lv:sv>=4?"🔴":sv>=2?"🟡":"🟢"}}
+
+/* ===== FRONT_APPROACH ====================================================
+   Rilevamento dei fronti "in avvicinamento" basato su trend multi-orizzonte.
+   AF() rileva il fronte quando è praticamente già sopra (firma istantanea
+   forte). FRONT_APPROACH invece guarda l'evoluzione e dà un punteggio di
+   approssimazione: utile per anticipare l'allarme di 6-24 ore.
+   
+   Restituisce {score, level, signals, type, hint} oppure null.
+     score:  0-12+ (somma sub-punteggi)
+     level:  'low' (1-2) | 'medium' (3-4) | 'high' (>=5)
+     signals: array di stringhe descrittive
+     type:    tipo di fronte stimato (basato su tendenza termica e vento)
+     hint:    color hint per UI
+   
+   I sotto-punteggi:
+     A) Tendenza pressione 3h    (1-2 punti)
+     B) Tendenza pressione 6h    (1-2 punti)   ← Leva 1
+     C) Tendenza pressione 12h   (1-2 punti)   ← Leva 1
+     D) Trend Z500 su 12-24h     (1-2 punti)   ← Leva 4
+     E) Nuvolosità in aumento    (1 punto)
+     F) Vento in rotazione (back/veer consistente)  (1 punto)
+   ========================================================================= */
+function FRONT_APPROACH(h, x){
+  if(!h || x < 0 || !h.pressure_msl || h.pressure_msl[x] == null) return null;
+  
+  var signals = [];
+  var score = 0;
+  var pressureSignals = 0; // conta quante delle leve A/B/C hanno contribuito (Fix B)
+  
+  // ── A) Tendenza pressione 3h ─────────────────────────────────────────────
+  var p3 = (x >= 3 && h.pressure_msl[x-3] != null) ? h.pressure_msl[x] - h.pressure_msl[x-3] : null;
+  if(p3 != null){
+    if(p3 < -2){ score += 2; pressureSignals++; signals.push('📉 Pressione: '+p3.toFixed(1)+' hPa in 3h (forte calo)'); }
+    else if(p3 < -1){ score += 1; pressureSignals++; signals.push('📉 Pressione: '+p3.toFixed(1)+' hPa in 3h (calo)'); }
+  }
+  
+  // ── B) Tendenza pressione 6h ─────────────────────────────────────────────
+  var p6 = (x >= 6 && h.pressure_msl[x-6] != null) ? h.pressure_msl[x] - h.pressure_msl[x-6] : null;
+  if(p6 != null){
+    if(p6 < -4){ score += 2; pressureSignals++; signals.push('📉 Pressione: '+p6.toFixed(1)+' hPa in 6h (forte)'); }
+    else if(p6 < -2){ score += 1; pressureSignals++; signals.push('📉 Pressione: '+p6.toFixed(1)+' hPa in 6h'); }
+  }
+  
+  // ── C) Tendenza pressione 12h ────────────────────────────────────────────
+  var p12 = (x >= 12 && h.pressure_msl[x-12] != null) ? h.pressure_msl[x] - h.pressure_msl[x-12] : null;
+  if(p12 != null){
+    if(p12 < -6){ score += 2; pressureSignals++; signals.push('📉 Pressione: '+p12.toFixed(1)+' hPa in 12h (peggioramento esteso)'); }
+    else if(p12 < -3){ score += 1; pressureSignals++; signals.push('📉 Pressione: '+p12.toFixed(1)+' hPa in 12h'); }
+  }
+  
+  // ── D) Trend Z500 (geopotenziale 500 hPa) su 12-24h ─────────────────────
+  // Il geopotenziale a 500 hPa cala quando arriva una depressione in quota.
+  // Z500 in salita marcata è invece un segnale di STABILIZZAZIONE → veto soft.
+  var z = h.geopotential_height_500hPa;
+  var z12 = null, z24 = null;
+  var zVetoApplied = false;
+  if(z && z[x] != null){
+    if(x >= 12 && z[x-12] != null) z12 = z[x] - z[x-12];
+    if(x >= 24 && z[x-24] != null) z24 = z[x] - z[x-24];
+    var zRef = (z24 != null) ? z24 : z12;
+    if(zRef != null){
+      if(zRef < -60){ score += 2; signals.push('🌐 Z500: '+Math.round(zRef)+' m (depressione in quota)'); }
+      else if(zRef < -30){ score += 1; signals.push('🌐 Z500: '+Math.round(zRef)+' m (geopotenziale in calo)'); }
+      else if(zRef > 30){
+        // Fix A — veto soft: Z500 in salita = atmosfera in stabilizzazione.
+        // Sottrae 2 punti dal punteggio. Se altri segnali sono fortissimi
+        // (es. pressione in forte calo per altri motivi) il sistema può
+        // comunque scattare, ma con livello declassato.
+        score = Math.max(0, score - 2);
+        zVetoApplied = true;
+        signals.push('🔼 Z500: +'+Math.round(zRef)+' m in 24h (atmosfera in stabilizzazione — veto applicato)');
+      }
+    }
+  }
+  
+  // ── E) Nuvolosità in aumento (delta cloud_cover ultime 6h) ───────────────
+  if(h.cloud_cover && h.cloud_cover[x] != null && x >= 6 && h.cloud_cover[x-6] != null){
+    var dCloud = h.cloud_cover[x] - h.cloud_cover[x-6];
+    if(dCloud > 30 && h.cloud_cover[x] > 60){
+      score += 1;
+      signals.push('☁️ Nuvolosità: +'+Math.round(dCloud)+'% in 6h ('+Math.round(h.cloud_cover[x])+'% ora)');
+    }
+  }
+  
+  // ── F) Vento in rotazione consistente (backing/veering medio ≥3°/h) ──────
+  if(h.wind_direction_10m && x >= 5){
+    var rotSum = 0, rotCount = 0;
+    for(var k = x-5; k <= x; k++){
+      var r = WR(h.wind_direction_10m, k);
+      if(r != null){ rotSum += r; rotCount++; }
+    }
+    if(rotCount >= 3){
+      var avgRot = rotSum / rotCount;
+      if(avgRot < -3){ score += 1; signals.push('🔄 Vento: backing '+avgRot.toFixed(1)+'°/h (rotazione antioraria — sistema in avvicinamento)'); }
+      else if(avgRot > 3){ score += 1; signals.push('🔄 Vento: veering +'+avgRot.toFixed(1)+'°/h (rotazione oraria — passaggio in atto)'); }
+    }
+  }
+  
+  if(score === 0) return null;
+  
+  // Classificazione tipo: usa tendenza termica e direzione vento attuale
+  var td = (x >= 3 && h.temperature_2m && h.temperature_2m[x-3] != null) ? h.temperature_2m[x] - h.temperature_2m[x-3] : 0;
+  var wd = h.wind_direction_10m ? h.wind_direction_10m[x] : null;
+  var type, color;
+  if(td < -1.5){
+    type = 'FRONTE FREDDO in avvicinamento'; color = 'var(--highlight-blue)';
+  } else if(td > 1 || (wd != null && (wd > 135 && wd < 225))){
+    // Caldo o vento da S/SW
+    type = 'FRONTE CALDO in avvicinamento'; color = 'var(--error-strong)';
+  } else if(p3 != null && p3 < -2 && p12 != null && p12 < -5){
+    // Calo barico marcato e prolungato → tipico di occlusione
+    type = 'OCCLUSIONE in avvicinamento'; color = '#7b1fa2';
+  } else {
+    type = 'PERTURBAZIONE in avvicinamento'; color = 'var(--wind-strong)';
+  }
+  
+  var level;
+  if(score >= 5) level = 'high';
+  else if(score >= 3) level = 'medium';
+  else if(score >= 1) level = 'low';
+  else return null;
+  
+  // Fix B stringente: il livello 'low' richiede ALMENO 2 segnali di pressione (A/B/C).
+  // Senza un trend barico consolidato, segnali come "nuvolosità + rotazione vento"
+  // sono tipicamente cicli termici locali (brezze costiere), non fronti.
+  // Le condizioni medium/high non sono filtrate: hanno score abbastanza alto
+  // che presumibilmente include comunque trend barici significativi.
+  if(level === 'low' && pressureSignals < 2) return null;
+  
+  return {
+    score: score,
+    level: level,
+    signals: signals,
+    type: type,
+    color: color,
+    pressureSignals: pressureSignals,
+    zVetoApplied: zVetoApplied
+  };
+}
 function GG(w,wh,cp,vs,rr){let is=[];if(w>20)is.push("Vento forte("+Math.round(w)+"kn)");else if(w>15)is.push("Vento sostenuto");if(wh>2)is.push("Onde alte("+wh.toFixed(1)+"m)");else if(wh>1.5)is.push("Mare mosso");if(cp>1000)is.push("Rischio temporali");if(rr>3)is.push("Pioggia intensa");if(vs&&vs.t==="Scarsa")is.push("Visibilità scarsa");if(!is.length)return{l:"SI PUÒ USCIRE ✅",c:"var(--success-strong)",b:"rgba(46,125,50,.12)",is:["Condizioni favorevoli"]};if(w>25||wh>2.5||cp>2000)return{l:"NON USCIRE ⛔",c:"var(--wind-storm)",b:"var(--status-stop-bg)",is};return{l:"CAUTELA ⚠️",c:"var(--warning-orange)",b:"rgba(230,81,0,.12)",is}}
 
 const N=(v,d)=>v!=null?v.toFixed(d):"—";
@@ -663,7 +812,55 @@ document.getElementById("p24").innerHTML=bFc(vi,24);
 document.getElementById("p48").innerHTML=bFc(vi,48);
 // FR tab
 let fr='<div style="font-size:10px;color:var(--text-shadow);margin-bottom:10px;padding:6px 10px;border-radius:8px;background:var(--border-subtle);border:1px solid var(--border-subtle)">Analisi frontale e rotazione vento: dati relativi all\'ora selezionata. Grafico pressione: evoluzione 72h.</div>';
-fr+='<div class="cd" style="margin-bottom:10px"><div class="lb" style="margin-bottom:8px">🌀 ANALISI FRONTALE — '+ts+'</div>';
+// Banner riepilogo 48h: stesso esito del banner sticky in alto, ma esteso e qui sempre visibile
+try{
+  var _summary = detectIncomingFront();
+  if(_summary){
+    var _sumDist = estimateFrontDistanceNM(_summary.type, _summary.hoursAhead);
+    var _sumSpeed = estimateFrontSpeedKn(_summary.type);
+    var _sumHuman;
+    if(_summary.hoursAhead === 0) _sumHuman = 'ORA';
+    else if(_summary.hoursAhead <= 6) _sumHuman = 'TRA ~'+_summary.hoursAhead+'h';
+    else if(_summary.hoursAhead <= 12) _sumHuman = 'TRA ~12h';
+    else if(_summary.hoursAhead <= 24) _sumHuman = 'ENTRO 24h';
+    else if(_summary.hoursAhead <= 36) _sumHuman = 'TRA 24-36h';
+    else _sumHuman = 'TRA '+_summary.hoursAhead+'h';
+    // Etichetta differente per conclamato vs approach (+ livello)
+    var _sumHdr;
+    if(_summary.mode === 'approach'){
+      if(_summary.approachLevel === 'high')        _sumHdr = '🟠 PROBABILE FRONTE (48h)';
+      else if(_summary.approachLevel === 'medium') _sumHdr = '🟡 POSSIBILE FRONTE (48h)';
+      else                                          _sumHdr = '🟢 SEGNALI DEBOLI (48h)';
+    } else {
+      _sumHdr = '⚠️ FRONTE IN AVVICINAMENTO (48h)';
+    }
+    // Stile più tenue per approach low
+    var _sumStyle = (_summary.mode === 'approach' && _summary.approachLevel === 'low')
+      ? 'margin-bottom:10px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,'+_summary.color+'15,'+_summary.color+'06);border:1px solid '+_summary.color+'40;display:flex;align-items:center;gap:12px;flex-wrap:wrap'
+      : 'margin-bottom:10px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,'+_summary.color+'25,'+_summary.color+'10);border:1.5px solid '+_summary.color+'60;display:flex;align-items:center;gap:12px;flex-wrap:wrap';
+    fr += '<div style="'+_sumStyle+'">';
+    fr += '<div style="flex-shrink:0">'+FRONT_SVG(_summary.type, 44)+'</div>';
+    fr += '<div style="flex:1;min-width:200px">';
+    fr += '<div style="font-size:10px;color:'+_summary.color+';font-weight:700;letter-spacing:1.5px;text-transform:uppercase">'+_sumHdr+'</div>';
+    fr += '<div style="font-size:16px;font-weight:900;color:'+_summary.color+';line-height:1.2;margin-top:2px">'+_summary.type+'</div>';
+    fr += '<div style="font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.4">';
+    if(_summary.hoursAhead === 0){
+      // Fronte in transito: niente stima distanza, dichiariamo lo stato
+      fr += '<b style="color:'+_summary.color+'">'+_sumHuman+' · In transito</b>';
+      fr += ' <span style="color:var(--text-faint);font-style:italic">il sistema è sopra di te ora</span>';
+    } else {
+      fr += '<b style="color:var(--text-primary)">'+_sumHuman+'</b> · ~<b style="color:var(--text-primary)">'+_sumDist+' NM</b> di traiettoria stimata';
+      fr += ' <span style="color:var(--text-faint);font-style:italic">(stima a '+_sumSpeed+' kn)</span>';
+    }
+    fr += '</div></div></div>';
+  } else {
+    fr += '<div style="margin-bottom:10px;padding:10px 14px;border-radius:10px;background:rgba(74,144,96,.10);border:1px solid rgba(74,144,96,.30);display:flex;align-items:center;gap:10px">';
+    fr += '<div style="font-size:22px;flex-shrink:0">🟢</div>';
+    fr += '<div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--status-go-2);line-height:1.2">Nessun fronte rilevato nelle prossime 48h</div>';
+    fr += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">Sorveglianza attiva su tendenza pressione (3/6/12h), Z500, nuvolosità e rotazione vento</div></div></div>';
+  }
+}catch(_e){ console.warn('Front summary error:', _e); }
+fr+='<div class="cd" style="margin-bottom:10px"><div class="lb" style="margin-bottom:4px">🌀 ANALISI FRONTALE — '+ts+'</div><div style="font-size:10px;color:var(--text-muted);margin-bottom:10px;font-style:italic;line-height:1.4">Stato attuale alla posizione e ora selezionata. Per la prospettiva a 48 ore, vedi il banner riepilogo qui sopra.</div>';
 if(fa){
   if(fa.fr){
     // Determina il tipo di fronte per scegliere il simbolo SVG
@@ -820,16 +1017,52 @@ function rzZ(){
     fronte='<div class="rx" style="background:rgba(123,31,162,.1);border:1px solid rgba(123,31,162,.25);margin-bottom:6px"><strong style="color:#ce93d8">&#127744; Firma: POSSIBILE CUT-OFF</strong><br><span style="font-size:9px">Z500 molto basso e stazionario. Sistema difficile da prevedere. Massima cautela.</span></div>';
   }
 
-  var vl,vc,vb,vi2;
-  if(z0>5640&&(delta6==null||delta6>-40)){
-    vl="SI PUO USCIRE &#10003;";vc="var(--success-strong)";vb="rgba(46,125,50,.12)";
-    vi2="Z500 a "+z0+"m ("+z0dam+" dam) &#8212; atmosfera stabile e prevedibile.";
-  } else if(z0>5400||(delta6!=null&&delta6>0)){
-    vl="CAUTELA &#9888;";vc="var(--warning-orange)";vb="rgba(230,81,0,.12)";
-    vi2="Z500 a "+z0+"m ("+z0dam+" dam) &#8212; situazione in evoluzione. Monitorare.";
+  // Verdetto Z500: ora considera l'EVOLUZIONE a 24/48h, non solo lo stato presente.
+  // Un Z500 alto ora ma in calo netto nelle 48h è il classico pattern di
+  // "promontorio in cedimento — depressione in arrivo", che non può essere
+  // dichiarato "SI PUÒ USCIRE" perché contraddice la prospettiva sinottica.
+  // Calcolo dei delta principali (su 24h e 48h)
+  var delta48 = (z48h != null) ? z48h - z0 : null;
+  
+  // Classificazione a 3 livelli:
+  //   verde  → Z500 alto E stabile/in salita nelle 24-48h
+  //   giallo → Z500 alto MA in cedimento nelle 24-48h (CAUTELA)
+  //   rosso  → Z500 basso O depressione in quota in arrivo (ATTENZIONE)
+  var vl, vc, vb, vi2;
+  // Soglie di "cedimento": -60m/24h significa promontorio che si abbassa visibilmente.
+  //                       -120m/48h significa rinforzo di depressione in quota.
+  var cedimento24 = (delta24 != null && delta24 < -60);
+  var cedimento48 = (delta48 != null && delta48 < -120);
+  var cedimentoMarcato = (delta24 != null && delta24 < -120) || (delta48 != null && delta48 < -180);
+  
+  if(z0 > 5640 && !cedimento24 && !cedimento48 && (delta6 == null || delta6 > -40)){
+    // Verde: alta pressione stabile E nessun cedimento atteso
+    vl = "SI PUO USCIRE &#10003;";
+    vc = "var(--success-strong)";
+    vb = "rgba(46,125,50,.12)";
+    vi2 = "Z500 a "+z0+"m ("+z0dam+" dam) &#8212; atmosfera stabile e prevedibile.";
+  } else if(z0 > 5400 && !cedimentoMarcato){
+    // Giallo: o Z500 in zona intermedia, o ancora alto ma in cedimento
+    vl = "CAUTELA &#9888;";
+    vc = "var(--warning-orange)";
+    vb = "rgba(230,81,0,.12)";
+    if(cedimento48){
+      vi2 = "Z500 a "+z0+"m &#8212; <b>promontorio in cedimento</b>: previsto calo a "+(z48h||"?")+"m in 48h. Peggioramento atteso.";
+    } else if(cedimento24){
+      vi2 = "Z500 a "+z0+"m &#8212; <b>cedimento rapido</b>: previsto calo a "+(z24h||"?")+"m in 24h. Monitorare.";
+    } else {
+      vi2 = "Z500 a "+z0+"m ("+z0dam+" dam) &#8212; situazione in evoluzione. Monitorare.";
+    }
   } else {
-    vl="ATTENZIONE &#9940;";vc="var(--wind-storm)";vb="var(--status-stop-bg)";
-    vi2="Z500 a "+z0+"m ("+z0dam+" dam) &#8212; bassa pressione in quota. Previsione incerta oltre 24h.";
+    // Rosso: Z500 già basso o cedimento marcato in arrivo
+    vl = "ATTENZIONE &#9940;";
+    vc = "var(--wind-storm)";
+    vb = "var(--status-stop-bg)";
+    if(cedimentoMarcato){
+      vi2 = "Z500 a "+z0+"m &#8212; <b>depressione in quota in arrivo</b>: previsto crollo a "+(z48h||z24h||"?")+"m. Atmosfera fortemente instabile attesa.";
+    } else {
+      vi2 = "Z500 a "+z0+"m ("+z0dam+" dam) &#8212; bassa pressione in quota. Previsione incerta oltre 24h.";
+    }
   }
 
   var f24l,f24c,f48l,f48c;
@@ -847,6 +1080,39 @@ function rzZ(){
   var ts=new Date(h.time[vi]).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
 
   var out='';
+  
+  // Banner cross-reference: se la tab Fronti ha rilevato un fronte in arrivo,
+  // mostralo qui in cima per evitare l'incoerenza percepita
+  // ("la tab Fronti dice fronte, ma Quota 5500m dice stabile").
+  try{
+    var _zFront = detectIncomingFront();
+    if(_zFront){
+      var _zfDist = estimateFrontDistanceNM(_zFront.type, _zFront.hoursAhead);
+      var _zfHuman;
+      if(_zFront.hoursAhead === 0) _zfHuman = 'ORA';
+      else if(_zFront.hoursAhead <= 6) _zfHuman = 'tra ~'+_zFront.hoursAhead+'h';
+      else if(_zFront.hoursAhead <= 12) _zfHuman = 'tra ~12h';
+      else if(_zFront.hoursAhead <= 24) _zfHuman = 'entro 24h';
+      else if(_zFront.hoursAhead <= 36) _zfHuman = 'tra 24-36h';
+      else _zfHuman = 'tra '+_zFront.hoursAhead+'h';
+      // Spiega il legame: se Z500 sta calando, il fronte è coerente; se Z500 stabile/alto, è anomalia
+      var _zfNota = (delta24 != null && delta24 < -60)
+        ? 'Z500 in calo conferma il segnale di superficie.'
+        : (delta24 != null && delta24 > 20)
+          ? 'Z500 stabile/in salita: il fronte potrebbe essere lieve o passare oltre.'
+          : 'Confrontare con l\'evoluzione Z500 sotto.';
+      out += '<div onclick="goToFrontiTab()" style="margin-bottom:10px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,'+_zFront.color+'20,'+_zFront.color+'08);border:1px solid '+_zFront.color+'50;cursor:pointer;display:flex;align-items:center;gap:12px;flex-wrap:wrap">';
+      out += '<div style="flex-shrink:0">'+FRONT_SVG(_zFront.type, 32)+'</div>';
+      out += '<div style="flex:1;min-width:200px">';
+      out += '<div style="font-size:9px;color:'+_zFront.color+';font-weight:700;letter-spacing:1.5px;text-transform:uppercase">&#128279; Coerenza con tab Fronti</div>';
+      out += '<div style="font-size:13px;font-weight:700;color:'+_zFront.color+';line-height:1.3;margin-top:2px">'+_zFront.type+'</div>';
+      out += '<div style="font-size:10px;color:var(--text-secondary);margin-top:2px;line-height:1.4">'+_zfHuman+(_zfDist?' &middot; ~'+_zfDist+' NM':'')+' &middot; <i>'+_zfNota+'</i></div>';
+      out += '</div>';
+      out += '<div style="flex-shrink:0;font-size:10px;color:'+_zFront.color+';font-weight:700">Dettagli &rsaquo;</div>';
+      out += '</div>';
+    }
+  }catch(_zfE){ console.warn('Z500 front cross-ref error:', _zfE); }
+  
   out+='<div class="vd" style="background:'+vb+';border:1px solid '+vc+'30;margin-bottom:8px"><h2 style="color:'+vc+'">'+vl+'</h2><p style="color:'+vc+'">'+vi2+'</p></div>';
 
   out+='<div class="gr" style="margin-bottom:8px">';
@@ -1694,7 +1960,7 @@ function rtRenderWpDataRow(w){
   
   // Container grid responsivo: in linea su desktop, 2x2 su mobile
   // L'etichetta "ORA" chiarisce che questi valori sono per l'ora corrente, NON l'ora di arrivo
-  html += '<div class="rt-wp-data" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px;justify-content:flex-end;align-items:flex-start">';
+  html += '<div class="rt-wp-data" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px;justify-content:flex-start;align-items:flex-start">';
   
   // Badge "ORA" piccolo a sinistra delle mini-card
   if(meteoTimeStr){
@@ -2334,7 +2600,7 @@ function renderRottaMap(){
             var timeLbl = arrivalDate.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
             var sameDay = arrivalDate.toDateString() === depDate.toDateString();
             var dayLbl = sameDay ? '' : ' ' + arrivalDate.toLocaleDateString('it-IT',{weekday:'short',day:'numeric'});
-            timeBadge = '<div style="background:rgba(6,14,26,.92);color:var(--text-primary);font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;border:1px solid var(--border-strongest);box-shadow:0 2px 6px var(--bg-overlay);font-family:ui-monospace,monospace;white-space:nowrap;letter-spacing:.3px;margin-top:3px">🕐 '+timeLbl+dayLbl+'</div>';
+            timeBadge = '<div style="background:var(--arrow-badge-bg);color:var(--arrow-badge-text);font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;border:1px solid var(--border-strongest);box-shadow:0 2px 6px var(--arrow-badge-shadow);font-family:ui-monospace,monospace;white-space:nowrap;letter-spacing:.3px;margin-top:3px">🕐 '+timeLbl+dayLbl+'</div>';
           }
         }
       }
@@ -3991,6 +4257,28 @@ function FRONT_ADVICE(typeStr){
   return null;
 }
 
+/* ===== STIMA DISTANZA FRONTE ===== */
+/* Calcola la distanza approssimativa del fronte dalla posizione attuale,
+   moltiplicando le ore mancanti al passaggio per la velocità di spostamento
+   tipica del tipo di fronte sull'area mediterranea/europea.
+   Velocità medie note dalla letteratura meteorologica:
+   - Fronti freddi:    25-35 kn (uso 30)
+   - Fronti caldi:     15-25 kn (uso 20)
+   - Occlusioni:       20-30 kn (uso 25)
+   È una STIMA approssimativa: nessun dato satellitare/radar è disponibile via API. */
+function estimateFrontSpeedKn(typeStr){
+  var t = (typeStr || '').toUpperCase();
+  if(t.indexOf('OCCLUSIONE') >= 0) return 25;
+  if(t.indexOf('CALDO') >= 0 || t.indexOf('WARM') >= 0) return 20;
+  if(t.indexOf('FREDDO') >= 0 || t.indexOf('COLD') >= 0) return 30;
+  return 25; // fallback medio
+}
+function estimateFrontDistanceNM(typeStr, hoursAhead){
+  if(hoursAhead == null || hoursAhead < 0) return null;
+  var speed = estimateFrontSpeedKn(typeStr);
+  return Math.round(hoursAhead * speed);
+}
+
 /* ===== RILEVAMENTO FRONTE NELLE PROSSIME 48h ===== */
 /* Scansiona i dati orari dalla posizione attuale (vi) fino a +48h.
    Per ogni ora calcola AF() e tiene traccia del PRIMO fronte rilevato.
@@ -4000,14 +4288,50 @@ function detectIncomingFront(){
   if(!D || !D.hourly) return null;
   var h = D.hourly;
   var maxHours = Math.min(48, h.time.length - vi - 1);
-  // 1) Cerca fronte conclamato (fa.fr presente)
+  
+  // Helper: regime di Z500 nelle prossime 48h dalla posizione attuale.
+  // Calcolato UNA VOLTA per tutta la scansione (non al singolo punto).
+  // Confronta Z500 attuale (vi) con la media di Z500 nelle prossime 24-48h:
+  // se la salita complessiva supera +30m, siamo in regime di costruzione di
+  // dorsale anticiclonica. Qualunque firma frontale di superficie in questo
+  // contesto è SOSPETTA (probabilmente artefatti del modello o cicli locali).
+  // Veto duro globale: scarta TUTTI i risultati AF/APPROACH per i prossimi 48h.
+  var z = h.geopotential_height_500hPa;
+  var globalZ500Rising = false;
+  if(z && z[vi] != null){
+    // Calcola Z500 medio nella finestra +24h..+48h dal punto attuale
+    var sumFuture = 0, nFuture = 0;
+    var fStart = vi + 24;
+    var fEnd = Math.min(vi + 48, z.length - 1);
+    for(var fi = fStart; fi <= fEnd; fi++){
+      if(z[fi] != null){ sumFuture += z[fi]; nFuture++; }
+    }
+    if(nFuture >= 6){
+      var avgFuture = sumFuture / nFuture;
+      // Soglia +30m: cattura solo dorsali in costruzione, non oscillazioni
+      if((avgFuture - z[vi]) > 30) globalZ500Rising = true;
+    }
+  }
+  function _z500RisingAt(i){
+    // i parametro mantenuto per compatibilità ma non più usato:
+    // il veto è globale per tutta la scansione 48h.
+    return globalZ500Rising;
+  }
+  
+  // ── 1) Fronte CONCLAMATO: firma istantanea forte (AF rileva fr).
+  //    Ha sempre priorità — è il segnale più certo.
+  //    MA: veto Z500 — se in quel punto Z500 sta salendo nettamente,
+  //    scartiamo il risultato (probabilmente è un artefatto del modello,
+  //    non un vero fronte: l'atmosfera in quota dice "stabilizzazione").
   for(var off = 0; off <= maxHours; off++){
     var i = vi + off;
     var fa = AF(h, i);
     if(fa && fa.fr){
+      if(_z500RisingAt(i)) continue; // veto duro: skip e continua a cercare
       var t = new Date(h.time[i]);
       var sev = fa.lv === '🔴' ? 'high' : fa.lv === '🟡' ? 'medium' : 'low';
       return {
+        mode: 'confirmed',
         type: fa.fr.t,
         description: fa.fr.d,
         color: fa.fr.c,
@@ -4016,11 +4340,50 @@ function detectIncomingFront(){
         atTime: t,
         atTimeStr: t.toLocaleString('it-IT',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
         severity: sev,
-        signals: fa.sg
+        signals: fa.sg,
+        approachLevel: null
       };
     }
   }
-  return null;
+  
+  // ── 2) Fronte in APPROACH: trend multi-orizzonte (FRONT_APPROACH).
+  //    Cerca il PRIMO punto delle prossime 48h dove il punteggio è
+  //    medio o alto (early-warning gialli e rossi).
+  //    I segnali low (verde-giallo) sono utili come informazione ma non
+  //    fanno scattare l'allarme principale: vengono restituiti a parte
+  //    solo se non c'è un livello superiore.
+  //    Stesso veto Z500: se in quel punto Z500 sale > 30m/24h, skip.
+  var firstMedium = null, firstHigh = null, firstLow = null;
+  for(var off2 = 0; off2 <= maxHours; off2++){
+    var j = vi + off2;
+    if(_z500RisingAt(j)) continue; // veto duro: salta i punti con Z500 in salita
+    var ap = FRONT_APPROACH(h, j);
+    if(!ap) continue;
+    if(ap.level === 'high' && !firstHigh) firstHigh = {ap: ap, off: off2, time: new Date(h.time[j])};
+    else if(ap.level === 'medium' && !firstMedium) firstMedium = {ap: ap, off: off2, time: new Date(h.time[j])};
+    else if(ap.level === 'low' && !firstLow) firstLow = {ap: ap, off: off2, time: new Date(h.time[j])};
+    if(firstHigh) break; // high è il massimo: smettiamo di scansionare
+  }
+  
+  var pick = firstHigh || firstMedium || firstLow;
+  if(!pick) return null;
+  
+  var sev2 = pick.ap.level === 'high' ? 'medium' : pick.ap.level === 'medium' ? 'low' : 'low';
+  // Severità più bassa di un conclamato — un approach non è ancora un fronte certo
+  return {
+    mode: 'approach',
+    type: pick.ap.type,
+    description: 'Segnali multi-orizzonte indicano l\'evoluzione verso un sistema frontale. Confidenza '+pick.ap.level+'.',
+    color: pick.ap.color,
+    advice: null,
+    hoursAhead: pick.off,
+    atTime: pick.time,
+    atTimeStr: pick.time.toLocaleString('it-IT',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+    severity: sev2,
+    signals: pick.ap.signals,
+    approachLevel: pick.ap.level,
+    score: pick.ap.score
+  };
 }
 
 /* ===== BANNER STICKY ALLARME FRONTE ===== */
@@ -4030,6 +4393,14 @@ function updateFrontAlertBanner(){
   
   var front = detectIncomingFront();
   if(!front){
+    banner.style.display = 'none';
+    banner.innerHTML = '';
+    return;
+  }
+  // Sensibilità "equilibrata": il banner sticky scatta solo per fronte conclamato
+  // o per approach di livello medium/high. Il livello low (early-warning verde)
+  // resta visibile solo nella card della tab Attuale e nel riepilogo Fronti.
+  if(front.mode === 'approach' && front.approachLevel === 'low'){
     banner.style.display = 'none';
     banner.innerHTML = '';
     return;
@@ -4052,12 +4423,59 @@ function updateFrontAlertBanner(){
   else bgIntensity = '15';
   
   var svg = FRONT_SVG(front.type, 32);
+  // Etichetta: "Allarme" per conclamato, "Probabile fronte" per approach
+  var headerLbl = (front.mode === 'approach')
+    ? (front.approachLevel === 'high' ? '🟠 Probabile fronte' : '🟡 Possibile fronte')
+    : '⚠️ Allarme fronte';
+  
+  // Rilevamento "pill principale già NON USCIRE": leggo il contenuto di #vd
+  // (impostato da rn() via GG()). Se è già stato dichiarato "NON USCIRE",
+  // il banner fronte diventa una riga tenue, perché l'allarme operativo c'è già.
+  var vdEl = document.getElementById('vd');
+  var pillRed = vdEl ? (vdEl.textContent || '').indexOf('NON USCIRE') >= 0 : false;
+  
+  // Override stile se pill è rossa: niente pulse, niente gradient pieno, niente bordo colorato.
+  // Mantieni le info ma in stile discreto a una riga sola.
+  if(pillRed){
+    var compactSvg = FRONT_SVG(front.type, 22);
+    var compactHtml = '<div onclick="goToFrontiTab()" style="display:flex;align-items:center;gap:10px;padding:6px 12px;background:var(--border-subtle);border:1px solid var(--border-soft);border-radius:8px;cursor:pointer;opacity:.85">';
+    compactHtml += '<div style="flex-shrink:0;display:flex;align-items:center">'+compactSvg+'</div>';
+    compactHtml += '<div style="flex:1;min-width:0;font-size:11px;color:var(--text-secondary);line-height:1.3">';
+    compactHtml += '<span style="color:var(--text-muted);font-weight:500">In aggiunta — </span>';
+    compactHtml += '<span style="color:'+front.color+';font-weight:700">'+front.type+'</span>';
+    compactHtml += ' <span style="color:var(--text-muted)">·</span> '+humanTime;
+    // Distanza inline solo se calcolabile e fronte non ORA
+    if(front.hoursAhead > 0){
+      var distNMc = estimateFrontDistanceNM(front.type, front.hoursAhead);
+      if(distNMc != null && distNMc > 0){
+        compactHtml += ' <span style="color:var(--text-muted)">·</span> ~'+distNMc+' NM';
+      }
+    } else {
+      compactHtml += ' <span style="color:var(--text-muted)">·</span> in transito';
+    }
+    compactHtml += '</div>';
+    compactHtml += '<div style="flex-shrink:0;font-size:10px;color:var(--text-muted);white-space:nowrap">Dettagli ›</div>';
+    compactHtml += '</div>';
+    banner.innerHTML = compactHtml;
+    banner.style.display = 'block';
+    return;
+  }
   
   var html = '<div onclick="goToFrontiTab()" class="'+pulseClass.trim()+'" style="display:flex;align-items:center;gap:12px;padding:8px 14px;background:linear-gradient(90deg,'+front.color+bgIntensity+','+front.color+'15);border:1px solid '+front.color+'60;border-radius:10px;cursor:pointer">';
   html += '<div style="flex-shrink:0;display:flex;align-items:center">'+svg+'</div>';
   html += '<div style="flex:1;min-width:0">';
-  html += '<div style="font-size:10px;color:'+front.color+';font-weight:700;letter-spacing:1.5px;text-transform:uppercase;line-height:1">⚠️ Allarme fronte</div>';
+  html += '<div style="font-size:10px;color:'+front.color+';font-weight:700;letter-spacing:1.5px;text-transform:uppercase;line-height:1">'+headerLbl+'</div>';
+  // Riga principale: tipo + tempo umano (sempre presente)
   html += '<div style="font-size:14px;font-weight:800;color:var(--text-primary);line-height:1.2;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:'+front.color+'">'+front.type+'</span> <span style="color:var(--text-muted);font-weight:500">·</span> '+humanTime+'</div>';
+  // Riga secondaria: distanza stimata in NM, oppure "In transito" se fronte già qui
+  if(front.hoursAhead === 0){
+    html += '<div style="font-size:11px;color:'+front.color+';font-weight:700;line-height:1.2;margin-top:1px">In transito <span style="color:var(--text-faint);font-weight:400;font-style:italic">(sistema sopra di te ora)</span></div>';
+  } else {
+    var distNM = estimateFrontDistanceNM(front.type, front.hoursAhead);
+    if(distNM != null && distNM > 0){
+      html += '<div style="font-size:11px;color:var(--text-muted);font-weight:500;line-height:1.2;margin-top:1px">~<b style="color:var(--text-secondary)">'+distNM+' NM</b> di traiettoria stimata <span style="font-style:italic;color:var(--text-faint)">(velocità tipica)</span></div>';
+    }
+  }
   html += '</div>';
   html += '<div style="flex-shrink:0;font-size:11px;color:'+front.color+';font-weight:700;white-space:nowrap">Dettagli ›</div>';
   html += '</div>';
@@ -4120,7 +4538,22 @@ function injectFrontDetailCard(){
   if(!pN) return;
   var existing = pN.querySelector('#frontDetailCard');
   if(existing) existing.remove();
-  if(!front) return;
+  if(!front){
+    // Nessun fronte rilevato: mostra una card verde tranquilla, in modo che
+    // l'utente veda che l'algoritmo sta sorvegliando attivamente.
+    var okHtml = '<div id="frontDetailCard" style="margin-bottom:14px;padding:12px 16px;border-radius:12px;background:rgba(74,144,96,.10);border:1px solid rgba(74,144,96,.30);display:flex;align-items:center;gap:12px">'+
+      '<div style="font-size:24px;flex-shrink:0">🟢</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:13px;font-weight:700;color:var(--status-go-2);line-height:1.2">Nessun fronte rilevato nelle prossime 48h</div>'+
+        '<div style="font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.4">Sorveglianza multi-orizzonte: tendenza pressione (3/6/12h), Z500 (24h), nuvolosità e rotazione vento. Nessun segnale frontale significativo.</div>'+
+      '</div>'+
+    '</div>';
+    var firstChild = pN.firstChild;
+    var wrap = document.createElement('div');
+    wrap.innerHTML = okHtml;
+    pN.insertBefore(wrap.firstChild, firstChild);
+    return;
+  }
   
   var humanTime;
   if(front.hoursAhead === 0) humanTime = 'ORA';
@@ -4132,24 +4565,59 @@ function injectFrontDetailCard(){
   
   var svg = FRONT_SVG(front.type, 56);
   
-  var html = '<div id="frontDetailCard" style="margin-bottom:14px;padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,'+front.color+'30,'+front.color+'10);border:2px solid '+front.color+'70;box-shadow:0 4px 20px '+front.color+'20">';
+  // Header label e icona: distingue allarme conclamato da approach (early-warning)
+  var hdrLabel, hdrEmoji;
+  if(front.mode === 'approach'){
+    if(front.approachLevel === 'high'){      hdrLabel = 'Probabile fronte in formazione'; hdrEmoji = '🟠'; }
+    else if(front.approachLevel === 'medium'){ hdrLabel = 'Possibile fronte: segnali in aumento'; hdrEmoji = '🟡'; }
+    else {                                     hdrLabel = 'Segnali deboli — monitoraggio attivo'; hdrEmoji = '🟢'; }
+  } else {
+    hdrLabel = 'Allarme fronte in avvicinamento'; hdrEmoji = '⚠️';
+  }
+  
+  // Stile card: meno enfatico per approach 'low' (early-warning), pieno per gli altri
+  var cardOuter = (front.mode === 'approach' && front.approachLevel === 'low')
+    ? 'margin-bottom:14px;padding:14px 18px;border-radius:12px;background:linear-gradient(135deg,'+front.color+'18,'+front.color+'08);border:1px solid '+front.color+'50'
+    : 'margin-bottom:14px;padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,'+front.color+'30,'+front.color+'10);border:2px solid '+front.color+'70;box-shadow:0 4px 20px '+front.color+'20';
+  
+  var html = '<div id="frontDetailCard" style="'+cardOuter+'">';
   
   // Header con icona e titolo
   html += '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">';
   html += '<div style="flex-shrink:0">'+svg+'</div>';
   html += '<div style="flex:1;min-width:200px">';
-  html += '<div style="font-size:11px;color:'+front.color+';font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">⚠️ Allarme fronte in avvicinamento</div>';
+  html += '<div style="font-size:11px;color:'+front.color+';font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">'+hdrEmoji+' '+hdrLabel+'</div>';
   html += '<div style="font-size:22px;font-weight:900;color:'+front.color+';line-height:1.1">'+front.type+'</div>';
-  html += '<div style="font-size:12px;color:#d0dce8;margin-top:4px;line-height:1.4">'+front.description+'</div>';
+  html += '<div style="font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.4">'+front.description+'</div>';
   html += '</div></div>';
   
-  // Riga ETA + ora stimata
+  // Riga ETA + distanza stimata + severità
   html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">';
   html += '<div style="flex:1;min-width:140px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid '+front.color+'40">';
   html += '<div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Quando</div>';
   html += '<div style="font-size:17px;font-weight:800;color:'+front.color+'">'+humanTime+'</div>';
   html += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">'+front.atTimeStr+'</div>';
   html += '</div>';
+  // Card distanza stimata (NM) — sempre visibile
+  // Caso 1: hoursAhead === 0 → fronte già qui, "In transito" senza calcolo NM
+  // Caso 2: hoursAhead > 0 → mostra distanza calcolata + velocità tipica
+  if(front.hoursAhead === 0){
+    html += '<div style="flex:1;min-width:140px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid var(--border-soft)">';
+    html += '<div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Distanza stimata</div>';
+    html += '<div style="font-size:17px;font-weight:800;color:'+front.color+'">In transito</div>';
+    html += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;font-style:italic">il sistema è sopra di te ora</div>';
+    html += '</div>';
+  } else {
+    var distNMcard = estimateFrontDistanceNM(front.type, front.hoursAhead);
+    if(distNMcard != null && distNMcard > 0){
+      var speedKn = estimateFrontSpeedKn(front.type);
+      html += '<div style="flex:1;min-width:140px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid var(--border-soft)">';
+      html += '<div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Distanza stimata</div>';
+      html += '<div style="font-size:17px;font-weight:800;color:var(--text-primary)">~'+distNMcard+' NM</div>';
+      html += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;font-style:italic">traiettoria a ~'+speedKn+' kn</div>';
+      html += '</div>';
+    }
+  }
   html += '<div style="flex:1;min-width:140px;padding:10px 14px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid var(--border-soft)">';
   html += '<div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Severità stimata</div>';
   var sevLabel = front.severity==='high'?'🔴 Alta':front.severity==='medium'?'🟡 Media':'🟢 Bassa';
@@ -4165,6 +4633,19 @@ function injectFrontDetailCard(){
     html += '<div style="font-size:18px;flex-shrink:0">⚓</div>';
     html += '<div style="flex:1"><div style="font-size:10px;color:var(--wind-strong);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px">Cosa fare</div>';
     html += '<div style="font-size:12px;color:#e8d0a0;line-height:1.5">'+front.advice+'</div></div></div>';
+  }
+  
+  // Lista dettagliata dei segnali (utile soprattutto per approach: spiega COSA ha visto)
+  if(front.signals && front.signals.length){
+    html += '<div style="margin-bottom:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--border-soft)">';
+    html += '<div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700">📡 Segnali rilevati ('+front.signals.length+')</div>';
+    front.signals.forEach(function(s){
+      html += '<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;padding:2px 0">'+s+'</div>';
+    });
+    if(front.mode === 'approach' && front.score != null){
+      html += '<div style="font-size:9px;color:var(--text-faint);font-style:italic;margin-top:6px;border-top:1px solid var(--border-subtle);padding-top:5px">Punteggio approccio: '+front.score+' · confidenza '+front.approachLevel+'</div>';
+    }
+    html += '</div>';
   }
   
   // Pulsante azione
