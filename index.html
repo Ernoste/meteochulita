@@ -4864,6 +4864,40 @@ function renderSynopticUI(){
   html += 'Le linee continue sono <b style="color:var(--text-primary)">isobare</b> (linee di pari pressione, ogni 4 hPa). <b style="color:#ff7070;font-size:15px">L</b> indica zone di <b style="color:#ff9090">bassa pressione</b> (tempo perturbato), <b style="color:#70a0ff;font-size:15px">H</b> di <b style="color:#90b8ff">alta pressione</b> (tempo stabile). I simboli sui fronti mostrano la direzione di movimento — vedi la tab <b style="color:var(--route-color)">🌀 Fronti</b> per dettagli sui tipi.';
   html += '</div>';
   
+  // ─── Bollettino Meteomar (link al sito esterno) ──────────────────────────
+  // Aggiunge una sezione che spiega cos'è il Meteomar e linka al bollettino
+  // ufficiale dell'Aeronautica Militare e all'archivio testuale del Cybernauta
+  // (entrambi consultabili in nuova scheda). Non scarichiamo il contenuto qui
+  // dentro l'app: l'utente apre il link, legge il bollettino, torna.
+  html += '<div style="margin-top:18px;padding:14px 16px;border-radius:12px;background:linear-gradient(135deg,rgba(74,144,96,.08),rgba(46,125,50,.04));border:1px solid rgba(74,144,96,.30)">';
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">';
+  html += '<div style="font-size:20px;flex-shrink:0">⚓</div>';
+  html += '<div style="flex:1;min-width:200px">';
+  html += '<div style="font-size:13px;font-weight:800;color:var(--status-go-2);line-height:1.2">Bollettino Meteomar — Aeronautica Militare</div>';
+  html += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.4">Fonte ufficiale italiana per la navigazione marittima. Emesso ogni 6 ore sinottiche (00, 06, 12, 18 UTC) per i mari del Mediterraneo.</div>';
+  html += '</div></div>';
+  
+  // Struttura del bollettino
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:12px">';
+  html += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border-soft);border-radius:8px"><div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;font-weight:700">1 · Avvisi</div><div style="font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.4">Burrasche e temporali in corso o previsti</div></div>';
+  html += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border-soft);border-radius:8px"><div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;font-weight:700">2 · Situazione</div><div style="font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.4">Analisi sinottica, fronti, pressione</div></div>';
+  html += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border-soft);border-radius:8px"><div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;font-weight:700">3 · Previsione 24h</div><div style="font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.4">Vento, mare, visibilità per 21 zone (+ tendenza 12h)</div></div>';
+  html += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border-soft);border-radius:8px"><div style="font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;font-weight:700">4 · Tendenza 3gg</div><div style="font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.4">Vento e moto ondoso mari italiani a +12h, +24h, +36h</div></div>';
+  html += '</div>';
+  
+  // Pulsanti link
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  html += '<a href="https://www.meteoam.it/it/meteomar" target="_blank" rel="noopener" style="flex:1;min-width:180px;padding:10px 14px;background:linear-gradient(135deg,rgba(74,144,96,.20),rgba(46,125,50,.10));color:var(--status-go-2);border:1px solid rgba(74,144,96,.50);border-radius:8px;font-size:12px;font-weight:800;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px">🇮🇹 Apri Meteomar ufficiale <span style="font-size:10px;opacity:.7">↗</span></a>';
+  html += '<a href="https://www.paolociraci.it/meteo-nautica/meteomar.htm" target="_blank" rel="noopener" style="flex:1;min-width:180px;padding:10px 14px;background:var(--border-subtle);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px">📄 Versione testuale <span style="font-size:10px;opacity:.7">↗</span></a>';
+  html += '</div>';
+  
+  // Nota
+  html += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-soft);font-size:10px;color:var(--text-faint);line-height:1.5;font-style:italic">';
+  html += '💡 Il bollettino Meteomar è la fonte ufficiale italiana legalmente riconosciuta. Le carte UK Met Office sopra mostrano i fronti graficamente; il Meteomar descrive le condizioni testualmente, zona per zona, con riferimento alla scala Beaufort (vento) e Douglas (mare).';
+  html += '</div>';
+  
+  html += '</div>';
+  
   // Disclaimer
   html += '<div style="margin-top:12px;padding:10px 14px;text-align:center;font-size:12px;color:var(--text-muted);background:var(--border-subtle);border-radius:8px;line-height:1.5">Carte © <b style="color:var(--text-muted)">Crown Copyright UK Met Office</b> — Solo riferimento, consultare sempre gli avvisi meteo ufficiali prima di navigare</div>';
   
