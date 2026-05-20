@@ -5034,20 +5034,30 @@ function attachSyTouchHandlers(){
    ============================================================ */
 
 /* Costruisce un tileLayer Leaflet coerente con il tema corrente.
-   Dark  -> Esri World Dark Gray Base (quello storico dell'app)
-   Light -> CartoDB Positron (toni carta nautica, etichette leggibili) */
+   Dark  -> Esri World Dark Gray Base + overlay OpenSeaMap (nautico)
+   Light -> CartoDB Positron + overlay OpenSeaMap (nautico)
+   L'overlay OpenSeaMap aggiunge boe, fari, porti, profondità sopra la base. */
 window._buildTileLayer = function(){
   var theme = document.documentElement.getAttribute('data-theme') || 'dark';
+  var base;
   if(theme === 'light'){
-    return L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    base = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
       attribution:'© OpenStreetMap © CARTO',
       subdomains:'abcd',
       maxZoom:19
     });
+  } else {
+    base = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{
+      attribution:'© Esri',
+      maxZoom:19
+    });
   }
-  return L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{
-    attribution:'© Esri'
+  var seamark = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{
+    attribution:'© OpenSeaMap',
+    maxZoom:18,
+    opacity:0.9
   });
+  return L.layerGroup([base, seamark]);
 };
 
 /* Sostituisce i tile sulle mappe esistenti quando cambia il tema.
