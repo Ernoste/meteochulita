@@ -1166,19 +1166,20 @@ function rzZ(){
   out+='</div></div>';
   out+='<div style="font-size:9px;color:#2a4060;text-align:center;margin-top:8px">Dati: Open-Meteo &#8212; GFS/ICON &#8212; 1 dam = 10 m</div>';
 
-  // Carta sinottica Z500 da wetter3.de (GFS, aggiornata ogni 6h)
+  // Carta sinottica Z500 da firenzemeteo.it (GFS, aggiornata 4 volte al giorno)
   // Vista Europa intera con Mediterraneo ben visibile + selezione orari T+0..T+72
-  out+='<div class="cd" style="margin-top:14px"><div class="lb" style="margin-bottom:8px">&#128506;&#65039; CARTA Z500 EUROPA (GFS &#8212; aggiornata ogni 6h)</div>';
-  out+='<div style="font-size:10px;color:var(--text-deep);margin-bottom:10px;line-height:1.5">Carta del geopotenziale a 500 hPa (~5500m) e pressione al suolo sull&apos;Europa/Mediterraneo. <b>L</b> = bassa pressione in quota (instabile). <b>H</b> = alta pressione (stabile). Le linee colorate sono isoipse del geopotenziale, le nere sono isobare al suolo.</div>';
+  // URL pattern: europa_hgt_500hPa_NNN.webp dove NNN = ore di forecast (000, 006, 012, ...)
+  out+='<div class="cd" style="margin-top:14px"><div class="lb" style="margin-bottom:8px">&#128506;&#65039; CARTA Z500 EUROPA (GFS &#8212; aggiornata 4 volte/giorno)</div>';
+  out+='<div style="font-size:10px;color:var(--text-deep);margin-bottom:10px;line-height:1.5">Carta del geopotenziale a 500 hPa (~5500m), temperatura e pressione al suolo sull&apos;Europa/Mediterraneo. Le aree <b style="color:#d05050">rosse/arancio</b> indicano alta pressione in quota (tempo stabile). Le aree <b style="color:#5080d0">blu/viola</b> indicano bassa pressione in quota (instabile). Le linee nere sono isobare al suolo.</div>';
   out+='<div id="z5MapBtns" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">';
-  ['0','12','24','48','72','96'].forEach(function(h,i){
-    out+='<button onclick="_z5Switch(this,'+h+')" class="z5btn'+(i===0?' z5btnA':'')+'" style="padding:5px 10px;font-size:11px;font-weight:600;background:'+(i===0?'var(--accent-primary-3)':'rgba(255,255,255,.06)')+';color:'+(i===0?'#fff':'var(--text-secondary)')+';border:1px solid rgba(255,255,255,.15);border-radius:6px;cursor:pointer">T+'+h+'h</button>';
+  ['0','12','24','48','72','96','120'].forEach(function(h,i){
+    out+='<button onclick="_z5Switch(this,'+h+')" class="z5btn'+(i===0?' z5btnA':'')+'" style="padding:5px 10px;font-size:11px;font-weight:600;background:'+(i===0?'var(--accent-primary-3)':'rgba(255,255,255,.06)')+';color:'+(i===0?'#fff':'var(--text-secondary)')+';border:1px solid rgba(255,255,255,.15);border-radius:6px;cursor:pointer">'+(i===0?'Ora':'T+'+h+'h')+'</button>';
   });
   out+='</div>';
-  out+='<div style="position:relative;width:100%;padding-bottom:70%;overflow:hidden;border-radius:8px;background:#000">';
-  out+='<img id="z5MapImg" src="https://www.wetter3.de/Animation_00_UTC/0_1.gif" loading="lazy" alt="Carta Z500 Europa" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000" onerror="this.parentNode.innerHTML=\'<div style=&quot;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-deep);font-size:11px;text-align:center;padding:20px&quot;>Carta non disponibile al momento.<br>Riprova tra qualche minuto o apri full-screen.</div>\'">';
+  out+='<div style="position:relative;width:100%;padding-bottom:65%;overflow:hidden;border-radius:8px;background:#000">';
+  out+='<img id="z5MapImg" src="https://www.firenzemeteo.it/maps/plot/europa_hgt_500hPa_000.webp" loading="lazy" alt="Carta Z500 Europa" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#fff" onerror="this.parentNode.innerHTML=\'<div style=&quot;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-deep);font-size:11px;text-align:center;padding:20px&quot;>Carta non disponibile al momento.<br>Apri full-screen per vederla.</div>\'">';
   out+='</div>';
-  out+='<div style="font-size:9px;color:var(--text-faint);text-align:center;margin-top:6px">Fonte: wetter3.de &#8212; GFS &#8212; <a href="https://www.wetter3.de/animation_00_eur.html" target="_blank" rel="noopener" style="color:var(--accent-primary-3)">apri full-screen / animazione &#8599;</a></div>';
+  out+='<div style="font-size:9px;color:var(--text-faint);text-align:center;margin-top:6px">Fonte: firenzemeteo.it &#8212; GFS 0.5&deg; &#8212; <a href="https://www.firenzemeteo.it/maps/gfs-geopotenziale-temperature-500-hPa.php" target="_blank" rel="noopener" style="color:var(--accent-primary-3)">apri full-screen / animazione &#8599;</a></div>';
   out+='</div>';
 
   document.getElementById("pZ").innerHTML=out;
@@ -1188,10 +1189,9 @@ function rzZ(){
 window._z5Switch = function(btn, hour){
   var img = document.getElementById('z5MapImg');
   if(!img) return;
-  // wetter3.de usa numerazione: 0_1=T+0, 0_3=T+6, 0_5=T+12, 0_9=T+24, 0_17=T+48, 0_25=T+72, 0_33=T+96
-  var map = {0:'0_1',12:'0_5',24:'0_9',48:'0_17',72:'0_25',96:'0_33'};
-  var code = map[hour] || '0_1';
-  img.src = 'https://www.wetter3.de/Animation_00_UTC/'+code+'.gif?t='+Date.now();
+  // firenzemeteo.it usa il numero ore di forecast con padding a 3 cifre: 000, 012, 024, 048, 072, 096, 120
+  var pad = String(hour).padStart(3,'0');
+  img.src = 'https://www.firenzemeteo.it/maps/plot/europa_hgt_500hPa_'+pad+'.webp?t='+Date.now();
   // Aggiorna stile bottoni
   document.querySelectorAll('.z5btn').forEach(function(b){
     b.classList.remove('z5btnA');
