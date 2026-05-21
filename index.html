@@ -1166,18 +1166,42 @@ function rzZ(){
   out+='</div></div>';
   out+='<div style="font-size:9px;color:#2a4060;text-align:center;margin-top:8px">Dati: Open-Meteo &#8212; GFS/ICON &#8212; 1 dam = 10 m</div>';
 
-  // Carta sinottica Z500 dal Wetterzentrale (GFS, aggiornata ogni 6h)
-  // Mostra geopotenziale 500 hPa e temperatura su Europa/Mediterraneo
+  // Carta sinottica Z500 da wetter3.de (GFS, aggiornata ogni 6h)
+  // Vista Europa intera con Mediterraneo ben visibile + selezione orari T+0..T+72
   out+='<div class="cd" style="margin-top:14px"><div class="lb" style="margin-bottom:8px">&#128506;&#65039; CARTA Z500 EUROPA (GFS &#8212; aggiornata ogni 6h)</div>';
-  out+='<div style="font-size:10px;color:var(--text-deep);margin-bottom:8px;line-height:1.5">Carta del geopotenziale a 500 hPa (~5500m) sull&apos;Europa. <b style="color:#ff5050">Rosso</b> = alta pressione in quota (stabile). <b style="color:#5080ff">Blu</b> = bassa pressione in quota (instabile). Le isolinee bianche sono altezze costanti del geopotenziale; le frecce indicano il flusso a 5500m.</div>';
-  out+='<div style="position:relative;width:100%;padding-bottom:75%;overflow:hidden;border-radius:8px;background:#000">';
-  out+='<img src="https://www.wetterzentrale.de/maps/GFSOPME00_0_1.png" loading="lazy" alt="Carta Z500 Europa" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000" onerror="this.parentNode.innerHTML=\'<div style=&quot;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-deep);font-size:11px;text-align:center;padding:20px&quot;>Carta non disponibile al momento.<br>Riprova tra qualche minuto.</div>\'">';
+  out+='<div style="font-size:10px;color:var(--text-deep);margin-bottom:10px;line-height:1.5">Carta del geopotenziale a 500 hPa (~5500m) e pressione al suolo sull&apos;Europa/Mediterraneo. <b>L</b> = bassa pressione in quota (instabile). <b>H</b> = alta pressione (stabile). Le linee colorate sono isoipse del geopotenziale, le nere sono isobare al suolo.</div>';
+  out+='<div id="z5MapBtns" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">';
+  ['0','12','24','48','72','96'].forEach(function(h,i){
+    out+='<button onclick="_z5Switch(this,'+h+')" class="z5btn'+(i===0?' z5btnA':'')+'" style="padding:5px 10px;font-size:11px;font-weight:600;background:'+(i===0?'var(--accent-primary-3)':'rgba(255,255,255,.06)')+';color:'+(i===0?'#fff':'var(--text-secondary)')+';border:1px solid rgba(255,255,255,.15);border-radius:6px;cursor:pointer">T+'+h+'h</button>';
+  });
   out+='</div>';
-  out+='<div style="font-size:9px;color:var(--text-faint);text-align:center;margin-top:6px">Fonte: Wetterzentrale.de (GFS T+0h) &#8212; <a href="https://www.wetterzentrale.de/en/topkarten.php?model=gfs&map=1&time=0&run=0" target="_blank" rel="noopener" style="color:var(--accent-primary-3)">apri full-screen &#8599;</a></div>';
+  out+='<div style="position:relative;width:100%;padding-bottom:70%;overflow:hidden;border-radius:8px;background:#000">';
+  out+='<img id="z5MapImg" src="https://www.wetter3.de/Animation_00_UTC/0_1.gif" loading="lazy" alt="Carta Z500 Europa" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000" onerror="this.parentNode.innerHTML=\'<div style=&quot;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-deep);font-size:11px;text-align:center;padding:20px&quot;>Carta non disponibile al momento.<br>Riprova tra qualche minuto o apri full-screen.</div>\'">';
+  out+='</div>';
+  out+='<div style="font-size:9px;color:var(--text-faint);text-align:center;margin-top:6px">Fonte: wetter3.de &#8212; GFS &#8212; <a href="https://www.wetter3.de/animation_00_eur.html" target="_blank" rel="noopener" style="color:var(--accent-primary-3)">apri full-screen / animazione &#8599;</a></div>';
   out+='</div>';
 
   document.getElementById("pZ").innerHTML=out;
 }
+
+// Switch dell'immagine Z500 tra diversi orari di previsione
+window._z5Switch = function(btn, hour){
+  var img = document.getElementById('z5MapImg');
+  if(!img) return;
+  // wetter3.de usa numerazione: 0_1=T+0, 0_3=T+6, 0_5=T+12, 0_9=T+24, 0_17=T+48, 0_25=T+72, 0_33=T+96
+  var map = {0:'0_1',12:'0_5',24:'0_9',48:'0_17',72:'0_25',96:'0_33'};
+  var code = map[hour] || '0_1';
+  img.src = 'https://www.wetter3.de/Animation_00_UTC/'+code+'.gif?t='+Date.now();
+  // Aggiorna stile bottoni
+  document.querySelectorAll('.z5btn').forEach(function(b){
+    b.classList.remove('z5btnA');
+    b.style.background = 'rgba(255,255,255,.06)';
+    b.style.color = 'var(--text-secondary)';
+  });
+  btn.classList.add('z5btnA');
+  btn.style.background = 'var(--accent-primary-3)';
+  btn.style.color = '#fff';
+};
   var p=document.getElementById("pZ");
   var h='';
   h+='<div class="cd" style="margin-bottom:10px">';
