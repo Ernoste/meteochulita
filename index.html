@@ -516,6 +516,8 @@ function st(id,b){
       if(!window._leafMap){
         window._leafMap=L.map('mapContainer',{center:[38,13],zoom:5});
         window._leafTiles=window._buildTileLayer().addTo(window._leafMap);
+        // RainViewer radar overlay (pioggia e temporali animati)
+        window._initRainRadar(window._leafMap);
         window._leafMarkers={};
         Z.forEach(function(loc){
           var color=(window._meteoColors&&window._meteoColors[loc.n])||'var(--accent-primary-4)';
@@ -1163,6 +1165,16 @@ function rzZ(){
   out+='<div class="rx" style="background:rgba(123,31,162,.08);border:1px solid rgba(123,31,162,.2)"><strong style="color:var(--route-color)">&#127744; Occlusione/Cut-off</strong><br><span style="font-size:8px;color:var(--text-faint)">Z500 molto basso e stazionario &#8226; sistema complesso &#8226; massima cautela</span></div>';
   out+='</div></div>';
   out+='<div style="font-size:9px;color:#2a4060;text-align:center;margin-top:8px">Dati: Open-Meteo &#8212; GFS/ICON &#8212; 1 dam = 10 m</div>';
+
+  // Carta sinottica Z500 dal Wetterzentrale (GFS, aggiornata ogni 6h)
+  // Mostra geopotenziale 500 hPa e temperatura su Europa/Mediterraneo
+  out+='<div class="cd" style="margin-top:14px"><div class="lb" style="margin-bottom:8px">&#128506;&#65039; CARTA Z500 EUROPA (GFS &#8212; aggiornata ogni 6h)</div>';
+  out+='<div style="font-size:10px;color:var(--text-deep);margin-bottom:8px;line-height:1.5">Carta del geopotenziale a 500 hPa (~5500m) sull&apos;Europa. <b style="color:#ff5050">Rosso</b> = alta pressione in quota (stabile). <b style="color:#5080ff">Blu</b> = bassa pressione in quota (instabile). Le isolinee bianche sono altezze costanti del geopotenziale; le frecce indicano il flusso a 5500m.</div>';
+  out+='<div style="position:relative;width:100%;padding-bottom:75%;overflow:hidden;border-radius:8px;background:#000">';
+  out+='<img src="https://www.wetterzentrale.de/maps/GFSOPME00_0_1.png" loading="lazy" alt="Carta Z500 Europa" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000" onerror="this.parentNode.innerHTML=\'<div style=&quot;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-deep);font-size:11px;text-align:center;padding:20px&quot;>Carta non disponibile al momento.<br>Riprova tra qualche minuto.</div>\'">';
+  out+='</div>';
+  out+='<div style="font-size:9px;color:var(--text-faint);text-align:center;margin-top:6px">Fonte: Wetterzentrale.de (GFS T+0h) &#8212; <a href="https://www.wetterzentrale.de/en/topkarten.php?model=gfs&map=1&time=0&run=0" target="_blank" rel="noopener" style="color:var(--accent-primary-3)">apri full-screen &#8599;</a></div>';
+  out+='</div>';
 
   document.getElementById("pZ").innerHTML=out;
 }
@@ -2553,6 +2565,8 @@ function renderRottaMap(){
     }).addTo(_rtMap);
   } else {
     window._rtTiles = window._buildTileLayer().addTo(_rtMap);
+    // RainViewer radar overlay anche sulla mappa rotta (solo in modalità visualizzazione)
+    window._initRainRadar(_rtMap);
   }
   
   // Draw polyline (solo se >= 2 waypoint)
@@ -5058,6 +5072,90 @@ window._buildTileLayer = function(){
     opacity:0.9
   });
   return L.layerGroup([base, seamark]);
+};
+
+/* RainViewer radar overlay: mostra pioggia/temporali in tempo reale + previsione 30min.
+   Aggiunge un toggle in alto a destra sulla mappa per accendere/spegnere il radar.
+   Animazione: ciclo automatico tra i frame del passato + futuro. */
+window._initRainRadar = function(map){
+  if(!map || map._rainInited) return;
+  map._rainInited = true;
+
+  var rainLayer = null;
+  var rainOn = false;
+  var frames = [];
+  var currentFrame = 0;
+  var animTimer = null;
+  var lastFetch = 0;
+
+  // Bottone toggle in alto a destra
+  var RainControl = L.Control.extend({
+    options:{position:'topright'},
+    onAdd:function(){
+      var div = L.DomUtil.create('div','leaflet-bar');
+      div.style.cssText = 'background:rgba(20,30,45,.92);color:#fff;padding:6px 10px;cursor:pointer;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.2);border-radius:4px;user-select:none;backdrop-filter:blur(6px)';
+      div.innerHTML = '🌧️ Radar OFF';
+      div.title = 'Mostra/nascondi radar pioggia';
+      L.DomEvent.disableClickPropagation(div);
+      L.DomEvent.on(div,'click',function(){
+        rainOn = !rainOn;
+        div.innerHTML = rainOn ? '🌧️ Radar ON' : '🌧️ Radar OFF';
+        div.style.background = rainOn ? 'rgba(40,120,200,.92)' : 'rgba(20,30,45,.92)';
+        if(rainOn){ loadAndStart(); } else { stop(); }
+      });
+      return div;
+    }
+  });
+  map.addControl(new RainControl());
+
+  function stop(){
+    if(animTimer){ clearInterval(animTimer); animTimer = null; }
+    if(rainLayer){ map.removeLayer(rainLayer); rainLayer = null; }
+  }
+
+  function loadAndStart(){
+    // Cache 5 minuti: se l'ultima fetch è recente riusiamo i frame
+    var now = Date.now();
+    if(frames.length && (now - lastFetch) < 300000){ startAnim(); return; }
+    fetch('https://api.rainviewer.com/public/weather-maps.json')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        // Combiniamo passato (ultime 2h) + futuro (prossimi 30min)
+        var past = (data.radar && data.radar.past) || [];
+        var future = (data.radar && data.radar.nowcast) || [];
+        frames = past.concat(future).map(function(f){
+          return {
+            url: data.host + f.path + '/256/{z}/{x}/{y}/2/1_1.png',
+            time: f.time
+          };
+        });
+        lastFetch = now;
+        if(frames.length) startAnim();
+      })
+      .catch(function(e){ console.warn('RainViewer fetch failed', e); });
+  }
+
+  function startAnim(){
+    currentFrame = Math.max(0, frames.findIndex(function(f){ return f.time * 1000 >= Date.now() - 60000; }));
+    if(currentFrame < 0) currentFrame = frames.length - 1;
+    showFrame(currentFrame);
+    if(animTimer) clearInterval(animTimer);
+    animTimer = setInterval(function(){
+      currentFrame = (currentFrame + 1) % frames.length;
+      showFrame(currentFrame);
+    }, 600);
+  }
+
+  function showFrame(i){
+    var f = frames[i];
+    if(!f) return;
+    var newLayer = L.tileLayer(f.url, { opacity: 0.6, maxZoom: 12, attribution: '© RainViewer' });
+    newLayer.addTo(map);
+    // Rimuovo il layer precedente solo quando il nuovo è in coda (effetto crossfade morbido)
+    var prev = rainLayer;
+    rainLayer = newLayer;
+    setTimeout(function(){ if(prev) map.removeLayer(prev); }, 200);
+  }
 };
 
 /* Sostituisce i tile sulle mappe esistenti quando cambia il tema.
