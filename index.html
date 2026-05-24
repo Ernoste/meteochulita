@@ -1797,13 +1797,11 @@ function renderRottaUI(){
 
   // ===== EXPORT GPX / KML — sotto AGGIORNA METEO, solo con rotta (>=2 waypoint) =====
   if(wp.length >= 2){
-    html += '<div style="margin-bottom:16px">';
-    html += '<div style="display:flex;gap:8px">';
-    html += '<button onclick="rtExportGPX()" style="flex:1;padding:12px;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:10px;font-size:14px;cursor:pointer;font-weight:700">📤 GPX</button>';
-    html += '<button onclick="rtExportKML()" style="flex:1;padding:12px;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:10px;font-size:14px;cursor:pointer;font-weight:700">📤 KML</button>';
+    html += '<div style="display:flex;gap:8px;margin-bottom:8px">';
+    html += '<button onclick="rtExportGPX()" title="Esporta in formato GPX (OpenCPN, Navionics, Garmin, Raymarine)" style="flex:1;padding:12px;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:10px;font-size:14px;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-size:18px">📤</span> GPX</button>';
+    html += '<button onclick="rtExportKML()" title="Esporta in formato KML (Google Earth, Google Maps)" style="flex:1;padding:12px;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:10px;font-size:14px;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-size:18px">📤</span> KML</button>';
     html += '</div>';
-    html += '<div style="font-size:11px;color:var(--text-soft);text-align:center;margin-top:6px">Esporta la rotta per OpenCPN, Navionics, Garmin, Google Earth</div>';
-    html += '</div>';
+    html += '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin-bottom:16px">Esporta per OpenCPN, Navionics, Garmin, Google Earth</div>';
   }
 
   // ===== LISTA WAYPOINT — con info meteo compatte + espansione "Più dettagli" =====
