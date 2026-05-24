@@ -1795,6 +1795,17 @@ function renderRottaUI(){
     html += '<style>@keyframes rtPulseLoad{0%,100%{box-shadow:0 4px 16px rgba(46,125,50,.4)}50%{box-shadow:0 4px 24px rgba(46,125,50,.7)}}</style>';
   }
 
+  // ===== EXPORT GPX / KML — sotto AGGIORNA METEO, solo con rotta (>=2 waypoint) =====
+  if(wp.length >= 2){
+    html += '<div style="margin-bottom:16px">';
+    html += '<div style="display:flex;gap:8px">';
+    html += '<button onclick="rtExportGPX()" style="flex:1;padding:12px;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:10px;font-size:14px;cursor:pointer;font-weight:700">📤 GPX</button>';
+    html += '<button onclick="rtExportKML()" style="flex:1;padding:12px;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:10px;font-size:14px;cursor:pointer;font-weight:700">📤 KML</button>';
+    html += '</div>';
+    html += '<div style="font-size:11px;color:var(--text-soft);text-align:center;margin-top:6px">Esporta la rotta per OpenCPN, Navionics, Garmin, Google Earth</div>';
+    html += '</div>';
+  }
+
   // ===== LISTA WAYPOINT — con info meteo compatte + espansione "Più dettagli" =====
   if(wp.length > 0){
     if(!window._rtExpanded) window._rtExpanded = {};
@@ -3170,6 +3181,123 @@ async function rtLoadAll(){
   await Promise.all(promises);
   if(btn){btn.textContent='🔄 Carica meteo';btn.disabled=false;}
   renderRottaUI();
+}
+
+// ===== EXPORT ROTTA → GPX 1.1 / KML 2.2 =====
+function xmlEsc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+
+function rtDownload(filename, mime, text){
+  var blob = new Blob([text], {type:mime});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+}
+
+function rtDateStamp(){
+  var d = new Date();
+  return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+}
+
+// ETA per ogni waypoint (Date o null) — distanza cumulata / velocità da partenza
+function rtArrivalTimes(){
+  var wp = _rtWaypoints, spd = window._rtSpeed || 6;
+  var dep = window._rtDeparture || '';
+  var depTime = dep ? new Date(dep) : null;
+  var times = [], cumNm = 0;
+  for(var i=0;i<wp.length;i++){
+    if(i===0){ times.push(depTime ? new Date(depTime) : null); }
+    else {
+      cumNm += nmDistance(wp[i-1].lat, wp[i-1].lon, wp[i].lat, wp[i].lon);
+      times.push(depTime ? new Date(depTime.getTime() + (cumNm/spd)*3600000) : null);
+    }
+  }
+  return times;
+}
+
+// Nota testuale per waypoint: coordinate + ETA + meteo previsto (all'ora di arrivo se nota)
+function rtWpNote(w, arrT){
+  var L = [];
+  L.push('Coordinate: ' + toDMS(w.lat,true) + ' ' + toDMS(w.lon,false));
+  if(arrT) L.push('ETA: ' + arrT.toLocaleString('it-IT',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}));
+  if(w.D){
+    var d = w.D, m = w.Mr, vi = w.vi;
+    if(arrT){ // indice forecast all'ora di arrivo
+      var best = null;
+      for(var i=0;i<d.hourly.time.length;i++){ if(new Date(d.hourly.time[i]) <= arrT) best = i; }
+      if(best != null) vi = best;
+    }
+    var wk = Math.round(d.hourly.wind_speed_10m[vi]||0);
+    var bf = BF(wk), wdir = WN(d.hourly.wind_direction_10m[vi]);
+    var gust = d.hourly.wind_gusts_10m ? Math.round(d.hourly.wind_gusts_10m[vi]||0) : null;
+    var wh = (m && m.hourly.wave_height) ? m.hourly.wave_height[vi] : null;
+    var pr = d.hourly.pressure_msl ? Math.round(d.hourly.pressure_msl[vi]||0) : null;
+    var sc = rtScore({D:d,Mr:m,vi:vi});
+    var sem = ['VERDE','GIALLO','ROSSO'][sc.s];
+    L.push('Vento: ' + wk + ' kn (F' + bf.f + ') da ' + wdir + (gust!=null?(' - raffiche '+gust+' kn'):''));
+    if(wh != null) L.push('Mare: onda ' + wh.toFixed(1) + ' m');
+    if(pr != null) L.push('Pressione: ' + pr + ' hPa');
+    L.push('Giudizio: ' + sem + ' - ' + sc.label);
+  } else {
+    L.push('Meteo non caricato');
+  }
+  return L.join('\n');
+}
+
+function rtExportGPX(){
+  var wp = _rtWaypoints;
+  if(!wp.length){ alert('Aggiungi almeno una tappa'); return; }
+  var arr = rtArrivalTimes();
+  var now = new Date().toISOString();
+  var x = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  x += '<gpx version="1.1" creator="MeteoChulita" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
+  x += '  <metadata><name>Rotta MeteoChulita</name><time>'+now+'</time></metadata>\n';
+  wp.forEach(function(w,i){
+    x += '  <wpt lat="'+w.lat.toFixed(6)+'" lon="'+w.lon.toFixed(6)+'">\n';
+    if(arr[i]) x += '    <time>'+arr[i].toISOString()+'</time>\n'; // GPX 1.1: time prima di name
+    x += '    <name>'+xmlEsc(w.name)+'</name>\n';
+    x += '    <desc>'+xmlEsc(rtWpNote(w, arr[i]))+'</desc>\n';
+    x += '  </wpt>\n';
+  });
+  x += '  <rte>\n    <name>Rotta MeteoChulita</name>\n';
+  wp.forEach(function(w,i){
+    x += '    <rtept lat="'+w.lat.toFixed(6)+'" lon="'+w.lon.toFixed(6)+'">\n';
+    if(arr[i]) x += '      <time>'+arr[i].toISOString()+'</time>\n'; // GPX 1.1: time prima di name
+    x += '      <name>'+xmlEsc(w.name)+'</name>\n';
+    x += '      <desc>'+xmlEsc(rtWpNote(w, arr[i]))+'</desc>\n';
+    x += '    </rtept>\n';
+  });
+  x += '  </rte>\n</gpx>\n';
+  rtDownload('MeteoChulita_rotta_'+rtDateStamp()+'.gpx', 'application/gpx+xml', x);
+}
+
+function rtExportKML(){
+  var wp = _rtWaypoints;
+  if(!wp.length){ alert('Aggiungi almeno una tappa'); return; }
+  var arr = rtArrivalTimes();
+  var k = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  k += '<kml xmlns="http://www.opengis.net/kml/2.2">\n  <Document>\n    <name>Rotta MeteoChulita</name>\n';
+  k += '    <Style id="rtLine"><LineStyle><color>ffff901e</color><width>3</width></LineStyle></Style>\n';
+  wp.forEach(function(w,i){
+    k += '    <Placemark>\n';
+    k += '      <name>'+xmlEsc((i+1)+'. '+w.name)+'</name>\n';
+    k += '      <description>'+xmlEsc(rtWpNote(w, arr[i]))+'</description>\n';
+    k += '      <Point><coordinates>'+w.lon.toFixed(6)+','+w.lat.toFixed(6)+',0</coordinates></Point>\n';
+    k += '    </Placemark>\n';
+  });
+  if(wp.length >= 2){
+    k += '    <Placemark>\n      <name>Linea rotta</name>\n      <styleUrl>#rtLine</styleUrl>\n';
+    k += '      <LineString><tessellate>1</tessellate><coordinates>\n';
+    wp.forEach(function(w){ k += '        '+w.lon.toFixed(6)+','+w.lat.toFixed(6)+',0\n'; });
+    k += '      </coordinates></LineString>\n    </Placemark>\n';
+  }
+  k += '  </Document>\n</kml>\n';
+  rtDownload('MeteoChulita_rotta_'+rtDateStamp()+'.kml', 'application/vnd.google-earth.kml+xml', k);
 }
 
 
