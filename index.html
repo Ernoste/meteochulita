@@ -1657,6 +1657,9 @@ var _rtMap = null;
 var _rtMarkers = [];
 var _rtPolyline = null;
 
+// Detection puntatore: coarse = touch (mobile/tablet), altrimenti desktop (mouse).
+function rtIsCoarse(){ return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); }
+
 function bzRT(){
   try{
     if(!window._rtWaypoints) window._rtWaypoints=[];
@@ -1693,9 +1696,14 @@ function renderRottaUI(){
     html += '<div style="font-size:20px;font-weight:800;color:var(--status-go-3);display:flex;align-items:center;gap:8px">✏️ Disegna Rotta sulla Mappa</div>';
     html += '<div style="font-size:13px;color:var(--text-muted);margin-top:3px"><b style="color:var(--text-primary)">'+wp.length+'</b> waypoint inseriti • Clicca sulla mappa per aggiungere punti</div>';
     html += '</div>';
+    // Toggle "Modalità precisa" — solo su touch (su desktop il cursore fantasma segue già il mouse)
+    if(rtIsCoarse()){
+      var _pmOn = window._rtPreciseMode ? true : false;
+      html += '<button id="rtPreciseToggle" onclick="rtTogglePreciseMode()" style="padding:14px 18px;background:'+(_pmOn?'var(--accent-primary-bg-7)':'rgba(255,255,255,.08)')+';color:'+(_pmOn?'#fff':'var(--text-secondary)')+';border:2px solid '+(_pmOn?'var(--accent-primary)':'rgba(255,255,255,.2)')+';border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">🎯 Precisa'+(_pmOn?' ✓':'')+'</button>';
+    }
     html += '<button onclick="rtToggleDrawMode()" style="padding:14px 30px;background:linear-gradient(135deg,var(--success-strong),#1b5e20);color:#ffffff;border:2px solid var(--wind-calm);border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(46,125,50,.5);letter-spacing:.5px">✓ FATTO</button>';
     html += '</div>';
-    html += '<div style="font-size:12px;color:var(--status-go-3);margin-top:8px;padding:6px 10px;background:rgba(120,180,80,.12);border-radius:6px;text-align:center;max-width:1400px;margin-left:auto;margin-right:auto">⚓ Snap automatico ai porti entro 1 NM • Coordinate libere altrove</div>';
+    html += '<div style="font-size:12px;color:var(--status-go-3);margin-top:8px;padding:6px 10px;background:rgba(120,180,80,.12);border-radius:6px;text-align:center;max-width:1400px;margin-left:auto;margin-right:auto">⚓ Snap automatico ai porti entro 1 NM • Coordinate libere altrove'+(rtIsCoarse()?' • 🎯 Precisa = mirino al centro':'')+'</div>';
     html += '</div>';
     
     // Lista chip waypoint orizzontale (sopra la mappa)
@@ -1721,8 +1729,40 @@ function renderRottaUI(){
     document.getElementById('pRT').innerHTML = html;
     setTimeout(renderRottaMap, 100);
     return;
+  } else if(window._rtFullscreenView){
+    // ╔══════════════════════════════════════════════════════════════╗
+    // ║   FULLSCREEN SOLA LETTURA — consultazione mappa risultato     ║
+    // ║   Stessa infrastruttura del drawMode ma SENZA click di disegno║
+    // ╚══════════════════════════════════════════════════════════════╝
+    document.body.style.overflow = 'hidden';
+    html += '<div id="rtFullscreenOverlay" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;z-index:9999;background:linear-gradient(180deg,var(--bg-deep),var(--bg-app));display:flex;flex-direction:column;padding:0">';
+    // Header (stile neutro/accent, NON verde: non si sta editando)
+    html += '<div style="flex-shrink:0;background:linear-gradient(180deg,rgba(6,14,26,.98),rgba(12,30,56,.95));backdrop-filter:blur(12px);padding:14px 18px;border-bottom:2px solid var(--accent-primary-bg-3);box-shadow:0 4px 16px var(--bg-overlay)">';
+    html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:1400px;margin:0 auto">';
+    html += '<div style="flex:1;min-width:200px">';
+    html += '<div style="font-size:20px;font-weight:800;color:var(--accent-primary);display:flex;align-items:center;gap:8px">🗺️ Mappa Rotta</div>';
+    html += '<div style="font-size:13px;color:var(--text-muted);margin-top:3px"><b style="color:var(--text-primary)">'+wp.length+'</b> tappe • zoom e pan • premi <b style="color:var(--text-primary)">ESC</b> o Chiudi per uscire</div>';
+    html += '</div>';
+    html += '<button onclick="rtToggleFullscreenView()" style="padding:14px 28px;background:var(--border-soft);color:var(--text-primary);border:2px solid var(--border-stronger);border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:.5px">✕ Chiudi</button>';
+    html += '</div></div>';
+    // Lista chip waypoint in SOLA LETTURA (senza ✕ di rimozione)
+    if(wp.length > 0){
+      html += '<div style="flex-shrink:0;display:flex;gap:8px;overflow-x:auto;padding:10px 18px;background:rgba(6,14,26,.6);-webkit-overflow-scrolling:touch;border-bottom:1px solid var(--border-subtle)">';
+      wp.forEach(function(w, i){
+        html += '<div style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(25,110,190,.18);border:1px solid var(--accent-primary-bg-6);border-radius:20px;font-size:13px">';
+        html += '<div style="width:24px;height:24px;border-radius:50%;background:var(--accent-primary-bg-7);color:var(--text-primary);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid rgba(255,255,255,.3)">'+(i+1)+'</div>';
+        html += '<span style="color:var(--text-primary);font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+w.name+'</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+    html += '<div id="rtMapContainer" style="flex:1;width:100%;background:var(--bg-deep-2);cursor:default;min-height:300px"></div>';
+    html += '</div>'; // fine overlay fullscreen read-only
+    document.getElementById('pRT').innerHTML = html;
+    setTimeout(renderRottaMap, 100);
+    return;
   } else {
-    // Ripristina scroll quando NON sei in drawMode
+    // Ripristina scroll quando NON sei in drawMode né fullscreen-view
     document.body.style.overflow = '';
   }
   
@@ -1966,6 +2006,10 @@ function rtToggleDrawMode(){
       try{ window._rtMap.removeLayer(window._rtTmpPin); }catch(e){}
       window._rtTmpPin = null;
     }
+    // Reset modalità precisa e rimozione bottone "Posiziona qui" (no residui)
+    window._rtPreciseMode = false;
+    var ph = document.getElementById('rtPlaceHereBtn');
+    if(ph) ph.remove();
   }
   renderRottaUI();
   // Quando si esce dal drawMode, scrolla in cima
@@ -1974,6 +2018,47 @@ function rtToggleDrawMode(){
       var pRT = document.getElementById('pRT');
       if(pRT) pRT.scrollIntoView({behavior:'smooth', block:'start'});
     }, 150);
+  }
+}
+
+/* Apre/chiude la mappa risultato a tutto schermo in SOLA LETTURA.
+   ESC chiude (listener aggiunto all'entrata, rimosso all'uscita per non lasciare residui). */
+function rtToggleFullscreenView(){
+  window._rtFullscreenView = !window._rtFullscreenView;
+  if(window._rtFullscreenView){
+    // Pulizia difensiva di eventuali residui mobile (improbabili in vista normale)
+    var bar = document.getElementById('rtPinBar'); if(bar) bar.remove();
+    if(window._rtTmpPin && window._rtMap){ try{ window._rtMap.removeLayer(window._rtTmpPin); }catch(e){} window._rtTmpPin = null; }
+    // ESC → chiude il fullscreen read-only
+    window._rtEscHandler = function(e){ if(e.key === 'Escape' && window._rtFullscreenView){ rtToggleFullscreenView(); } };
+    document.addEventListener('keydown', window._rtEscHandler);
+  } else {
+    if(window._rtEscHandler){ document.removeEventListener('keydown', window._rtEscHandler); window._rtEscHandler = null; }
+  }
+  renderRottaUI();
+  if(!window._rtFullscreenView){
+    setTimeout(function(){ var pRT = document.getElementById('pRT'); if(pRT) pRT.scrollIntoView({behavior:'smooth', block:'start'}); }, 150);
+  }
+}
+
+/* Toggle "Modalità precisa" (mobile): mostra/nasconde mirino centrale + bottone "Posiziona qui".
+   NON ri-renderizza (perderebbe pan/zoom): manipola solo il display degli elementi già nel DOM. */
+function rtTogglePreciseMode(){
+  window._rtPreciseMode = !window._rtPreciseMode;
+  var on = window._rtPreciseMode;
+  if(on){
+    // Pulisci un eventuale drop-pin draggable residuo da un tap precedente
+    var bar = document.getElementById('rtPinBar'); if(bar) bar.remove();
+    if(window._rtTmpPin && window._rtMap){ try{ window._rtMap.removeLayer(window._rtTmpPin); }catch(e){} window._rtTmpPin = null; }
+  }
+  var cross = document.getElementById('rtCenterCrosshair'); if(cross) cross.style.display = on ? 'block' : 'none';
+  var btn = document.getElementById('rtPlaceHereBtn'); if(btn) btn.style.display = on ? 'block' : 'none';
+  var tg = document.getElementById('rtPreciseToggle');
+  if(tg){
+    tg.style.background = on ? 'var(--accent-primary-bg-7)' : 'rgba(255,255,255,.08)';
+    tg.style.color = on ? '#fff' : 'var(--text-secondary)';
+    tg.style.borderColor = on ? 'var(--accent-primary)' : 'rgba(255,255,255,.2)';
+    tg.innerHTML = on ? '🎯 Precisa ✓' : '🎯 Precisa';
   }
 }
 
@@ -2703,21 +2788,68 @@ function renderRottaMap(){
     L.marker([w.lat,w.lon],{icon:icon}).bindPopup(popupContent).addTo(_rtMap);
   });
   
-  // ===== CLICK HANDLER PER DRAWMODE =====
+  // ===== CLICK HANDLER + PUNTATORE EVIDENTE PER DRAWMODE =====
   if(drawMode){
+    var _coarse = rtIsCoarse();
     _rtMap.on('click', function(e){
+      if(window._rtPreciseMode) return; // in modalità precisa si aggiunge solo con "Posiziona qui"
       var lat = e.latlng.lat;
       var lon = e.latlng.lng;
-      // Detection mobile: touch device + viewport stretto. iPad in landscape rimane su tap-and-go.
-      var isMobile = ('ontouchstart' in window) && window.innerWidth < 768;
-      if(isMobile){
+      if(_coarse){
         rtShowDraggablePin(lat, lon);
       } else {
         rtProcessMapPoint(lat, lon);
       }
     });
+
+    // Mirino comune (cerchio fill semi-trasparente + crosshair pieno al centro)
+    var _reticleInner = '<div style="position:absolute;left:50%;top:50%;width:16px;height:2px;background:var(--accent-primary);transform:translate(-50%,-50%)"></div>'
+      + '<div style="position:absolute;left:50%;top:50%;width:2px;height:16px;background:var(--accent-primary);transform:translate(-50%,-50%)"></div>'
+      + '<div style="position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:var(--accent-primary);transform:translate(-50%,-50%)"></div>';
+
+    if(!_coarse){
+      // DESKTOP: cerchio "fantasma" + mirino che segue il mouse in tempo reale
+      var _ghost = document.createElement('div');
+      _ghost.id = 'rtGhostCursor';
+      _ghost.style.cssText = 'position:absolute;left:0;top:0;width:46px;height:46px;border-radius:50%;background:var(--accent-primary-bg-6);border:2px solid var(--accent-primary);pointer-events:none;z-index:500;display:none';
+      _ghost.innerHTML = _reticleInner;
+      container.appendChild(_ghost);
+      _rtMap.on('mousemove', function(e){
+        _ghost.style.display = 'block';
+        var p = e.containerPoint;
+        _ghost.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px) translate(-50%,-50%)';
+      });
+      _rtMap.on('mouseout', function(){ _ghost.style.display = 'none'; });
+    } else {
+      // MOBILE: mirino FISSO al centro + bottone "Posiziona qui" (pattern Street View)
+      var _cross = document.createElement('div');
+      _cross.id = 'rtCenterCrosshair';
+      _cross.style.cssText = 'position:absolute;left:50%;top:50%;width:46px;height:46px;border-radius:50%;background:var(--accent-primary-bg-6);border:2px solid var(--accent-primary);pointer-events:none;z-index:500;transform:translate(-50%,-50%);display:' + (window._rtPreciseMode ? 'block' : 'none');
+      _cross.innerHTML = _reticleInner;
+      container.appendChild(_cross);
+
+      var _oldBtn = document.getElementById('rtPlaceHereBtn'); if(_oldBtn) _oldBtn.remove();
+      var _placeBtn = document.createElement('button');
+      _placeBtn.id = 'rtPlaceHereBtn';
+      _placeBtn.type = 'button';
+      _placeBtn.innerHTML = '📍 Posiziona qui';
+      _placeBtn.style.cssText = 'position:fixed;bottom:18px;left:12px;right:12px;z-index:10001;padding:16px;background:linear-gradient(135deg,var(--accent-primary-bg-7),rgba(25,110,190,.7));color:#fff;border:2px solid var(--accent-primary);border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.5);display:' + (window._rtPreciseMode ? 'block' : 'none');
+      _placeBtn.onclick = function(){ var c = _rtMap.getCenter(); rtProcessMapPoint(c.lat, c.lng); };
+      document.body.appendChild(_placeBtn);
+    }
   }
-  
+
+  // ===== BOTTONE "PIENO SCHERMO" — solo sulla mappa risultato normale =====
+  if(!drawMode && !window._rtFullscreenView){
+    var _fsBtn = document.createElement('button');
+    _fsBtn.type = 'button';
+    _fsBtn.title = 'Apri la mappa a tutto schermo (sola lettura)';
+    _fsBtn.innerHTML = '⛶ Pieno schermo';
+    _fsBtn.style.cssText = 'position:absolute;top:10px;right:10px;z-index:1000;padding:8px 12px;background:var(--bg-app);color:var(--text-primary);border:1px solid var(--border-stronger);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)';
+    _fsBtn.onclick = function(){ rtToggleFullscreenView(); };
+    container.appendChild(_fsBtn);
+  }
+
   // FitBounds solo se >=2 waypoint
   if(wp.length >= 2){
     var latlngsFit = wp.map(function(w){return [w.lat,w.lon];});
