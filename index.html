@@ -515,6 +515,7 @@ function st(id,b){
     setTimeout(function(){
       if(!window._leafMap){
         window._leafMap=L.map('mapContainer',{center:[38,13],zoom:5});
+        window._leafMap.attributionControl.setPrefix('Leaflet');
         window._leafTiles=window._buildTileLayer().addTo(window._leafMap);
         // RainViewer radar overlay (pioggia e temporali animati)
         window._initRainRadar(window._leafMap);
@@ -2427,6 +2428,7 @@ function renderRottaMap(){
   }
   
   _rtMap = L.map('rtMapContainer',{center:[centerLat,centerLon],zoom:zoom,zoomControl:true});
+  _rtMap.attributionControl.setPrefix('Leaflet');
   // In modalità disegno uso una mappa con etichette/riferimenti visibili (nomi città, isole, porti).
   // Altrimenti uso un tile coerente con il tema corrente (dark gray su scuro, positron su chiaro).
   if(drawMode){
@@ -2437,8 +2439,6 @@ function renderRottaMap(){
     }).addTo(_rtMap);
   } else {
     window._rtTiles = window._buildTileLayer().addTo(_rtMap);
-    // RainViewer radar overlay anche sulla mappa rotta (solo in modalità visualizzazione)
-    window._initRainRadar(_rtMap);
   }
   
   // Draw polyline (solo se >= 2 waypoint)
