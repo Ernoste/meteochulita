@@ -3695,22 +3695,27 @@ window._attachMapTapHandler = function(){
   if(!window._leafMap || window._mapTapAttached) return;
   window._mapTapAttached = true;
   var container = window._leafMap.getContainer();
-  var sx = null, sy = null, st0 = 0;
+  var sx = null, sy = null, st0 = 0, skip = false;
+  // pointerdown sul container: ci dice che il gesto è partito SULLA mappa.
+  // Decidiamo QUI l'esclusione (marker/popup/controlli): al pointerup il
+  // bersaglio può essere un tile radar staccato dal DOM mid-gesto.
   container.addEventListener('pointerdown', function(e){
     if(!e.isPrimary) return;                                   // ignora dita extra (pinch)
     if(e.pointerType === 'mouse' && e.button !== 0){ sx = null; return; } // solo tasto sx
     sx = e.clientX; sy = e.clientY; st0 = Date.now();
+    skip = !!(e.target.closest && (e.target.closest('.leaflet-marker-pane') || e.target.closest('.leaflet-popup') || e.target.closest('.leaflet-control')));
   }, true);
-  container.addEventListener('pointercancel', function(){ sx = null; }, true);
-  container.addEventListener('pointerup', function(e){
+  // pointerup/pointercancel su WINDOW (non sul container): arrivano sempre,
+  // anche se l'animazione radar ha rimosso il tile che era bersaglio del
+  // pointerdown (implicit pointer capture su nodo orfano) → immune al radar.
+  window.addEventListener('pointercancel', function(){ sx = null; skip = false; });
+  window.addEventListener('pointerup', function(e){
     if(!e.isPrimary || sx === null) return;
-    var dx = Math.abs(e.clientX - sx), dy = Math.abs(e.clientY - sy), dt = Date.now() - st0;
-    sx = null;
-    if(dx > 14 || dy > 14 || dt > 700) return;                 // pan o long-press, non un tap
-    // Non interferire con marker, popup o controlli Leaflet
-    if(e.target.closest && (e.target.closest('.leaflet-marker-pane') || e.target.closest('.leaflet-popup') || e.target.closest('.leaflet-control'))) return;
+    var dx = Math.abs(e.clientX - sx), dy = Math.abs(e.clientY - sy), dt = Date.now() - st0, wasSkip = skip;
+    sx = null; skip = false;
+    if(wasSkip || dx > 14 || dy > 14 || dt > 700) return;      // marker/pan/long-press, non un tap
     window._openAddLocPopup(window._leafMap.mouseEventToLatLng(e));
-  }, true);
+  });
 };
 
 function saveMapClickLoc(lat, lon){
