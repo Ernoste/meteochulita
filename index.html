@@ -534,10 +534,8 @@ function st(id,b){
           m.addTo(window._leafMap);
           window._leafMarkers[loc.n]=m;
         });
-        window._attachMapTapHandler();
       } else {
         window._leafMap.invalidateSize();
-        window._attachMapTapHandler(); // ri-aggancia i listener tap a ogni apertura tab (idempotente)
         Z.forEach(function(loc){
           var m=window._leafMarkers[loc.n];
           if(!m)return;
@@ -3655,70 +3653,56 @@ function findNearestPort(){
   });
 }
 
-/* ===== 2) TAP/CLICK SULLA MAPPA → AGGIUNGI LOCALITÀ ===== */
-/* Leaflet sopprime il proprio evento "click" se il puntatore si sposta
-   anche di pochi px tra press e release (lo classifica come pan): su touch
-   e trackpad un tap porta quasi sempre micro-jitter → tap persi in modo
-   intermittente. Usiamo Pointer Events sul container con tolleranza
-   esplicita (14px / 700ms), così i tap "sporchi" registrano comunque.
-   L'handler viene agganciato da st() alla creazione della mappa
-   (window._attachMapTapHandler), non più da un polling a tempo. */
-window._openAddLocPopup = function(latlng){
-  var lat = latlng.lat, lon = latlng.lng;
-  var dmsLat = toDMS(lat, true);
-  var dmsLon = toDMS(lon, false);
-  var popupHtml = '<div style="font-family:system-ui,sans-serif;min-width:240px">'+
-    '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:8px">➕ Aggiungi località</div>'+
-    '<div style="font-size:13px;color:var(--accent-primary);margin-bottom:4px;font-family:ui-monospace,monospace;font-weight:700;line-height:1.5">'+
-      '📍 '+dmsLat+'<br>&nbsp;&nbsp;&nbsp;&nbsp;'+dmsLon+'</div>'+
-    '<div style="font-size:10px;color:var(--text-faint);margin-bottom:8px;font-family:ui-monospace,monospace">'+
-      '('+lat.toFixed(4)+'°, '+lon.toFixed(4)+'°)</div>'+
-    '<input id="mapClickName" type="text" placeholder="Nome (es. Cala Mare)" '+
-      'style="width:100%;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-strongest);'+
-      'border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:8px;box-sizing:border-box">'+
-    '<button onclick="saveMapClickLoc('+lat+','+lon+')" '+
-      'style="width:100%;padding:7px 10px;background:var(--accent-primary-bg-7);color:var(--text-primary);'+
-      'border:1px solid rgba(25,110,190,.6);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">'+
-      '💾 Salva località</button>'+
-    '</div>';
-  L.popup({maxWidth:300})
-    .setLatLng(latlng)
-    .setContent(popupHtml)
-    .openOn(window._leafMap);
-  // Focus sul campo nome dopo apertura
-  setTimeout(function(){
-    var inp = document.getElementById('mapClickName');
-    if(inp) inp.focus();
-  }, 200);
-};
-
-window._attachMapTapHandler = function(){
-  if(!window._leafMap) return;
-  var map = window._leafMap;
-  // Usiamo gli eventi NATIVI di Leaflet (mousedown/mouseup), non listener DOM
-  // grezzi: Leaflet li normalizza per mouse e touch, li delega centralmente
-  // sul container (immuni al churn dei tile radar) e non dipendono dalla
-  // implicit pointer capture, che sui marker lasciava lo stato incastrato.
-  // Idempotente: niente flag-guard (si bloccava in memoria JS lasciando i
-  // listener mai agganciati); rimuoviamo gli eventuali handler precedenti
-  // prima di ri-agganciare, così la funzione è sicura anche se richiamata.
-  map.off('mousedown');
-  map.off('mouseup');
-  var down = null, t0 = 0;
-  map.on('mousedown', function(e){
-    var oe = e.originalEvent, t = oe && oe.target;
-    // Su marker/popup/controlli non si aggiunge una località
-    if(t && t.closest && (t.closest('.leaflet-marker-pane') || t.closest('.leaflet-popup') || t.closest('.leaflet-control'))){ down = null; return; }
-    down = e.containerPoint; t0 = Date.now();
-  });
-  map.on('mouseup', function(e){
-    if(!down) return;
-    var dx = Math.abs(e.containerPoint.x - down.x), dy = Math.abs(e.containerPoint.y - down.y), dt = Date.now() - t0;
-    down = null;
-    if(dx > 14 || dy > 14 || dt > 700) return;   // pan o long-press, non un tap
-    window._openAddLocPopup(e.latlng);
-  });
-};
+/* ===== 2) CLICK SULLA MAPPA → AGGIUNGI LOCALITÀ ===== */
+/* Hook che si attiva quando la mappa Leaflet viene inizializzata.
+   Aggiunge un listener sul click che apre un popup con coordinate
+   precompilate e campo nome. */
+(function setupMapClickHandler(){
+  // Polling: aspetta che la mappa sia pronta
+  var tries = 0;
+  var interval = setInterval(function(){
+    tries++;
+    if(window._leafMap && !window._mapClickAttached){
+      window._mapClickAttached = true;
+      window._leafMap.on('click', function(e){
+        // Ignora se il click è su un marker (Leaflet gestisce a parte)
+        var lat = e.latlng.lat;
+        var lon = e.latlng.lng;
+        
+        // Costruisci popup con form per nuova località
+        var dmsLat = toDMS(lat, true);
+        var dmsLon = toDMS(lon, false);
+        var popupHtml = '<div style="font-family:system-ui,sans-serif;min-width:240px">'+
+          '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:8px">➕ Aggiungi località</div>'+
+          '<div style="font-size:13px;color:var(--accent-primary);margin-bottom:4px;font-family:ui-monospace,monospace;font-weight:700;line-height:1.5">'+
+            '📍 '+dmsLat+'<br>&nbsp;&nbsp;&nbsp;&nbsp;'+dmsLon+'</div>'+
+          '<div style="font-size:10px;color:var(--text-faint);margin-bottom:8px;font-family:ui-monospace,monospace">'+
+            '('+lat.toFixed(4)+'°, '+lon.toFixed(4)+'°)</div>'+
+          '<input id="mapClickName" type="text" placeholder="Nome (es. Cala Mare)" '+
+            'style="width:100%;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-strongest);'+
+            'border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:8px;box-sizing:border-box">'+
+          '<button onclick="saveMapClickLoc('+lat+','+lon+')" '+
+            'style="width:100%;padding:7px 10px;background:var(--accent-primary-bg-7);color:var(--text-primary);'+
+            'border:1px solid rgba(25,110,190,.6);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">'+
+            '💾 Salva località</button>'+
+          '</div>';
+        
+        L.popup({maxWidth:300})
+          .setLatLng(e.latlng)
+          .setContent(popupHtml)
+          .openOn(window._leafMap);
+        
+        // Focus sul campo nome dopo apertura
+        setTimeout(function(){
+          var inp = document.getElementById('mapClickName');
+          if(inp) inp.focus();
+        }, 200);
+      });
+      clearInterval(interval);
+    }
+    if(tries > 100) clearInterval(interval); // dopo 10s smetti di provare
+  }, 100);
+})();
 
 function saveMapClickLoc(lat, lon){
   var inp = document.getElementById('mapClickName');
