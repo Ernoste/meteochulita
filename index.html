@@ -716,11 +716,61 @@ function GG(w,wh,cp,vs,rr){let is=[];if(w>20)is.push("Vento forte("+Math.round(w
 
 const N=(v,d)=>v!=null?v.toFixed(d):"—";
 
+/* ===== CACHE LAST-KNOWN-GOOD (resilienza quando Open-Meteo è giù) =====
+   Al successo del fetch salva D/Mr per località in localStorage; al
+   fallimento (502/504/network) li ripristina mostrando un banner giallo
+   non bloccante. Cache PER LOCALITÀ, FIFO max 50, con sfratto anche su
+   QuotaExceededError. */
+var MC_PREFIX='meteoChulita_cache_', MC_INDEX='meteoChulita_cache_index', MC_MAX=50;
+function _mcIndex(){ try{ return JSON.parse(localStorage.getItem(MC_INDEX)||'[]'); }catch(e){ return []; } }
+function saveMeteoCache(name, D, Mr){
+  var payload=JSON.stringify({D:D, Mr:Mr||null, ts:Date.now()});
+  var idx=_mcIndex().filter(function(n){return n!==name;}); idx.push(name); // ultimo = più recente
+  while(true){
+    try{
+      localStorage.setItem(MC_PREFIX+name, payload);
+      while(idx.length>MC_MAX){ try{ localStorage.removeItem(MC_PREFIX+idx.shift()); }catch(e){} } // limite 50
+      localStorage.setItem(MC_INDEX, JSON.stringify(idx));
+      return;
+    }catch(e){
+      // QuotaExceededError: sfratta il più vecchio (≠ quello in salvataggio) e riprova
+      if(idx.length>1 && idx[0]!==name){ try{ localStorage.removeItem(MC_PREFIX+idx.shift()); }catch(_e){} }
+      else return; // niente da sfrattare → rinuncia silenziosa
+    }
+  }
+}
+function getMeteoCache(name){
+  try{ var r=localStorage.getItem(MC_PREFIX+name); return r?JSON.parse(r):null; }
+  catch(e){ return null; }
+}
+function _staleBannerHtml(ts){
+  var age=Date.now()-ts, h=Math.floor(age/3600000), m=Math.floor((age%3600000)/60000);
+  var ageStr = h>0 ? (h+' or'+(h===1?'a':'e')) : (m+' min');
+  var d=new Date(ts).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return '⚠️ Servizio meteo non disponibile — Dati salvati '+ageStr+' fa ('+d+') '+
+    '<button onclick="ld()" style="margin-left:8px;padding:4px 10px;background:rgba(255,200,50,.25);color:var(--wind-mod);border:1px solid rgba(255,200,50,.5);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">🔄 Riprova</button>';
+}
+
 async function ld(){let b=document.getElementById("go"),s=document.getElementById("ss");b.disabled=true;b.textContent="⏳...";s.className="st";s.style.cssText="background:rgba(25,110,190,.1);border:1px solid var(--accent-primary-bg-2);color:var(--accent-primary)";s.textContent="⏳ Connessione a Open-Meteo per "+z.n+"...";
 try{let r1=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+z.a+"&longitude="+z.o+"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape,geopotential_height_500hPa,temperature_500hPa,wind_speed_500hPa,wind_direction_500hPa,geopotential_height_500hPa&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,precipitation_sum,precipitation_probability_max&forecast_days=7&wind_speed_unit=kn&timezone=Europe%2FRome");if(!r1.ok)throw new Error("API:"+r1.status);D=await r1.json();try{let r2=await fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+z.a+"&longitude="+z.o+"&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,wind_wave_height&daily=wave_height_max,wave_direction_dominant,wave_period_max&forecast_days=7&timezone=Europe%2FRome");if(r2.ok)Mr=await r2.json()}catch(e){Mr=null}
 let now=new Date();vi=0;for(let i=0;i<D.hourly.time.length;i++)if(new Date(D.hourly.time[i])<=now)vi=i;
+saveMeteoCache(z.n,D,Mr);
 s.style.cssText="background:rgba(46,125,50,.1);border:1px solid rgba(46,125,50,.3);color:var(--status-go-2)";s.textContent="✅ Dati caricati!";setTimeout(()=>s.classList.add("dn"),1500);document.getElementById("mu").classList.remove("dn");rn()}
-catch(e){s.style.cssText="background:rgba(183,28,28,.1);border:1px solid var(--status-stop-border);color:var(--status-stop-2)";s.innerHTML="❌ "+e.message+"<br><small style='color:#c0a0a0'>Scarica il file HTML e aprilo in Safari/Chrome</small>"}
+catch(e){
+  var _c=getMeteoCache(z.n);
+  if(_c && _c.D){
+    // Fallback: mostra l'ultimo dato valido salvato per questa località
+    D=_c.D; Mr=_c.Mr||null;
+    let now=new Date();vi=0;for(let i=0;i<D.hourly.time.length;i++)if(new Date(D.hourly.time[i])<=now)vi=i;
+    document.getElementById("mu").classList.remove("dn");rn();
+    // Banner GIALLO non bloccante (riusa #ss, NON auto-nascosto) + 🔄 Riprova
+    s.style.cssText="background:rgba(255,200,50,.12);border:1px solid rgba(255,200,50,.4);color:var(--wind-mod)";
+    s.innerHTML=_staleBannerHtml(_c.ts);s.classList.remove("dn");
+  } else {
+    s.style.cssText="background:rgba(255,200,50,.12);border:1px solid rgba(255,200,50,.4);color:var(--wind-mod)";
+    s.innerHTML="⚠️ Servizio meteo non disponibile. Nessun dato salvato per questa località. Riprova più tardi.";
+  }
+}
 b.disabled=false;b.textContent="🔄 Carica Dati Live"}
 
 function rn(){try{if(!D)return;let h=D.hourly,m=Mr?.hourly,wk=h.wind_speed_10m[vi]??0,wd=h.wind_direction_10m[vi],wg=h.wind_gusts_10m[vi]??0,tp=h.temperature_2m[vi]??0,hm=h.relative_humidity_2m[vi]??0,dw=h.dew_point_2m?.[vi],pr=h.pressure_msl[vi]??1013,cl=h.cloud_cover[vi]??0,rr=h.precipitation?.[vi]??0,cp=h.cape?.[vi]??0,wh=m?.wave_height?.[vi],wdr=m?.wave_direction?.[vi],wp=m?.wave_period?.[vi],swh=m?.swell_wave_height?.[vi],swd=m?.swell_wave_direction?.[vi],wwh=m?.wind_wave_height?.[vi];
