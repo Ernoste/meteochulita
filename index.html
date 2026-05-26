@@ -537,6 +537,7 @@ function st(id,b){
         window._attachMapTapHandler();
       } else {
         window._leafMap.invalidateSize();
+        window._attachMapTapHandler(); // ri-aggancia i listener tap a ogni apertura tab (idempotente)
         Z.forEach(function(loc){
           var m=window._leafMarkers[loc.n];
           if(!m)return;
@@ -3692,13 +3693,17 @@ window._openAddLocPopup = function(latlng){
 };
 
 window._attachMapTapHandler = function(){
-  if(!window._leafMap || window._mapTapAttached) return;
-  window._mapTapAttached = true;
+  if(!window._leafMap) return;
   var map = window._leafMap;
   // Usiamo gli eventi NATIVI di Leaflet (mousedown/mouseup), non listener DOM
   // grezzi: Leaflet li normalizza per mouse e touch, li delega centralmente
   // sul container (immuni al churn dei tile radar) e non dipendono dalla
   // implicit pointer capture, che sui marker lasciava lo stato incastrato.
+  // Idempotente: niente flag-guard (si bloccava in memoria JS lasciando i
+  // listener mai agganciati); rimuoviamo gli eventuali handler precedenti
+  // prima di ri-agganciare, così la funzione è sicura anche se richiamata.
+  map.off('mousedown');
+  map.off('mouseup');
   var down = null, t0 = 0;
   map.on('mousedown', function(e){
     var oe = e.originalEvent, t = oe && oe.target;
