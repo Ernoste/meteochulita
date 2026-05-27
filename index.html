@@ -444,15 +444,15 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
   <div id="addLocForm" style="display:none;flex-wrap:wrap;gap:8px;align-items:flex-end">
     <div style="display:flex;flex-direction:column;gap:3px">
       <label style="font-size:10px;color:var(--text-deep)">Nome</label>
-      <input id="newLocName" placeholder="Es. Porto di Roma" style="background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;font-size:12px;width:160px">
+      <input id="newLocName" placeholder="Es. Porto di Roma" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" style="background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;font-size:12px;width:160px">
     </div>
     <div style="display:flex;flex-direction:column;gap:3px">
       <label style="font-size:10px;color:var(--text-deep)">Latitudine</label>
-      <input id="newLocLat" type="number" step="0.0001" placeholder="41.8900" style="background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;font-size:12px;width:110px">
+      <input id="newLocLat" type="text" inputmode="decimal" autocomplete="off" placeholder="41.8900" style="background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;font-size:12px;width:110px">
     </div>
     <div style="display:flex;flex-direction:column;gap:3px">
       <label style="font-size:10px;color:var(--text-deep)">Longitudine</label>
-      <input id="newLocLon" type="number" step="0.0001" placeholder="12.4900" style="background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;font-size:12px;width:110px">
+      <input id="newLocLon" type="text" inputmode="decimal" autocomplete="off" placeholder="12.4900" style="background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;font-size:12px;width:110px">
     </div>
     <button onclick="addCustomLoc()" style="padding:6px 14px;background:var(--accent-primary-bg-4);color:var(--accent-primary);border:1px solid var(--accent-primary-bg-6);border-radius:6px;font-size:12px;cursor:pointer;font-weight:700">+ Aggiungi</button>
     <button onclick="clearCustomLocs()" style="padding:6px 10px;background:rgba(183,28,28,.2);color:var(--status-stop-2);border:1px solid var(--status-stop-border);border-radius:6px;font-size:11px;cursor:pointer">✕ Rimuovi tutte</button>
@@ -526,8 +526,8 @@ function st(id,b){
           var m=L.marker([loc.a,loc.o],{icon:icon});
           m.locName=loc.n;
           m.on('click',function(){
-            // No popup - use info panel instead
-            document.getElementById('mapInfo').style.display='block';
+            window._markerClicked = true;
+            document.getElementById('mapInfo').style.display='flex';
             document.getElementById('mapInfoName').textContent=loc.n;
             window._selectedMapLoc=loc.n;
           });
@@ -3402,8 +3402,8 @@ function saveCustomLocs(locs){
 
 function addCustomLoc(){
   var name = document.getElementById('newLocName').value.trim();
-  var lat = parseFloat(document.getElementById('newLocLat').value);
-  var lon = parseFloat(document.getElementById('newLocLon').value);
+  var lat = parseFloat(document.getElementById('newLocLat').value.trim().replace(',','.'));
+  var lon = parseFloat(document.getElementById('newLocLon').value.trim().replace(',','.'));
 
   if(!name){ alert('Inserisci un nome'); return; }
   if(isNaN(lat)||lat<-90||lat>90){ alert('Latitudine non valida (es. 41.8900)'); return; }
@@ -3428,6 +3428,7 @@ function addCustomLoc(){
     var m=L.marker([lat,lon],{icon:icon});
     m.locName=name;
     m.on('click',function(){
+      window._markerClicked = true;
       document.getElementById('mapInfo').style.display='flex';
       document.getElementById('mapInfoName').textContent=name;
       window._selectedMapLoc=name;
@@ -3440,6 +3441,9 @@ function addCustomLoc(){
   document.getElementById('newLocName').value='';
   document.getElementById('newLocLat').value='';
   document.getElementById('newLocLon').value='';
+
+  // Rimuovi il pin temporaneo del tap (se presente)
+  if(window._tmpAddPin && window._leafMap){ window._leafMap.removeLayer(window._tmpAddPin); window._tmpAddPin=null; }
 
   updateCustomLocsList();
   alert('✅ '+name+' aggiunta! Ora puoi selezionarla dal menu.');
@@ -3716,93 +3720,40 @@ function findNearestPort(){
     if(window._leafMap && !window._mapClickAttached){
       window._mapClickAttached = true;
       window._leafMap.on('click', function(e){
-        // Ignora se il click è su un marker (Leaflet gestisce a parte)
+        // Guard: se il click viene da un marker, non fare nulla
+        if(window._markerClicked){ window._markerClicked = false; return; }
+
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
-        
-        // Costruisci popup con form per nuova località
-        var dmsLat = toDMS(lat, true);
-        var dmsLon = toDMS(lon, false);
-        var popupHtml = '<div style="font-family:system-ui,sans-serif;min-width:240px">'+
-          '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:8px">➕ Aggiungi località</div>'+
-          '<div style="font-size:13px;color:var(--accent-primary);margin-bottom:4px;font-family:ui-monospace,monospace;font-weight:700;line-height:1.5">'+
-            '📍 '+dmsLat+'<br>&nbsp;&nbsp;&nbsp;&nbsp;'+dmsLon+'</div>'+
-          '<div style="font-size:10px;color:var(--text-faint);margin-bottom:8px;font-family:ui-monospace,monospace">'+
-            '('+lat.toFixed(4)+'°, '+lon.toFixed(4)+'°)</div>'+
-          '<input id="mapClickName" type="text" placeholder="Nome (es. Cala Mare)" '+
-            'style="width:100%;background:var(--border-soft);color:var(--text-primary);border:1px solid var(--border-strongest);'+
-            'border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:8px;box-sizing:border-box">'+
-          '<button onclick="saveMapClickLoc('+lat+','+lon+')" '+
-            'style="width:100%;padding:7px 10px;background:var(--accent-primary-bg-7);color:var(--text-primary);'+
-            'border:1px solid rgba(25,110,190,.6);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">'+
-            '💾 Salva località</button>'+
-          '</div>';
-        
-        L.popup({maxWidth:300})
-          .setLatLng(e.latlng)
-          .setContent(popupHtml)
-          .openOn(window._leafMap);
-        
-        // Focus sul campo nome dopo apertura
+
+        // Popola i campi lat/lon del form
+        var latEl = document.getElementById('newLocLat');
+        var lonEl = document.getElementById('newLocLon');
+        if(latEl) latEl.value = lat.toFixed(4);
+        if(lonEl) lonEl.value = lon.toFixed(4);
+
+        // Mostra il form se nascosto
+        var form = document.getElementById('addLocForm');
+        if(form && form.style.display === 'none') form.style.display = 'flex';
+
+        // Pin temporaneo viola (sostituisce il precedente)
+        if(window._tmpAddPin){ window._leafMap.removeLayer(window._tmpAddPin); }
+        var pinIcon = L.divIcon({className:'',
+          html:'<div style="width:16px;height:16px;border-radius:50%;background:var(--route-color);border:2px solid #fff;box-shadow:0 0 8px var(--route-color)"></div>',
+          iconSize:[16,16], iconAnchor:[8,8]});
+        window._tmpAddPin = L.marker([lat,lon],{icon:pinIcon, interactive:false}).addTo(window._leafMap);
+
+        // Focus sul campo Nome (senza scrollIntoView)
         setTimeout(function(){
-          var inp = document.getElementById('mapClickName');
-          if(inp) inp.focus();
-        }, 200);
+          var nameEl = document.getElementById('newLocName');
+          if(nameEl) nameEl.focus();
+        }, 300);
       });
       clearInterval(interval);
     }
     if(tries > 100) clearInterval(interval); // dopo 10s smetti di provare
   }, 100);
 })();
-
-function saveMapClickLoc(lat, lon){
-  var inp = document.getElementById('mapClickName');
-  var name = inp ? inp.value.trim() : '';
-  if(!name){
-    alert('Inserisci un nome per la località');
-    if(inp) inp.focus();
-    return;
-  }
-  if(Z.find(function(x){return x.n===name;})){
-    alert('Esiste già una località con questo nome');
-    return;
-  }
-  
-  var newLoc = {n:name, a:lat, o:lon};
-  Z.push(newLoc);
-  
-  // Salva in localStorage
-  var customs = getCustomLocs();
-  customs.push(newLoc);
-  saveCustomLocs(customs);
-  
-  // Aggiungi marker viola sulla mappa
-  if(window._leafMap && window._leafMarkers){
-    var icon = L.divIcon({className:'',
-      html:'<div style="width:14px;height:14px;border-radius:50%;background:var(--route-color);border:2px solid var(--text-secondary);box-shadow:0 0 5px var(--route-color)"></div>',
-      iconSize:[14,14], iconAnchor:[7,7], popupAnchor:[0,-8]});
-    var m = L.marker([lat,lon],{icon:icon});
-    m.locName = name;
-    m.on('click', function(){
-      document.getElementById('mapInfo').style.display='block';
-      document.getElementById('mapInfoName').textContent=name;
-      window._selectedMapLoc=name;
-    });
-    m.addTo(window._leafMap);
-    window._leafMarkers[name] = m;
-  }
-  
-  window._leafMap.closePopup();
-  refreshAllDropdowns();
-  updateCustomLocsList();
-  
-  // Feedback visivo
-  var fb = document.createElement('div');
-  fb.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(46,125,50,.95);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:10000;box-shadow:0 4px 20px var(--bg-overlay)';
-  fb.textContent = '✅ "'+name+'" aggiunto!';
-  document.body.appendChild(fb);
-  setTimeout(function(){ fb.remove(); }, 2500);
-}
 
 /* ===== 3) NUVOLE: SVG STILIZZATE + LINK WIKIPEDIA ===== */
 /* Estende il CLOUD_DICT con SVG inline e link Wikipedia.
