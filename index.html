@@ -1040,6 +1040,7 @@ fr+='</div></div>';
 document.getElementById("pR").innerHTML=fr}catch(e){console.error("Errore rendering:",e);document.getElementById("ss").className="st";document.getElementById("ss").style.cssText="background:rgba(183,28,28,.1);border:1px solid var(--status-stop-border);color:var(--status-stop-2)";document.getElementById("ss").innerHTML="⚠️ Errore rendering: "+e.message;document.getElementById("ss").classList.remove("dn")}}
 var zBuilt=false;
 function bzP(){
+  if(zBuilt) return;
   zBuilt=true;
   var out='';
   out+='<div class="cd" style="margin-bottom:10px">';
