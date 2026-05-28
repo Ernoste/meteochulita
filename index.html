@@ -4964,8 +4964,13 @@ function bzCape(){
 
   // === SEZ 3: Semaforo decisionale ===
   var semCol,semLbl,semDesc,semBg,semBorder;
-  if(activeCount<=1){semCol='var(--status-go)';semLbl='🟢 NAVIGAZIONE NORMALE';semDesc='Monitorare radar. Condizioni non favorevoli a temporali significativi.';semBg='rgba(120,180,80,.1)';semBorder='rgba(120,180,80,.3)';}
-  else if(activeCount<=3){semCol='var(--status-caution)';semLbl='🟡 CAUTELA';semDesc='Navigare sottocosta. Preparare rotta di rientro. Temporali possibili nelle prossime ore.';semBg='rgba(240,192,64,.1)';semBorder='rgba(240,192,64,.3)';}
+  // Livello semaforo: considera CAPE assoluto + parametri attivi per coerenza con GG()
+  var semLevel; // 0=verde, 1=giallo, 2=rosso
+  if(cp>2500){semLevel=activeCount>=2?2:1;}
+  else if(cp>=1000){semLevel=activeCount>=4?2:activeCount>=1?1:0;}
+  else{semLevel=activeCount>=4?2:activeCount>=2?1:0;}
+  if(semLevel===0){semCol='var(--status-go)';semLbl='🟢 NAVIGAZIONE NORMALE';semDesc='Monitorare radar. Condizioni non favorevoli a temporali significativi.';semBg='rgba(120,180,80,.1)';semBorder='rgba(120,180,80,.3)';}
+  else if(semLevel===1){semCol='var(--status-caution)';semLbl='🟡 CAUTELA';semDesc='Navigare sottocosta. Preparare rotta di rientro. Temporali possibili nelle prossime ore.';semBg='rgba(240,192,64,.1)';semBorder='rgba(240,192,64,.3)';}
   else{semCol='var(--status-stop-3)';semLbl='🔴 PERICOLO — RESTARE IN PORTO';semDesc='Rischio temporali severi elevato. Se in mare: rientrare subito. Condizioni potenzialmente pericolose per la navigazione.';semBg='rgba(208,48,48,.1)';semBorder='rgba(208,48,48,.3)';}
   html+='<div style="text-align:center;padding:18px 16px;background:'+semBg+';border:2px solid '+semBorder+';border-radius:14px;margin-bottom:16px">';
   html+='<div style="font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:8px">Decisione operativa — '+activeCount+'/6 parametri attivi</div>';
