@@ -318,7 +318,7 @@ body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
 
 .mp-status{font-size:10px;margin-top:3px;color:var(--text-faint)}
 
-#mapContainer{width:100%;height:520px;border-radius:12px;overflow:hidden;border:1px solid var(--border-default);background:var(--bg-deep);position:relative;cursor:crosshair}
+#mapContainer{width:100%;height:520px;border-radius:12px;overflow:hidden;border:1px solid var(--border-default);background:var(--bg-deep);position:relative;cursor:crosshair;touch-action:none}
 #mapContainer svg{width:100%;height:100%}
 .mp-popup{position:absolute;background:var(--bg-app);border:1px solid var(--border-stronger);border-radius:10px;padding:10px 14px;font-family:system-ui,sans-serif;z-index:10;min-width:160px;pointer-events:all}
 .mp-popup .mp-name{font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px}
@@ -514,7 +514,7 @@ function st(id,b){
     document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
     setTimeout(function(){
       if(!window._leafMap){
-        window._leafMap=L.map('mapContainer',{center:[38,13],zoom:5});
+        window._leafMap=L.map('mapContainer',{center:[38,13],zoom:5,tap:false});
         window._leafMap.attributionControl.setPrefix('Leaflet');
         window._leafTiles=window._buildTileLayer().addTo(window._leafMap);
         // RainViewer radar overlay (pioggia e temporali animati)
@@ -533,6 +533,23 @@ function st(id,b){
           });
           m.addTo(window._leafMap);
           window._leafMarkers[loc.n]=m;
+        });
+        // Map click handler — tap mare aperto → pin viola + form aggiungi località
+        window._leafMap.on('click', function(e){
+          if(window._markerClicked){ window._markerClicked = false; return; }
+          var lat = e.latlng.lat, lon = e.latlng.lng;
+          var latEl = document.getElementById('newLocLat');
+          var lonEl = document.getElementById('newLocLon');
+          if(latEl) latEl.value = lat.toFixed(4);
+          if(lonEl) lonEl.value = lon.toFixed(4);
+          var form = document.getElementById('addLocForm');
+          if(form && form.style.display === 'none') form.style.display = 'flex';
+          if(window._tmpAddPin){ window._leafMap.removeLayer(window._tmpAddPin); }
+          var pinIcon = L.divIcon({className:'',
+            html:'<div style="width:16px;height:16px;border-radius:50%;background:var(--route-color);border:2px solid #fff;box-shadow:0 0 8px var(--route-color)"></div>',
+            iconSize:[16,16], iconAnchor:[8,8]});
+          window._tmpAddPin = L.marker([lat,lon],{icon:pinIcon, interactive:false}).addTo(window._leafMap);
+          setTimeout(function(){ var nameEl = document.getElementById('newLocName'); if(nameEl) nameEl.focus(); }, 300);
         });
       } else {
         window._leafMap.invalidateSize();
@@ -2527,7 +2544,7 @@ function renderRottaMap(){
     zoom = 6;
   }
   
-  _rtMap = L.map('rtMapContainer',{center:[centerLat,centerLon],zoom:zoom,zoomControl:true});
+  _rtMap = L.map('rtMapContainer',{center:[centerLat,centerLon],zoom:zoom,zoomControl:true,tap:false});
   _rtMap.attributionControl.setPrefix('Leaflet');
   // In modalità disegno uso una mappa con etichette/riferimenti visibili (nomi città, isole, porti).
   // Altrimenti uso un tile coerente con il tema corrente (dark gray su scuro, positron su chiaro).
@@ -3713,53 +3730,6 @@ function findNearestPort(){
     maximumAge: 60000
   });
 }
-
-/* ===== 2) CLICK SULLA MAPPA → AGGIUNGI LOCALITÀ ===== */
-/* Hook che si attiva quando la mappa Leaflet viene inizializzata.
-   Aggiunge un listener sul click che apre un popup con coordinate
-   precompilate e campo nome. */
-(function setupMapClickHandler(){
-  // Polling: aspetta che la mappa sia pronta
-  var tries = 0;
-  var interval = setInterval(function(){
-    tries++;
-    if(window._leafMap && !window._mapClickAttached){
-      window._mapClickAttached = true;
-      window._leafMap.on('click', function(e){
-        // Guard: se il click viene da un marker, non fare nulla
-        if(window._markerClicked){ window._markerClicked = false; return; }
-
-        var lat = e.latlng.lat;
-        var lon = e.latlng.lng;
-
-        // Popola i campi lat/lon del form
-        var latEl = document.getElementById('newLocLat');
-        var lonEl = document.getElementById('newLocLon');
-        if(latEl) latEl.value = lat.toFixed(4);
-        if(lonEl) lonEl.value = lon.toFixed(4);
-
-        // Mostra il form se nascosto
-        var form = document.getElementById('addLocForm');
-        if(form && form.style.display === 'none') form.style.display = 'flex';
-
-        // Pin temporaneo viola (sostituisce il precedente)
-        if(window._tmpAddPin){ window._leafMap.removeLayer(window._tmpAddPin); }
-        var pinIcon = L.divIcon({className:'',
-          html:'<div style="width:16px;height:16px;border-radius:50%;background:var(--route-color);border:2px solid #fff;box-shadow:0 0 8px var(--route-color)"></div>',
-          iconSize:[16,16], iconAnchor:[8,8]});
-        window._tmpAddPin = L.marker([lat,lon],{icon:pinIcon, interactive:false}).addTo(window._leafMap);
-
-        // Focus sul campo Nome (senza scrollIntoView)
-        setTimeout(function(){
-          var nameEl = document.getElementById('newLocName');
-          if(nameEl) nameEl.focus();
-        }, 300);
-      });
-      clearInterval(interval);
-    }
-    if(tries > 100) clearInterval(interval); // dopo 10s smetti di provare
-  }, 100);
-})();
 
 /* ===== 3) NUVOLE: SVG STILIZZATE + LINK WIKIPEDIA ===== */
 /* Estende il CLOUD_DICT con SVG inline e link Wikipedia.
