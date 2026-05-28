@@ -433,7 +433,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
 <div class="st" id="ss" style="background:rgba(25,110,190,.1);border:1px solid var(--accent-primary-bg-2);color:var(--accent-primary)">⏳ Premi il pulsante per caricare i dati meteo</div>
 <div class="dn" id="mu">
 <div class="vd dn" id="vd"></div>
-<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button></div>
+<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('cape',this)">⚡ Temporali</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button></div>
 <div class="cn" id="pN"></div><div class="cn" id="pM" style="height:0;overflow:hidden;padding:0">
 <div id="mapContainer" style="position:relative;width:100%;height:480px;background:var(--bg-deep-2);border-radius:12px;border:1px solid var(--border-strong);overflow:hidden"></div>
 <div id="addLocPanel" style="margin-top:10px;padding:12px 16px;background:var(--border-subtle);border:1px solid var(--border-default);border-radius:12px">
@@ -463,11 +463,11 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
   <div style="font-size:15px;font-weight:700;color:var(--text-primary)" id="mapInfoName">—</div>
   <button id="mapInfoBtn" style="padding:8px 18px;background:var(--accent-primary-bg-7);color:var(--accent-primary);border:1px solid var(--accent-primary-bg-7);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 Carica dati meteo</button>
 </div>
-</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="p7"></div><div class="cn dn" id="pSy"></div></div>
+</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="p7"></div><div class="cn dn" id="pCape"></div><div class="cn dn" id="pSy"></div></div>
 <div class="ft">Dati: Open-Meteo API — Stime indicative — Consultare previsioni ufficiali<br><span style="color:var(--text-ghost)">Progetto: Ernesto Faraco &amp; Claude Sonnet 🤖 — 2025</span></div>
 <script>
 const Z=[{n:"Capo dell'Arma",a:43.8461,o:7.9367},{n:"Capo di Vado",a:44.27,o:8.44},{n:"Capo Mele",a:43.96,o:8.17},{n:"Capo Noli",a:44.1956,o:8.4253},{n:"Portofino",a:44.3039,o:9.2078},{n:"Punta Mesco (Cinque Terre)",a:44.1333,o:9.65},{n:"Cala Galera",a:42.43,o:11.12},{n:"Capel Rosso (Giglio)",a:42.3589,o:10.9211},{n:"Capo d'Argentario",a:42.3833,o:11.15},{n:"Capo d'Enfola (Elba)",a:42.8333,o:10.2667},{n:"Capo d'Orso (Elba)",a:42.45,o:10.4},{n:"Capo d'Uomo (Argentario)",a:42.4,o:11.1},{n:"Capo Linaro (Civitavecchia)",a:42.08,o:11.79},{n:"Isola di Capraia",a:43.0511,o:9.8444},{n:"Livorno (Fanale dei Pisani)",a:43.5439,o:10.2947},{n:"Porto Santo Stefano",a:42.4347,o:11.1197},{n:"Portoferraio (Elba)",a:42.8164,o:10.3342},{n:"Punta del Fenaio (Giglio)",a:42.3667,o:10.8667},{n:"Talamone",a:42.5572,o:11.1394},{n:"Viareggio",a:43.8667,o:10.2333},{n:"Nettuno",a:41.46,o:12.66},{n:"Ponza",a:40.9,o:12.97},{n:"Ventotene",a:40.8,o:13.43},{n:"Capo Miseno",a:40.7778,o:14.0894},{n:"Capo Palinuro",a:40.0264,o:15.275},{n:"Isola d'Ischia",a:40.7333,o:13.95},{n:"Isola di Capri",a:40.55,o:14.2333},{n:"Isola di Stromboli",a:38.8,o:15.2167},{n:"Isola di Ustica",a:38.7078,o:13.1775},{n:"Isole Eolie (centro)",a:38.5333,o:14.9},{n:"Punta Campanella",a:40.5694,o:14.325},{n:"Punta di Posillipo",a:40.8219,o:14.2156},{n:"Punta Licosa",a:40.25,o:14.9},{n:"Capo Colonna (Crotone)",a:39.0333,o:17.2},{n:"Capo dell'Armi",a:37.95,o:15.7},{n:"Capo Peloro (Messina)",a:38.2664,o:15.6531},{n:"Capo Rizzuto",a:38.9667,o:17.2167},{n:"Capo Spartivento (Calabria)",a:37.9167,o:16.0667},{n:"Capo Vaticano",a:38.6194,o:15.8286},{n:"Punta Pellaro",a:38.0183,o:15.6369},{n:"Scilla",a:38.2506,o:15.7189},{n:"Capo Boeo (Marsala)",a:37.8,o:12.4333},{n:"Capo Gallo (Palermo)",a:38.2233,o:13.3167},{n:"Capo Milazzo",a:38.2706,o:15.2311},{n:"Capo Passero",a:36.685,o:15.14},{n:"Capo Zafferano",a:38.1122,o:13.5375},{n:"Isola di Favignana (Egadi)",a:37.9333,o:12.3333},{n:"Isola di Lampedusa",a:35.5086,o:12.5931},{n:"Isola di Pantelleria",a:36.7875,o:11.9925},{n:"Isola di Vulcano",a:38.4,o:14.9667},{n:"San Vito lo Capo",a:38.175,o:12.7333},{n:"Capo di Leuca",a:39.7833,o:18.3667},{n:"Punta della Testa (Gargano)",a:41.95,o:15.9667},{n:"Punta Palascia (Capo d'Otranto)",a:40.1075,o:18.52},{n:"Santa Maria di Leuca",a:39.7994,o:18.355},{n:"Vieste (Gargano)",a:41.8833,o:16.1667},{n:"Cagliari",a:39.22,o:9.12},{n:"Capo Caccia",a:40.57,o:8.16},{n:"Capo Carbonara",a:39.10,o:9.52},{n:"Capo Falcone",a:40.97,o:8.20},{n:"Capo Ferro",a:41.15,o:9.52},{n:"Capo Mannu",a:40.035,o:8.3781},{n:"Capo Marrangiu",a:40.3,o:8.4},{n:"Capo Pecora",a:39.4489,o:8.3917},{n:"Capo Pertusato (Bonifacio)",a:41.3678,o:9.1844},{n:"Capo San Marco",a:39.8583,o:8.4358},{n:"Capo Spartivento",a:38.8789,o:8.8936},{n:"Capo Testa",a:41.25,o:9.14},{n:"Capo Teulada",a:38.8667,o:8.6333},{n:"Carloforte",a:39.14,o:8.28},{n:"Faro della Chiappa",a:41.595,o:9.365},{n:"Olbia",a:40.92,o:9.5},{n:"P.ta Scorno (Asinara)",a:41.12,o:8.32},{n:"Pointe Cacavento",a:41.3883,o:9.1503},{n:"Porto Vecchio (Corsica)",a:41.59,o:9.28},{n:"Punta di u Cappiciolu",a:41.4281,o:9.2647},{n:"Punta Sardegna",a:41.1914,o:9.3608},{n:"Punta Scorno (Asinara)",a:41.1194,o:8.3183},{n:"Îles Lavezzi",a:41.325,o:9.25},{n:"Bastia",a:42.6944,o:9.4539},{n:"Cap Corse",a:42.8333,o:9.4167},{n:"Capu Fenu (Ajaccio)",a:41.9622,o:8.5933},{n:"Giraglia",a:43.03,o:9.41},{n:"Solenzara",a:41.8589,o:9.3997},{n:"Formentera - Cap de Barbaria",a:38.6333,o:1.4},{n:"Ibiza - Cap des Falcó",a:38.8667,o:1.2},{n:"Mahon (Minorca)",a:39.89,o:4.27},{n:"Mallorca - Cap de Formentor",a:39.9667,o:3.2167},{n:"Mallorca - Cap de ses Salines",a:39.2667,o:3.05},{n:"Menorca - Cap de Cavalleria",a:40.0667,o:4.0833},{n:"Palma Mallorca",a:39.57,o:2.65},{n:"Corfù",a:39.62,o:19.92},{n:"Cap Couronne",a:43.3333,o:5.05},{n:"Cap Croisette (Marsiglia)",a:43.2142,o:5.3375},{n:"Cap d'Antibes (Faro Garoupe)",a:43.5583,o:7.125},{n:"Cap Ferrat",a:43.6883,o:7.3289},{n:"Pointe d'Agde",a:43.3089,o:3.4769},{n:"Îles du Frioul (Marsiglia)",a:43.275,o:5.3},{n:"Cabo de Gata",a:36.8303,o:-2.0061},{n:"Cabo de la Nao",a:38.7333,o:0.2167},{n:"Cabo de Palos",a:37.6333,o:-0.7},{n:"Cap de Creus (Costa Brava)",a:42.3167,o:3.3167},{n:"Delta dell'Ebro",a:40.72,o:0.8631},{n:"Punta de Tarifa",a:36.0042,o:-5.6103},{n:"Sitges",a:41.235,o:1.8119}];
-let z=Z[0],D,Mr,vi=0,sl=document.getElementById("zS");
+let z=Z[0],D,Mr,Sst,vi=0,sl=document.getElementById("zS");
 (function(){
   var regionOrder = ["Liguria","Toscana","Lazio","Tirreno Centro","Campania","Tirreno Sud","Calabria","Sicilia","Puglia","Sardegna","Corsica","Baleari","Grecia","Francia","Spagna","Altro"];
   var regionMap = {};
@@ -509,7 +509,7 @@ document.getElementById("go").onclick=ld;
 function st(id,b){
   document.querySelectorAll(".t").forEach(x=>x.classList.remove("a"));
   b.classList.add("a");
-  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pSy"].forEach(x=>document.getElementById(x).classList.add("dn"));
+  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pCape","pSy"].forEach(x=>document.getElementById(x).classList.add("dn"));
   if(id==="mp"){
     document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
     setTimeout(function(){
@@ -548,7 +548,7 @@ function st(id,b){
   } else {
     document.getElementById("pM").style.cssText="height:0;overflow:hidden;padding:0";
     document.getElementById("mapInfo").style.display='none';
-    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else if(id==="f7d"){document.getElementById("p7").classList.remove("dn");}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
+    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else if(id==="cape"){document.getElementById("pCape").classList.remove("dn");bzCape();}else if(id==="f7d"){document.getElementById("p7").classList.remove("dn");}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
   }
 }
 
@@ -752,7 +752,8 @@ function _staleBannerHtml(ts){
 }
 
 async function ld(){let b=document.getElementById("go"),s=document.getElementById("ss");b.disabled=true;b.textContent="⏳...";s.className="st";s.style.cssText="background:rgba(25,110,190,.1);border:1px solid var(--accent-primary-bg-2);color:var(--accent-primary)";s.textContent="⏳ Connessione a Open-Meteo per "+z.n+"...";
-try{let r1=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+z.a+"&longitude="+z.o+"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape,geopotential_height_500hPa,temperature_500hPa,wind_speed_500hPa,wind_direction_500hPa,geopotential_height_500hPa&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,precipitation_sum,precipitation_probability_max&forecast_days=7&wind_speed_unit=kn&timezone=Europe%2FRome");if(!r1.ok)throw new Error("API:"+r1.status);D=await r1.json();try{let r2=await fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+z.a+"&longitude="+z.o+"&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,wind_wave_height&daily=wave_height_max,wave_direction_dominant,wave_period_max&forecast_days=7&timezone=Europe%2FRome");if(r2.ok)Mr=await r2.json()}catch(e){Mr=null}
+try{let r1=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+z.a+"&longitude="+z.o+"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cape,convective_inhibition,lifted_index,total_column_integrated_water_vapour,geopotential_height_500hPa,temperature_500hPa,wind_speed_500hPa,wind_direction_500hPa,geopotential_height_500hPa&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,precipitation_sum,precipitation_probability_max&forecast_days=7&wind_speed_unit=kn&timezone=Europe%2FRome");if(!r1.ok)throw new Error("API:"+r1.status);D=await r1.json();try{let r2=await fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+z.a+"&longitude="+z.o+"&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,wind_wave_height&daily=wave_height_max,wave_direction_dominant,wave_period_max&forecast_days=7&timezone=Europe%2FRome");if(r2.ok)Mr=await r2.json()}catch(e){Mr=null}
+try{let rSst=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+z.a+"&longitude="+z.o+"&hourly=soil_temperature_0cm&forecast_days=7&timezone=Europe%2FRome&cell_selection=sea");if(rSst.ok){Sst=await rSst.json()}else{Sst=null}}catch(e){Sst=null}
 let now=new Date();vi=0;for(let i=0;i<D.hourly.time.length;i++)if(new Date(D.hourly.time[i])<=now)vi=i;
 saveMeteoCache(z.n,D,Mr);
 s.style.cssText="background:rgba(46,125,50,.1);border:1px solid rgba(46,125,50,.3);color:var(--status-go-2)";s.textContent="✅ Dati caricati!";setTimeout(()=>s.classList.add("dn"),1500);document.getElementById("mu").classList.remove("dn");rn()}
@@ -1037,7 +1038,12 @@ fr+='<div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,min
   fr+='</div>';
 });
 fr+='</div></div>';
-document.getElementById("pR").innerHTML=fr}catch(e){console.error("Errore rendering:",e);document.getElementById("ss").className="st";document.getElementById("ss").style.cssText="background:rgba(183,28,28,.1);border:1px solid var(--status-stop-border);color:var(--status-stop-2)";document.getElementById("ss").innerHTML="⚠️ Errore rendering: "+e.message;document.getElementById("ss").classList.remove("dn")}}
+document.getElementById("pR").innerHTML=fr;
+// Badge CAPE ALTO nell'header
+var _cb=document.getElementById('capeBadge');
+if(cp>2500){if(!_cb){_cb=document.createElement('span');_cb.id='capeBadge';_cb.style.cssText='display:inline-block;margin-left:8px;padding:3px 8px;background:rgba(208,48,48,.2);border:1px solid rgba(208,48,48,.4);border-radius:6px;font-size:10px;font-weight:700;color:var(--wind-gale);cursor:pointer;vertical-align:middle;animation:pulse 2s infinite';_cb.textContent='⚡ CAPE ALTO';_cb.onclick=function(){var tabs=document.querySelectorAll('.t');for(var _ti=0;_ti<tabs.length;_ti++){if(tabs[_ti].textContent.indexOf('Temporali')>=0){tabs[_ti].click();break;}}};document.getElementById('hdBrand').appendChild(_cb);}}
+else{if(_cb)_cb.remove();}
+}catch(e){console.error("Errore rendering:",e);document.getElementById("ss").className="st";document.getElementById("ss").style.cssText="background:rgba(183,28,28,.1);border:1px solid var(--status-stop-border);color:var(--status-stop-2)";document.getElementById("ss").innerHTML="⚠️ Errore rendering: "+e.message;document.getElementById("ss").classList.remove("dn")}}
 var zBuilt=false;
 function bzP(){
   if(zBuilt) return;
@@ -4869,6 +4875,161 @@ function formatValidTime(issue, fHours){
     weekday: 'short', day: 'numeric', month: 'short',
     hour: '2-digit', minute: '2-digit'
   });
+}
+
+/* ===== TAB CAPE & TEMPORALI ===== */
+
+function calcDLS(ws500,wd500,ws10,wd10){
+  if(ws500==null||wd500==null||ws10==null||wd10==null) return null;
+  var toRad=Math.PI/180, kn2ms=0.5144;
+  var u500=ws500*kn2ms*Math.sin(wd500*toRad), v500=ws500*kn2ms*Math.cos(wd500*toRad);
+  var u10=ws10*kn2ms*Math.sin(wd10*toRad), v10=ws10*kn2ms*Math.cos(wd10*toRad);
+  return Math.sqrt(Math.pow(u500-u10,2)+Math.pow(v500-v10,2));
+}
+
+function calcLCL(t2m,td){
+  if(t2m==null||td==null) return null;
+  return 125*(t2m-td);
+}
+
+function getCapeParams(h,i,sst){
+  var params=[];
+  // 1. CIN
+  var cin=h.convective_inhibition?.[i];
+  var cinAbs=cin!=null?Math.abs(cin):null;
+  params.push({name:'CIN',val:cinAbs!=null?cinAbs.toFixed(0)+' J/kg':'N/D',active:cinAbs!=null&&cinAbs<50,desc:'Inibizione convettiva — bassa = innesco facile',threshold:'< 50 J/kg'});
+  // 2. DLS
+  var dls=calcDLS(h.wind_speed_500hPa?.[i],h.wind_direction_500hPa?.[i],h.wind_speed_10m[i],h.wind_direction_10m[i]);
+  params.push({name:'DLS 0-6km',val:dls!=null?dls.toFixed(1)+' m/s':'N/D',active:dls!=null&&dls>15,desc:'Deep Layer Shear — alto = temporali organizzati',threshold:'> 15 m/s'});
+  // 3. Lifted Index
+  var li=h.lifted_index?.[i];
+  params.push({name:'Lifted Index',val:li!=null?li.toFixed(1):'N/D',active:li!=null&&li<-4,desc:'Instabilità atmosferica — molto negativo = severa',threshold:'< -4'});
+  // 4. PWAT
+  var pw=h.total_column_integrated_water_vapour?.[i];
+  params.push({name:'PWAT',val:pw!=null?pw.toFixed(1)+' mm':'N/D',active:pw!=null&&pw>40,desc:'Acqua precipitabile in colonna — alta = visibilità zero',threshold:'> 40 mm'});
+  // 5. SST-T500
+  var sstVal=sst?.hourly?.soil_temperature_0cm?.[i];
+  var t500=h.temperature_500hPa?.[i];
+  var delta=null,sstNote='';
+  if(sstVal!=null&&t500!=null){delta=sstVal-t500;sstNote=' ⓘ stima';}
+  else{sstNote=' (punto su terra)';}
+  params.push({name:'SST−T500',val:delta!=null?(delta.toFixed(1)+'°C'+sstNote):'N/D'+sstNote,active:delta!=null&&delta>40,desc:'Differenza mare-quota — alta = trombe marine',threshold:'> 40°C'});
+  // 6. LCL
+  var lcl=calcLCL(h.temperature_2m[i],h.dew_point_2m?.[i]);
+  params.push({name:'LCL',val:lcl!=null?Math.round(lcl)+' m':'N/D',active:lcl!=null&&lcl<1000,desc:'Base nubi — bassa = rotazione possibile',threshold:'< 1000 m'});
+  return params;
+}
+
+function bzCape(){
+  var el=document.getElementById('pCape');
+  if(!el)return;
+  if(!D||!D.hourly){el.innerHTML='<div style="padding:20px;color:var(--text-muted)">Carica i dati meteo prima di usare questa tab.</div>';return;}
+  var h=D.hourly;
+  var cp=h.cape?.[vi]??0;
+  var params=getCapeParams(h,vi,Sst);
+  var activeCount=params.filter(function(p){return p.active;}).length;
+
+  // Colore CAPE
+  var capeCol,capeLbl,capeBg;
+  if(cp<1000){capeCol='var(--wind-calm)';capeLbl='Debole / stabile';capeBg='rgba(126,207,160,.1)';}
+  else if(cp<=2500){capeCol='var(--wind-mod)';capeLbl='Marcata — temporali possibili';capeBg='rgba(240,192,64,.1)';}
+  else{capeCol='var(--wind-gale)';capeLbl='Severa — temporali forti probabili';capeBg='rgba(208,48,48,.12)';}
+
+  var html='';
+
+  // === SEZ 1: CAPE attuale ===
+  html+='<div style="text-align:center;padding:20px 16px;background:'+capeBg+';border:1px solid '+capeCol+'40;border-radius:14px;margin-bottom:16px">';
+  html+='<div style="font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:6px">⚡ CAPE attuale</div>';
+  html+='<div style="font-size:42px;font-weight:900;color:'+capeCol+';line-height:1">'+Math.round(cp)+'<span style="font-size:16px;font-weight:500;color:var(--text-muted)"> J/kg</span></div>';
+  html+='<div style="font-size:13px;color:'+capeCol+';margin-top:6px;font-weight:600">'+capeLbl+'</div>';
+  html+='<div style="font-size:10px;color:var(--text-shadow);margin-top:4px">&lt;1000 debole · 1000-2500 marcata · &gt;2500 severa</div>';
+  html+='</div>';
+
+  // === SEZ 2: 6 parametri ===
+  html+='<div style="margin-bottom:16px">';
+  html+='<div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Parametri associati</div>';
+  for(var k=0;k<params.length;k++){
+    var p=params[k];
+    var ic=p.active?'✅':'⬜';
+    var rowBg=p.active?'rgba(208,48,48,.06)':'var(--bg-card)';
+    var rowBorder=p.active?'rgba(208,48,48,.2)':'var(--border-subtle)';
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:'+rowBg+';border:1px solid '+rowBorder+';border-radius:10px;margin-bottom:6px">';
+    html+='<div style="font-size:18px;flex-shrink:0">'+ic+'</div>';
+    html+='<div style="flex:1;min-width:0">';
+    html+='<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:13px;font-weight:700;color:var(--text-primary)">'+p.name+'</span><span style="font-size:12px;color:'+(p.active?'var(--status-stop-2)':'var(--text-muted)')+';font-weight:600">'+p.val+'</span><span style="font-size:10px;color:var(--text-ghost)">soglia: '+p.threshold+'</span></div>';
+    html+='<div style="font-size:10px;color:var(--text-shadow);margin-top:2px">'+p.desc+'</div>';
+    html+='</div></div>';
+  }
+  html+='</div>';
+
+  // === SEZ 3: Semaforo decisionale ===
+  var semCol,semLbl,semDesc,semBg,semBorder;
+  // Livello semaforo: considera CAPE assoluto + parametri attivi per coerenza con GG()
+  var semLevel; // 0=verde, 1=giallo, 2=rosso
+  if(cp>2500){semLevel=activeCount>=2?2:1;}
+  else if(cp>=1000){semLevel=activeCount>=4?2:activeCount>=1?1:0;}
+  else{semLevel=activeCount>=4?2:activeCount>=2?1:0;}
+  if(semLevel===0){semCol='var(--status-go)';semLbl='🟢 NAVIGAZIONE NORMALE';semDesc='Monitorare radar. Condizioni non favorevoli a temporali significativi.';semBg='rgba(120,180,80,.1)';semBorder='rgba(120,180,80,.3)';}
+  else if(semLevel===1){semCol='var(--status-caution)';semLbl='🟡 CAUTELA';semDesc='Navigare sottocosta. Preparare rotta di rientro. Temporali possibili nelle prossime ore.';semBg='rgba(240,192,64,.1)';semBorder='rgba(240,192,64,.3)';}
+  else{semCol='var(--status-stop-3)';semLbl='🔴 PERICOLO — RESTARE IN PORTO';semDesc='Rischio temporali severi elevato. Se in mare: rientrare subito. Condizioni potenzialmente pericolose per la navigazione.';semBg='rgba(208,48,48,.1)';semBorder='rgba(208,48,48,.3)';}
+  html+='<div style="text-align:center;padding:18px 16px;background:'+semBg+';border:2px solid '+semBorder+';border-radius:14px;margin-bottom:16px">';
+  html+='<div style="font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:8px">Decisione operativa — '+activeCount+'/6 parametri attivi</div>';
+  html+='<div style="font-size:20px;font-weight:900;color:'+semCol+';line-height:1.3">'+semLbl+'</div>';
+  html+='<div style="font-size:12px;color:var(--text-secondary);margin-top:8px;max-width:400px;margin-left:auto;margin-right:auto">'+semDesc+'</div>';
+  html+='</div>';
+
+  // === SEZ 4: Timeline CAPE 24h ===
+  html+='<div style="margin-bottom:16px">';
+  html+='<div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Timeline CAPE — prossime 24h</div>';
+  var bars='',maxCape=0,maxIdx=vi,barCount=0;
+  for(var j=vi;j<Math.min(vi+24,h.time.length);j++){
+    var cv=h.cape?.[j]??0;
+    if(cv>maxCape){maxCape=cv;maxIdx=j;}
+    barCount++;
+  }
+  if(maxCape<100)maxCape=100;
+  html+='<div style="display:flex;align-items:flex-end;gap:2px;height:80px;padding:4px 0;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;overflow:hidden">';
+  for(var j=vi;j<Math.min(vi+24,h.time.length);j++){
+    var cv=h.cape?.[j]??0;
+    var bh=Math.max(2,Math.round((cv/maxCape)*70));
+    var bc;
+    if(cv<1000)bc='var(--wind-calm)';
+    else if(cv<=2500)bc='var(--wind-mod)';
+    else bc='var(--wind-gale)';
+    var isPeak=j===maxIdx&&cv>0;
+    var tt=new Date(h.time[j]).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px" title="'+tt+': '+Math.round(cv)+' J/kg">';
+    if(isPeak)html+='<div style="font-size:8px;font-weight:700;color:'+bc+'">'+Math.round(cv)+'</div>';
+    html+='<div style="width:100%;height:'+bh+'px;background:'+bc+';border-radius:2px 2px 0 0;opacity:'+(isPeak?'1':'.7')+'"></div>';
+    if(j%3===0)html+='<div style="font-size:7px;color:var(--text-ghost);margin-top:1px">'+tt.split(':')[0]+'</div>';
+    html+='</div>';
+  }
+  html+='</div>';
+  if(maxCape>0){
+    var peakTime=new Date(h.time[maxIdx]).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    var peakCol;if(h.cape?.[maxIdx]<1000)peakCol='var(--wind-calm)';else if(h.cape?.[maxIdx]<=2500)peakCol='var(--wind-mod)';else peakCol='var(--wind-gale)';
+    html+='<div style="font-size:10px;color:var(--text-shadow);margin-top:4px;text-align:center">Picco: <b style="color:'+peakCol+'">'+Math.round(h.cape?.[maxIdx]??0)+' J/kg</b> alle '+peakTime+'</div>';
+  }
+  html+='</div>';
+
+  // === SEZ 5: Checklist operativa ===
+  html+='<div style="padding:14px 16px;background:rgba(208,48,48,.05);border:1px solid rgba(208,48,48,.15);border-radius:14px">';
+  html+='<div style="font-size:12px;font-weight:700;color:var(--status-stop-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">⚡ Checklist — se in mare durante temporale</div>';
+  var checks=[
+    '🔻 Riduci vela o motore in tempo',
+    '🔒 Chiudi tutto: oblò, boccaporti, paratie stagne',
+    '🦺 Cinture e giubbotti, life-line agganciate',
+    '🧭 Allontanati 90° dalla traiettoria del temporale',
+    '⚓ Prepara ancora galleggiante o drogue',
+    '📻 VHF su canale 16, posizione comunicata a terra',
+    '⚠️ Tieni distanza dalle coste sopravento'
+  ];
+  for(var c=0;c<checks.length;c++){
+    html+='<div style="padding:6px 0;font-size:12px;color:var(--text-secondary);border-bottom:'+(c<checks.length-1?'1px solid var(--border-subtle)':'none')+'">'+(c+1)+'. '+checks[c]+'</div>';
+  }
+  html+='</div>';
+
+  el.innerHTML=html;
 }
 
 /* Entry point quando si clicca sulla tab Sinottica */
