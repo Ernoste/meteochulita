@@ -574,7 +574,7 @@ function sv(i){vi=i;rn();document.querySelectorAll(".t")[0].click()}
 const BF=k=>{if(k<1)return{f:0,d:"Calma",c:"var(--wind-calm)"};if(k<4)return{f:1,d:"Bava",c:"var(--wind-calm)"};if(k<7)return{f:2,d:"Brezza legg",c:"var(--wind-light)"};if(k<11)return{f:3,d:"Brezza tesa",c:"var(--wind-light)"};if(k<17)return{f:4,d:"Moderato",c:"var(--wind-mod-2)"};if(k<22)return{f:5,d:"Teso",c:"#f0b040"};if(k<28)return{f:6,d:"Fresco",c:"var(--wind-strong-2)"};if(k<34)return{f:7,d:"Forte",c:"var(--wind-strong-2)"};if(k<41)return{f:8,d:"Burrasca",c:"var(--wind-gale)"};return{f:"9+",d:"Tempesta",c:"#a01020"}};
 const SE=h=>{if(h==null)return{d:"N/D",c:"#666"};if(h<.1)return{d:"Calmo",c:"var(--wind-calm)"};if(h<.5)return{d:"Q.calmo",c:"var(--wind-light)"};if(h<1.25)return{d:"Poco mosso",c:"var(--wind-light)"};if(h<2.5)return{d:"Mosso",c:"#f0b040"};if(h<4)return{d:"Molto mosso",c:"var(--wind-strong-2)"};return{d:"Agitato",c:"var(--wind-gale)"}};
 const WN=d=>{if(d==null)return"—";return["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d/22.5)%16]};
-const VI=(h,r,c)=>{if(r>5)return{t:"Scarsa",s:"<2km",c:"var(--wind-gale)"};if(r>1||(h>95&&c>87))return{t:"Mediocre",s:"2-5km",c:"var(--wind-strong-2)"};if(h>85||c>75)return{t:"Discreta",s:"5-10km",c:"var(--wind-mod-2)"};if(h>70)return{t:"Buona",s:"10-20km",c:"var(--wind-light)"};return{t:"Ottima",s:">20km",c:"var(--status-go-2)"}};
+const VI=(h,r,c)=>{if(r>5)return{t:"Scarsa",s:"<1 NM",c:"var(--wind-gale)"};if(r>1||(h>95&&c>87))return{t:"Mediocre",s:"1-3 NM",c:"var(--wind-strong-2)"};if(h>85||c>75)return{t:"Discreta",s:"3-5 NM",c:"var(--wind-mod-2)"};if(h>70)return{t:"Buona",s:"5-10 NM",c:"var(--wind-light)"};return{t:"Ottima",s:">10 NM",c:"var(--status-go-2)"}};
 const CT=(v,p)=>{let o=Math.round(v/12.5);if(o<=1)return"Sereno";if(o<=3&&p<200)return"Ci,Cs";if(o<=3)return"Ci,Ac cast⚠️";if(o<=5&&p<500)return"Ac,As";if(o<=5)return"Ac cast";if(o<=7&&p<800)return"Sc,Ns";if(o<=7)return"Cu con";if(p>=1500)return"Cb⚡";if(p>=500)return"Cu/Cb";return"Ns,St"};
 const PT=(p,i)=>{if(!p||i<3)return{t:"N/D",i:"—",c:"#666"};let d=p[i]-p[i-3];if(d<-3)return{t:"Forte calo("+d.toFixed(1)+")",i:"⬇️⬇️",c:"var(--wind-gale)"};if(d<-1.5)return{t:"Calo("+d.toFixed(1)+")",i:"⬇️",c:"var(--wind-strong-2)"};if(d<-.5)return{t:"Lieve calo",i:"↘️",c:"var(--wind-mod-2)"};if(d>3)return{t:"Forte rialzo",i:"⬆️⬆️",c:"var(--success-strong)"};if(d>1.5)return{t:"Rialzo",i:"⬆️",c:"var(--status-go-2)"};if(d>.5)return{t:"Lieve rialzo",i:"↗️",c:"var(--wind-light)"};return{t:"Stabile",i:"➡️",c:"#5a90a0"}};
 const WR=(d,i)=>{if(!d||i<1||d[i]==null||d[i-1]==null)return null;let x=d[i]-d[i-1];if(x>180)x-=360;if(x<-180)x+=360;return x};
@@ -3382,6 +3382,28 @@ document.addEventListener('DOMContentLoaded', function(){
   updateFavsList();
 });
 
+// --- GPS all'avvio: seleziona il porto piu' vicino (NON carica i dati) ---
+function _gpsAutoSelect(){
+  if(!navigator.geolocation) return;
+  var nf=document.getElementById('nf');
+  if(nf) nf.innerHTML='📍 Individuo la tua posizione…';
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var myLat=pos.coords.latitude, myLon=pos.coords.longitude;
+    var nearest=null, minDist=Infinity;
+    Z.forEach(function(loc){ var d=nmDistance(myLat,myLon,loc.a,loc.o); if(d<minDist){minDist=d;nearest=loc;} });
+    if(!nearest){ if(nf) nf.textContent='Premi "Carica Dati Live"'; return; }
+    z=nearest;
+    var sel=document.getElementById('zS');
+    if(sel) sel.value=nearest.n;
+    if(typeof updateFavBtn==='function') updateFavBtn();
+    if(nf){
+      var distStr=minDist<1?(minDist*1852).toFixed(0)+' m':minDist.toFixed(1)+' NM';
+      nf.innerHTML='📍 Porto più vicino: <b>'+nearest.n+'</b> ('+distStr+') — premi <b>🔄 Carica Dati Live</b>';
+    }
+  }, function(err){
+    if(nf) nf.textContent='Premi "Carica Dati Live"';
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
 // Also update when dropdown changes
 var _origOnchange = null;
 setTimeout(function(){
@@ -3395,6 +3417,7 @@ setTimeout(function(){
     updateFavBtn();
     updateFavsList();
   }
+  _gpsAutoSelect(); // GPS all'avvio: pre-seleziona il porto piu' vicino
 }, 500);
 
 </script>
@@ -5524,6 +5547,8 @@ function bzDiari(){
   var LBL = 'font-size:11px;font-weight:700;color:var(--accent-primary);display:block;margin-bottom:5px;letter-spacing:.2px';
   var FIELD = 'display:flex;flex-direction:column;margin-bottom:14px';
   var CARD = 'background:var(--bg-card);border:1px solid var(--border-default);border-radius:14px;padding:16px';
+  var STEP = 'min-width:46px;padding:12px 0;font-size:18px;font-weight:800;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:10px;cursor:pointer;font-family:inherit';
+  var SCALEBTN = 'padding:12px 0;font-size:15px;font-weight:800;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit';
 
   var html = '';
 
@@ -5565,7 +5590,14 @@ function bzDiari(){
 
   // Vento intensità
   html += '<div style="'+FIELD+'"><label style="'+LBL+'">💨 Vento — intensità <span id="obsWindLbl" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">0 kn</span></label>';
-  html += '<input id="obsWind" type="range" min="0" max="60" step="1" value="0" oninput="_diariWindLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)">';
+  html += '<input id="obsWind" type="hidden" value="0">';
+  html += '<div style="display:flex;gap:6px;align-items:center">';
+  html += '<button type="button" onclick="_diariWindStep(-5)" style="'+STEP+'">−5</button>';
+  html += '<button type="button" onclick="_diariWindStep(-1)" style="'+STEP+'">−</button>';
+  html += '<div style="flex:1;text-align:center;font-size:22px;font-weight:800;font-family:var(--font-data);color:var(--text-primary)"><span id="obsWindVal">0</span> <span style="font-size:12px;color:var(--text-muted)">kn</span></div>';
+  html += '<button type="button" onclick="_diariWindStep(1)" style="'+STEP+'">+</button>';
+  html += '<button type="button" onclick="_diariWindStep(5)" style="'+STEP+'">+5</button>';
+  html += '</div>';
   html += '<div id="obsWindBf" style="font-size:11px;color:var(--text-muted);margin-top:4px">Forza 0 — Calma</div></div>';
 
   // Vento direzione (rosa 16 punti)
@@ -5588,12 +5620,16 @@ function bzDiari(){
 
   // Stato del mare (Douglas)
   html += '<div style="'+FIELD+'"><label style="'+LBL+'">🌊 Stato del mare (Douglas) <span id="obsSeaNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">0</span></label>';
-  html += '<input id="obsSea" type="range" min="0" max="9" step="1" value="0" oninput="_diariSeaLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)">';
+  html += '<div id="obsSeaGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">';
+  for(var sd=0;sd<=9;sd++){ html += '<button type="button" data-v="'+sd+'" onclick="_diariSeaPick('+sd+')" style="'+SCALEBTN+'">'+sd+'</button>'; }
+  html += '</div><input id="obsSea" type="hidden" value="0">';
   html += '<div id="obsSeaLbl" style="font-size:11px;color:var(--text-muted);margin-top:4px">'+DIARI_DOUGLAS[0]+'</div></div>';
 
   // Nuvolosità (oktas) + tipo
   html += '<div style="'+FIELD+'"><label style="'+LBL+'">☁️ Nuvolosità (oktas) <span id="obsOktaNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">0/8</span></label>';
-  html += '<input id="obsOkta" type="range" min="0" max="8" step="1" value="0" oninput="_diariOktaLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)">';
+  html += '<div id="obsOktaGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">';
+  for(var okn=0;okn<=8;okn++){ html += '<button type="button" data-v="'+okn+'" onclick="_diariOktaPick('+okn+')" style="'+SCALEBTN+'">'+okn+'</button>'; }
+  html += '</div><input id="obsOkta" type="hidden" value="0">';
   html += '<div id="obsOktaLbl" style="font-size:11px;color:var(--text-muted);margin:4px 0 8px">Cielo sereno</div>';
   html += '<select id="obsCloud" style="'+INP+'">';
   for(var k=0;k<DIARI_CLOUDS.length;k++){ html += '<option value="'+DIARI_CLOUDS[k][0]+'">'+DIARI_CLOUDS[k][1]+'</option>'; }
@@ -5606,8 +5642,11 @@ function bzDiari(){
   html += '</select></div>';
 
   // Visibilità
-  html += '<div style="'+FIELD+'"><label style="'+LBL+'">👁️ Visibilità <span id="obsVisNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">10 km</span></label>';
-  html += '<input id="obsVis" type="range" min="0" max="50" step="1" value="10" oninput="_diariVisLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)"></div>';
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">👁️ Visibilità <span id="obsVisNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">10 NM</span></label>';
+  html += '<div id="obsVisGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">';
+  var _visVals=[0.5,1,2,5,10,20];
+  for(var vzi=0;vzi<_visVals.length;vzi++){ var _vl=(_visVals[vzi]>=50?'50+':_visVals[vzi]); html += '<button type="button" data-v="'+_visVals[vzi]+'" onclick="_diariVisPick('+_visVals[vzi]+')" style="'+SCALEBTN+'">'+_vl+'</button>'; }
+  html += '</div><input id="obsVis" type="hidden" value="10"></div>';
 
   // Note
   html += '<div style="'+FIELD+';margin-bottom:16px"><label style="'+LBL+'">📝 Note</label>';
@@ -5677,11 +5716,46 @@ function bzDiari(){
   })();
 
   el.innerHTML = html;
+  try{ _diariWindLbl(0); _diariScaleHL('obsSeaGrid',0); _diariScaleHL('obsOktaGrid',0); _diariScaleHL('obsVisGrid',10); }catch(e){}
 }
 
 /* ----- Handler live dei controlli ----- */
+function _diariWindStep(delta){
+  var el=document.getElementById('obsWind');
+  var v=Math.max(0,Math.min(60,(+el.value||0)+delta));
+  el.value=v; _diariWindLbl(v);
+}
+function _diariScaleHL(gridId,v){
+  var g=document.getElementById(gridId); if(!g) return;
+  var bs=g.querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){
+    var on = bs[i].getAttribute('data-v')===String(v);
+    bs[i].style.background = on?'var(--accent-primary-bg-5)':'var(--bg-pill)';
+    bs[i].style.color = on?'var(--accent-primary)':'var(--text-secondary)';
+    bs[i].style.borderColor = on?'var(--accent-primary-bg-7)':'var(--border-strong)';
+  }
+}
+function _diariSeaPick(v){
+  document.getElementById('obsSea').value=v;
+  document.getElementById('obsSeaNum').textContent=v;
+  document.getElementById('obsSeaLbl').textContent=DIARI_DOUGLAS[+v];
+  _diariScaleHL('obsSeaGrid',v);
+}
+function _diariOktaPick(v){
+  document.getElementById('obsOkta').value=v;
+  document.getElementById('obsOktaNum').textContent=v+'/8';
+  var t=(+v===0)?'Cielo sereno':(+v<=2)?'Poco nuvoloso':(+v<=4)?'Parz. nuvoloso':(+v<=6)?'Nuvoloso':(+v<=7)?'Molto nuvoloso':'Coperto';
+  document.getElementById('obsOktaLbl').textContent=t;
+  _diariScaleHL('obsOktaGrid',v);
+}
+function _diariVisPick(v){
+  document.getElementById('obsVis').value=v;
+  document.getElementById('obsVisNum').textContent=(+v>=20?'20+ NM':v+' NM');
+  _diariScaleHL('obsVisGrid',v);
+}
 function _diariWindLbl(v){
   document.getElementById('obsWindLbl').textContent = v+' kn';
+  try{ document.getElementById('obsWindVal').textContent = v; }catch(e){}
   try{ var b=BF(+v); document.getElementById('obsWindBf').textContent='Forza '+b.f+' — '+b.d; document.getElementById('obsWindBf').style.color=b.c; }catch(e){}
 }
 function _diariSeaLbl(v){ document.getElementById('obsSeaNum').textContent=v; document.getElementById('obsSeaLbl').textContent=DIARI_DOUGLAS[+v]; }
@@ -5690,7 +5764,6 @@ function _diariOktaLbl(v){
   var t = (+v===0)?'Cielo sereno':(+v<=2)?'Poco nuvoloso':(+v<=4)?'Parz. nuvoloso':(+v<=6)?'Nuvoloso':(+v<=7)?'Molto nuvoloso':'Coperto';
   document.getElementById('obsOktaLbl').textContent=t;
 }
-function _diariVisLbl(v){ document.getElementById('obsVisNum').textContent = (+v>=50?'50+ km':v+' km'); }
 function _diariDir(btn,deg){
   var grid=document.getElementById('obsDirGrid');
   var bs=grid.querySelectorAll('button');
@@ -5805,7 +5878,7 @@ function _diariCommit(){
     okta: +document.getElementById('obsOkta').value,
     cloudType: document.getElementById('obsCloud').value||'',
     precip: document.getElementById('obsPrecip').value||'Nessuna',
-    visKm: +document.getElementById('obsVis').value,
+    visNM: +document.getElementById('obsVis').value,
     notes: document.getElementById('obsNotes').value.trim(),
     fc: fc,
     lat: (_diariGps?_diariGps.lat:null),
@@ -5863,7 +5936,7 @@ function renderObsList(arr, filt){
     html += '</div>';
 
     // visibilità + note
-    html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px">👁️ Visibilità '+(o.visKm>=50?'50+ km':o.visKm+' km')+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px">👁️ Visibilità '+(o.visNM>=20?'20+ NM':o.visNM+' NM')+'</div>';
     if(o.notes) html += '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px;padding:7px 10px;background:var(--border-subtle);border-radius:8px;line-height:1.4;font-style:italic">📝 '+_diariEsc(o.notes)+'</div>';
 
     // confronto previsione vs osservazione
@@ -5905,7 +5978,7 @@ function diariClearAll(){
 function diariExportCSV(){
   var arr=getObs();
   if(!arr.length){ alert('Diario vuoto: niente da esportare.'); return; }
-  var cols=['Data/ora','Posizione','Vento_kn','Vento_dir','Baro_hPa','Baro_tend','Mare_Douglas','Oktas','Tipo_nuvole','Precipitazioni','Visibilita_km','Note','Prev_vento_kn','Prev_baro_hPa','GPS_lat','GPS_lon'];
+  var cols=['Data/ora','Posizione','Vento_kn','Vento_dir','Baro_hPa','Baro_tend','Mare_Douglas','Oktas','Tipo_nuvole','Precipitazioni','Visibilita_NM','Note','Prev_vento_kn','Prev_baro_hPa','GPS_lat','GPS_lon'];
   function q(v){ v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"'; }
   var rows=[cols.join(',')];
   // ordine cronologico crescente nel CSV
@@ -5914,7 +5987,7 @@ function diariExportCSV(){
     var o=sorted[i];
     var dir=(o.windDir==null)?'':DIARI_DIRS[Math.round(o.windDir/22.5)%16];
     var tr=o.baroTrend==='up'?'salita':o.baroTrend==='down'?'discesa':o.baroTrend==='stable'?'stabile':'';
-    rows.push([q(o.ts),q(o.loc),q(o.windKn),q(dir),q(o.baro),q(tr),q(o.sea),q(o.okta),q(o.cloudType),q(o.precip),q(o.visKm),q(o.notes),q(o.fc?o.fc.windKn:''),q(o.fc?o.fc.baro:''),q(o.lat),q(o.lon)].join(','));
+    rows.push([q(o.ts),q(o.loc),q(o.windKn),q(dir),q(o.baro),q(tr),q(o.sea),q(o.okta),q(o.cloudType),q(o.precip),q(o.visNM),q(o.notes),q(o.fc?o.fc.windKn:''),q(o.fc?o.fc.baro:''),q(o.lat),q(o.lon)].join(','));
   }
   var csv='\ufeff'+rows.join('\r\n'); // BOM per Excel
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
