@@ -409,8 +409,18 @@ body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
 </div>
 
 <div style="padding:12px 14px;background:rgba(120,180,80,.08);border-radius:10px;border-left:3px solid var(--status-go-3)">
-<div style="font-size:13px;font-weight:700;color:var(--status-go-3);margin-bottom:5px">📍 La mia posizione</div>
-<div style="font-size:11px;color:var(--text-faint);line-height:1.6">Premi il pulsante <b>📍</b> accanto al menu località per usare la geolocalizzazione del dispositivo. L'app trova il porto più vicino tra quelli in elenco e ti chiede se vuoi caricarne i dati meteo. Funziona su qualsiasi dispositivo con GPS o stima Wi-Fi (potrebbe servire concedere il permesso al browser la prima volta).</div>
+<div style="font-size:13px;font-weight:700;color:var(--status-go-3);margin-bottom:5px">📍 La mia posizione & GPS all'avvio</div>
+<div style="font-size:11px;color:var(--text-faint);line-height:1.6"><b>All'avvio</b> l'app prova a localizzarti e <b>pre-seleziona da sola il porto più vicino</b> nel menu — lo vedi nel messaggino sotto l'header. I dati però li carichi tu: premi <b style="color:var(--accent-primary)">🔄 Carica Dati Live</b>. In qualsiasi momento puoi premere il pulsante <b>📍</b> accanto al menu per ricalcolare il porto più vicino e caricarne subito i dati. Serve concedere il permesso di posizione al browser la prima volta; funziona su <b>https</b> o con l'app installata (non aprendo il file in locale). Se il GPS è spento o negato, nessun problema: scegli la località dal menu come sempre.</div>
+</div>
+
+<div style="padding:12px 14px;background:rgba(160,96,208,.08);border-radius:10px;border-left:3px solid var(--route-color)">
+<div style="font-size:13px;font-weight:700;color:var(--route-color);margin-bottom:5px">📓 Diario di Bordo — l'app impara dalle tue acque</div>
+<div style="font-size:11px;color:var(--text-faint);line-height:1.6">Nella tab <b>📓 Diario</b> registri le tue osservazioni reali (in mare o pre-partenza): <b>vento</b>, <b>mare</b> (scala Douglas), <b>nuvolosità</b> (okta), <b>visibilità in NM</b>, pressione, precipitazioni, note e — se il GPS è attivo — la posizione. I controlli sono <b>grandi e a tocco</b> (più/meno e griglie di pulsanti), pensati per l'uso su una barca in movimento.<br><br>Ad ogni osservazione l'app salva anche la <b>previsione del modello in quel momento</b>, così può confrontare <b>osservato vs previsto</b>. Dopo <b>almeno 5 osservazioni di vento</b> calcola l'<b>errore medio del modello nelle tue acque</b> e <b>corregge automaticamente il verdetto della tab Partenza</b> su misura per te (un banner ti dice se sta ancora imparando o se la correzione è attiva).<br><br>In cima al Diario c'è un <b>riepilogo</b> (numero osservazioni, periodo, vento min/medio/max, range pressione, scarto del modello) e puoi <b>esportare tutto in CSV</b> per analisi o backup.</div>
+</div>
+
+<div style="padding:12px 14px;background:var(--border-subtle);border-radius:10px;border-left:3px solid #4090d0">
+<div style="font-size:13px;font-weight:700;color:var(--accent-primary);margin-bottom:5px">📈 Previsioni 12/24/48h · 📅 7 giorni · ⚡ Temporali</div>
+<div style="font-size:11px;color:var(--text-faint);line-height:1.6">Le tab <b>12h / 24h / 48h</b> mostrano l'andamento orario di vento, raffiche, mare e pressione con grafici. <b>📅 7 giorni</b> dà la tendenza a medio termine per pianificare le uscite della settimana. <b>⚡ Temporali</b> usa il <b>CAPE</b> (energia convettiva): valori alti = atmosfera instabile, possibili celle temporalesche.</div>
 </div>
 
 </div>
