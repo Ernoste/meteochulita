@@ -433,7 +433,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
 <div class="st" id="ss" style="background:rgba(25,110,190,.1);border:1px solid var(--accent-primary-bg-2);color:var(--accent-primary)">⏳ Premi il pulsante per caricare i dati meteo</div>
 <div class="dn" id="mu">
 <div class="vd dn" id="vd"></div>
-<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('cape',this)">⚡ Temporali</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button></div>
+<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('cape',this)">⚡ Temporali</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button><button class="t" onclick="st('diari',this)">📓 Diario</button></div>
 <div class="cn" id="pN"></div><div class="cn" id="pM" style="height:0;overflow:hidden;padding:0">
 <div id="mapContainer" style="position:relative;width:100%;height:480px;background:var(--bg-deep-2);border-radius:12px;border:1px solid var(--border-strong);overflow:hidden"></div>
 <div id="addLocPanel" style="margin-top:10px;padding:12px 16px;background:var(--border-subtle);border:1px solid var(--border-default);border-radius:12px">
@@ -463,7 +463,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
   <div style="font-size:15px;font-weight:700;color:var(--text-primary)" id="mapInfoName">—</div>
   <button id="mapInfoBtn" style="padding:8px 18px;background:var(--accent-primary-bg-7);color:var(--accent-primary);border:1px solid var(--accent-primary-bg-7);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 Carica dati meteo</button>
 </div>
-</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="p7"></div><div class="cn dn" id="pCape"></div><div class="cn dn" id="pSy"></div></div>
+</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="p7"></div><div class="cn dn" id="pCape"></div><div class="cn dn" id="pSy"></div><div class="cn dn" id="pDiari"></div></div>
 <div class="ft">Dati: Open-Meteo API — Stime indicative — Consultare previsioni ufficiali<br><span style="color:var(--text-ghost)">Progetto: Ernesto Faraco &amp; Claude Sonnet 🤖 — 2025</span></div>
 <script>
 const Z=[{n:"Capo dell'Arma",a:43.8461,o:7.9367},{n:"Capo di Vado",a:44.27,o:8.44},{n:"Capo Mele",a:43.96,o:8.17},{n:"Capo Noli",a:44.1956,o:8.4253},{n:"Portofino",a:44.3039,o:9.2078},{n:"Punta Mesco (Cinque Terre)",a:44.1333,o:9.65},{n:"Cala Galera",a:42.43,o:11.12},{n:"Capel Rosso (Giglio)",a:42.3589,o:10.9211},{n:"Capo d'Argentario",a:42.3833,o:11.15},{n:"Capo d'Enfola (Elba)",a:42.8333,o:10.2667},{n:"Capo d'Orso (Elba)",a:42.45,o:10.4},{n:"Capo d'Uomo (Argentario)",a:42.4,o:11.1},{n:"Capo Linaro (Civitavecchia)",a:42.08,o:11.79},{n:"Isola di Capraia",a:43.0511,o:9.8444},{n:"Livorno (Fanale dei Pisani)",a:43.5439,o:10.2947},{n:"Porto Santo Stefano",a:42.4347,o:11.1197},{n:"Portoferraio (Elba)",a:42.8164,o:10.3342},{n:"Punta del Fenaio (Giglio)",a:42.3667,o:10.8667},{n:"Talamone",a:42.5572,o:11.1394},{n:"Viareggio",a:43.8667,o:10.2333},{n:"Nettuno",a:41.46,o:12.66},{n:"Ponza",a:40.9,o:12.97},{n:"Ventotene",a:40.8,o:13.43},{n:"Capo Miseno",a:40.7778,o:14.0894},{n:"Capo Palinuro",a:40.0264,o:15.275},{n:"Isola d'Ischia",a:40.7333,o:13.95},{n:"Isola di Capri",a:40.55,o:14.2333},{n:"Isola di Stromboli",a:38.8,o:15.2167},{n:"Isola di Ustica",a:38.7078,o:13.1775},{n:"Isole Eolie (centro)",a:38.5333,o:14.9},{n:"Punta Campanella",a:40.5694,o:14.325},{n:"Punta di Posillipo",a:40.8219,o:14.2156},{n:"Punta Licosa",a:40.25,o:14.9},{n:"Capo Colonna (Crotone)",a:39.0333,o:17.2},{n:"Capo dell'Armi",a:37.95,o:15.7},{n:"Capo Peloro (Messina)",a:38.2664,o:15.6531},{n:"Capo Rizzuto",a:38.9667,o:17.2167},{n:"Capo Spartivento (Calabria)",a:37.9167,o:16.0667},{n:"Capo Vaticano",a:38.6194,o:15.8286},{n:"Punta Pellaro",a:38.0183,o:15.6369},{n:"Scilla",a:38.2506,o:15.7189},{n:"Capo Boeo (Marsala)",a:37.8,o:12.4333},{n:"Capo Gallo (Palermo)",a:38.2233,o:13.3167},{n:"Capo Milazzo",a:38.2706,o:15.2311},{n:"Capo Passero",a:36.685,o:15.14},{n:"Capo Zafferano",a:38.1122,o:13.5375},{n:"Isola di Favignana (Egadi)",a:37.9333,o:12.3333},{n:"Isola di Lampedusa",a:35.5086,o:12.5931},{n:"Isola di Pantelleria",a:36.7875,o:11.9925},{n:"Isola di Vulcano",a:38.4,o:14.9667},{n:"San Vito lo Capo",a:38.175,o:12.7333},{n:"Capo di Leuca",a:39.7833,o:18.3667},{n:"Punta della Testa (Gargano)",a:41.95,o:15.9667},{n:"Punta Palascia (Capo d'Otranto)",a:40.1075,o:18.52},{n:"Santa Maria di Leuca",a:39.7994,o:18.355},{n:"Vieste (Gargano)",a:41.8833,o:16.1667},{n:"Cagliari",a:39.22,o:9.12},{n:"Capo Caccia",a:40.57,o:8.16},{n:"Capo Carbonara",a:39.10,o:9.52},{n:"Capo Falcone",a:40.97,o:8.20},{n:"Capo Ferro",a:41.15,o:9.52},{n:"Capo Mannu",a:40.035,o:8.3781},{n:"Capo Marrangiu",a:40.3,o:8.4},{n:"Capo Pecora",a:39.4489,o:8.3917},{n:"Capo Pertusato (Bonifacio)",a:41.3678,o:9.1844},{n:"Capo San Marco",a:39.8583,o:8.4358},{n:"Capo Spartivento",a:38.8789,o:8.8936},{n:"Capo Testa",a:41.25,o:9.14},{n:"Capo Teulada",a:38.8667,o:8.6333},{n:"Carloforte",a:39.14,o:8.28},{n:"Faro della Chiappa",a:41.595,o:9.365},{n:"Olbia",a:40.92,o:9.5},{n:"P.ta Scorno (Asinara)",a:41.12,o:8.32},{n:"Pointe Cacavento",a:41.3883,o:9.1503},{n:"Porto Vecchio (Corsica)",a:41.59,o:9.28},{n:"Punta di u Cappiciolu",a:41.4281,o:9.2647},{n:"Punta Sardegna",a:41.1914,o:9.3608},{n:"Punta Scorno (Asinara)",a:41.1194,o:8.3183},{n:"Îles Lavezzi",a:41.325,o:9.25},{n:"Bastia",a:42.6944,o:9.4539},{n:"Cap Corse",a:42.8333,o:9.4167},{n:"Capu Fenu (Ajaccio)",a:41.9622,o:8.5933},{n:"Giraglia",a:43.03,o:9.41},{n:"Solenzara",a:41.8589,o:9.3997},{n:"Formentera - Cap de Barbaria",a:38.6333,o:1.4},{n:"Ibiza - Cap des Falcó",a:38.8667,o:1.2},{n:"Mahon (Minorca)",a:39.89,o:4.27},{n:"Mallorca - Cap de Formentor",a:39.9667,o:3.2167},{n:"Mallorca - Cap de ses Salines",a:39.2667,o:3.05},{n:"Menorca - Cap de Cavalleria",a:40.0667,o:4.0833},{n:"Palma Mallorca",a:39.57,o:2.65},{n:"Corfù",a:39.62,o:19.92},{n:"Cap Couronne",a:43.3333,o:5.05},{n:"Cap Croisette (Marsiglia)",a:43.2142,o:5.3375},{n:"Cap d'Antibes (Faro Garoupe)",a:43.5583,o:7.125},{n:"Cap Ferrat",a:43.6883,o:7.3289},{n:"Pointe d'Agde",a:43.3089,o:3.4769},{n:"Îles du Frioul (Marsiglia)",a:43.275,o:5.3},{n:"Cabo de Gata",a:36.8303,o:-2.0061},{n:"Cabo de la Nao",a:38.7333,o:0.2167},{n:"Cabo de Palos",a:37.6333,o:-0.7},{n:"Cap de Creus (Costa Brava)",a:42.3167,o:3.3167},{n:"Delta dell'Ebro",a:40.72,o:0.8631},{n:"Punta de Tarifa",a:36.0042,o:-5.6103},{n:"Sitges",a:41.235,o:1.8119}];
@@ -509,7 +509,7 @@ document.getElementById("go").onclick=ld;
 function st(id,b){
   document.querySelectorAll(".t").forEach(x=>x.classList.remove("a"));
   b.classList.add("a");
-  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pCape","pSy"].forEach(x=>document.getElementById(x).classList.add("dn"));
+  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pCape","pSy","pDiari"].forEach(x=>document.getElementById(x).classList.add("dn"));
   if(id==="mp"){
     document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
     setTimeout(function(){
@@ -565,7 +565,7 @@ function st(id,b){
   } else {
     document.getElementById("pM").style.cssText="height:0;overflow:hidden;padding:0";
     document.getElementById("mapInfo").style.display='none';
-    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else if(id==="cape"){document.getElementById("pCape").classList.remove("dn");bzCape();}else if(id==="f7d"){document.getElementById("p7").classList.remove("dn");}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
+    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else if(id==="cape"){document.getElementById("pCape").classList.remove("dn");bzCape();}else if(id==="f7d"){document.getElementById("p7").classList.remove("dn");}else if(id==="diari"){document.getElementById("pDiari").classList.remove("dn");bzDiari();}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
   }
 }
 
@@ -1228,6 +1228,10 @@ function bzS(){
     return;
   }
   var h=D.hourly, m=Mr?Mr.hourly:null;
+  var __MIN=(typeof DIARI_MIN_CAL!=="undefined")?DIARI_MIN_CAL:5;
+  var __bias=(typeof diariModelBias==="function")?diariModelBias():null;
+  var __windCorrActive=!!(__bias && __bias.nWind>=__MIN);
+  var __windCorr=__windCorrActive?__bias.windBias:0;
   var slots=[
     {label:"Ora",     icon:"🕐", offset:0},
     {label:"+6h",     icon:"🕕", offset:6},
@@ -1239,7 +1243,8 @@ function bzS(){
 
   function scoreSlot(i){
     if(i>=h.time.length)return null;
-    var wk=h.wind_speed_10m[i]||0;
+    var wkRaw=h.wind_speed_10m[i]||0;
+    var wk=wkRaw+__windCorr; // correzione locale dal diario (0 se non attiva)
     var wg=h.wind_gusts_10m[i]||0;
     var cp=h.cape?.[i]||0;
     var rr=h.precipitation?.[i]||0;
@@ -1269,7 +1274,7 @@ function bzS(){
     else if(pd<-1.5){issues.push("Pressione in calo");score=Math.max(score,1);}
 
     if(issues.length===0)issues.push("Condizioni favorevoli");
-    return {score:score, issues:issues, wk:Math.round(wk), wh:wh, cp:cp, wd:WN(h.wind_direction_10m[i])};
+    return {score:score, issues:issues, wk:Math.round(wk), wkRaw:Math.round(wkRaw), wh:wh, cp:cp, wd:WN(h.wind_direction_10m[i])};
   }
 
   var colors=["var(--success-strong)","var(--warning-orange)","var(--wind-storm)"];
@@ -1287,6 +1292,14 @@ function bzS(){
   }
   html+='<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--text-shadow);margin-bottom:4px">📍 '+locName+' — '+ts+'</div>';
   html+='<div style="font-size:11px;color:var(--text-shadow)">Analisi condizioni di partenza per le prossime 48 ore</div></div>';
+  if(__bias && __bias.nWind>0){
+    if(__windCorrActive){
+      var __seg=(__bias.windBias>=0)?'sottostima':'sovrastima';
+      html+='<div style="background:var(--status-go-bg);border:1px solid var(--status-go-border);border-radius:10px;padding:11px 14px;margin-bottom:12px;font-size:12px;color:var(--status-go-2);line-height:1.5">📓 <b>Calibrazione dal diario attiva.</b> Nelle tue acque il modello '+__seg+' il vento di ~'+Math.abs(__bias.windBias)+' kn (su '+__bias.nWind+' osservazioni \u00b7 scarto tipico \u00b1'+__bias.windSpread+' kn). I valori vento qui sotto sono <b>corretti</b>; "mod" = valore grezzo del modello.</div>';
+    } else {
+      html+='<div style="background:var(--bg-pill);border:1px solid var(--border-default);border-radius:10px;padding:11px 14px;margin-bottom:12px;font-size:12px;color:var(--text-deep);line-height:1.5">📓 Calibrazione in apprendimento: <b>'+__bias.nWind+'/'+__MIN+'</b> osservazioni con previsione. Servono ancora '+(__MIN-__bias.nWind)+' per correggere il vento del semaforo.</div>';
+    }
+  }
 
   // Big grid of slots
   html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px">';
@@ -1312,7 +1325,7 @@ function bzS(){
     // Mini stats
     html+='<div style="display:flex;justify-content:space-around;margin-top:8px;padding-top:6px;border-top:1px solid var(--bg-pill)">';
     var _sfWdir=h&&h.wind_direction_10m?WN(h.wind_direction_10m[idx]):'—';
-    html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+colors[r.score]+'">'+r.wk+'</div><div style="font-size:8px;color:var(--text-shadow)">kn '+_sfWdir+'</div></div>';
+    html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+colors[r.score]+'">'+r.wk+'</div><div style="font-size:8px;color:var(--text-shadow)">kn '+_sfWdir+(__windCorrActive?' · mod '+r.wkRaw:'')+'</div></div>';
     if(r.wh!=null){
       html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+colors[r.score]+'">'+r.wh.toFixed(1)+'</div><div style="font-size:8px;color:var(--text-shadow)">m</div></div>';
     }
@@ -5416,5 +5429,555 @@ function toggleTheme(){
     document.documentElement.setAttribute('data-theme', 'dark');
   }
 })();
+
+
+/* ===== FEATURE DIARIO DI BORDO (innestata) ===== */
+/* ============================================================
+   DIARIO DI BORDO - Osservazioni reali offline
+   Registra vento, barometro, mare, nuvolosita, pioggia, visibilita
+   durante la navigazione. Persistenza localStorage (chiave navObs).
+   Snapshot della previsione API al momento della registrazione
+   per il confronto previsione vs osservazione (anche offline).
+   ============================================================ */
+
+/* ----- Persistenza ----- */
+function getObs(){
+  try{ return JSON.parse(localStorage.getItem('navObs')||'[]'); }
+  catch(e){ return []; }
+}
+function saveObs(arr){
+  try{ localStorage.setItem('navObs', JSON.stringify(arr)); }
+  catch(e){ alert('Memoria piena: impossibile salvare il diario.'); }
+}
+/* Verifica che localStorage sia davvero scrivibile su questo dispositivo
+   (modalità privata, storage disabilitato, quota a zero, ecc.) */
+function diariStorageOK(){
+  try{
+    var k='__navObsTest__';
+    localStorage.setItem(k,'1');
+    var ok = localStorage.getItem(k)==='1';
+    localStorage.removeItem(k);
+    return ok;
+  }catch(e){ return false; }
+}
+
+/* ----- Tabelle descrittive ----- */
+var DIARI_DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+var DIARI_DOUGLAS = ["Calmo (speculare)","Quasi calmo (increspato)","Poco mosso","Mosso","Molto mosso","Agitato","Molto agitato","Grosso","Molto grosso","Tempestoso"];
+var DIARI_CLOUDS = [
+  ["","— tipo —"],["Ci","Ci · Cirri"],["Cs","Cs · Cirrostrati"],["Cc","Cc · Cirrocumuli"],
+  ["Ac","Ac · Altocumuli"],["As","As · Altostrati"],["Ns","Ns · Nembostrati"],
+  ["Sc","Sc · Stratocumuli"],["St","St · Strati"],["Cu","Cu · Cumuli"],["Cb","Cb · Cumulonembi ⚡"]
+];
+var DIARI_PRECIP = ["Nessuna","Pioviggine","Pioggia leggera","Pioggia moderata","Pioggia forte","Rovescio","Temporale ⚡","Grandine","Neve"];
+
+/* ----- Helper formattazione ----- */
+function _diariPad(n){ return (n<10?'0':'')+n; }
+function _diariNowLocal(){
+  var d=new Date();
+  return d.getFullYear()+'-'+_diariPad(d.getMonth()+1)+'-'+_diariPad(d.getDate())+'T'+_diariPad(d.getHours())+':'+_diariPad(d.getMinutes());
+}
+function _diariFmtTs(iso){
+  var d=new Date(iso);
+  if(isNaN(d)) return iso||'—';
+  return _diariPad(d.getDate())+'/'+_diariPad(d.getMonth()+1)+' '+_diariPad(d.getHours())+':'+_diariPad(d.getMinutes());
+}
+function _diariEsc(s){
+  return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});
+}
+
+/* ----- Render principale della tab ----- */
+/* ===== Calibrazione locale: errore sistematico del modello, dal diario ===== */
+var DIARI_MIN_CAL = 5; // osservazioni minime (con previsione appaiata) per correggere il vento del semaforo
+/* toDDM: coordinate in gradi-primi nautici (recuperata dalla base del diario) */
+function toDDM(deg,isLat){
+  var h=isLat?(deg<0?'S':'N'):(deg<0?'W':'E');
+  var a=Math.abs(deg), d=Math.floor(a), m=(a-d)*60;
+  var dd=isLat?String(d).padStart(2,'0'):String(d).padStart(3,'0');
+  return dd+'\u00b0 '+m.toFixed(2).padStart(5,'0')+"' "+h;
+}
+function diariModelBias(){
+  try{
+    var arr = (typeof getObs==='function') ? getObs() : [];
+    var wd=[], pd=[], cd=[], k;
+    for(var i=0;i<arr.length;i++){
+      var o=arr[i]; if(!o||!o.fc) continue;
+      if(o.fc.windKn!=null && o.windKn!=null) wd.push(o.windKn - o.fc.windKn);
+      if(o.fc.baro!=null && o.baro!=null) pd.push(o.baro - o.fc.baro);
+      if(o.fc.cloudPct!=null && o.okta!=null) cd.push((o.okta*12.5) - o.fc.cloudPct);
+    }
+    function mean(a){ if(!a.length) return 0; var s=0; for(k=0;k<a.length;k++) s+=a[k]; return s/a.length; }
+    function mad(a,mu){ if(!a.length) return 0; var s=0; for(k=0;k<a.length;k++) s+=Math.abs(a[k]-mu); return s/a.length; }
+    var wm=mean(wd), pm=mean(pd), cm=mean(cd);
+    return { windBias:Math.round(wm*10)/10, nWind:wd.length, windSpread:Math.round(mad(wd,wm)*10)/10,
+             baroBias:Math.round(pm*10)/10, nBaro:pd.length,
+             cloudBias:Math.round(cm), nCloud:cd.length };
+  }catch(e){ return {windBias:0,nWind:0,windSpread:0,baroBias:0,nBaro:0,cloudBias:0,nCloud:0}; }
+}
+function bzDiari(){
+  var el = document.getElementById('pDiari');
+  var obs = getObs();
+  var curLoc = '';
+  try{ if(typeof z!=='undefined' && z && z.n) curLoc = z.n; }catch(e){}
+
+  var INP = 'background:var(--bg-pill);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box';
+  var LBL = 'font-size:11px;font-weight:700;color:var(--accent-primary);display:block;margin-bottom:5px;letter-spacing:.2px';
+  var FIELD = 'display:flex;flex-direction:column;margin-bottom:14px';
+  var CARD = 'background:var(--bg-card);border:1px solid var(--border-default);border-radius:14px;padding:16px';
+
+  var html = '';
+
+  /* ---------- BANNER: storage non scrivibile ---------- */
+  if(!diariStorageOK()){
+    html += '<div role="alert" style="display:flex;align-items:center;gap:10px;background:var(--status-stop-bg,#3a1212);color:var(--status-stop-2,#ffb4b4);border:1px solid var(--status-stop-border,#7a2a2a);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;font-weight:700;line-height:1.4">'
+          + '<span style="font-size:20px;flex-shrink:0">⚠️</span>'
+          + '<span>I dati non vengono salvati su questo dispositivo.<br><span style="font-weight:500;opacity:.85">Le osservazioni andranno perse alla chiusura. Controlla la modalità di navigazione privata o le impostazioni di archiviazione del browser.</span></span>'
+          + '</div>';
+  }
+
+  /* ---------- INTESTAZIONE ---------- */
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:20px">📓</span><div style="font-size:17px;font-weight:800;color:var(--text-primary)">Diario di Bordo</div></div>';
+  html += '<div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:16px">Registra le condizioni reali osservate. Tutto resta salvato sul dispositivo, <b style="color:var(--text-secondary)">funziona offline</b>. La previsione corrente viene fotografata e salvata per il confronto.</div>';
+
+  /* ---------- FORM ---------- */
+  html += '<div style="'+CARD+';margin-bottom:16px">';
+  html += '<div style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:14px">✍️ Nuova osservazione</div>';
+
+  // Posizione
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">📍 Posizione</label>';
+  html += '<select id="obsLoc" style="'+INP+'">';
+  var hasCur = false;
+  for(var i=0;i<Z.length;i++){
+    var sel = (Z[i].n===curLoc)?' selected':''; if(sel) hasCur=true;
+    html += '<option value="'+_diariEsc(Z[i].n)+'"'+sel+'>'+_diariEsc(Z[i].n)+'</option>';
+  }
+  // località custom salvate
+  try{ var cl=JSON.parse(localStorage.getItem('customLocs')||'[]'); for(var c=0;c<cl.length;c++){ html += '<option value="'+_diariEsc(cl[c].n)+'">'+_diariEsc(cl[c].n)+'</option>'; } }catch(e){}
+  html += '<option value="__free__">✏️ Altra posizione (testo libero)…</option>';
+  html += '</select>';
+  html += '<button type="button" id="obsGpsBtn" onclick="diariUseGPS()" style="margin-top:8px;align-self:flex-start;padding:9px 14px;font-size:13px;font-weight:700;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit">📍 GPS</button>';
+  html += '<input id="obsLocFree" type="text" placeholder="Es. 5 NM a SO di Ponza" style="'+INP+';margin-top:8px;display:none">';
+  html += '</div>';
+
+  // Data/ora
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">🕐 Data e ora</label>';
+  html += '<input id="obsTime" type="datetime-local" value="'+_diariNowLocal()+'" style="'+INP+'"></div>';
+
+  // Vento intensità
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">💨 Vento — intensità <span id="obsWindLbl" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">0 kn</span></label>';
+  html += '<input id="obsWind" type="range" min="0" max="60" step="1" value="0" oninput="_diariWindLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)">';
+  html += '<div id="obsWindBf" style="font-size:11px;color:var(--text-muted);margin-top:4px">Forza 0 — Calma</div></div>';
+
+  // Vento direzione (rosa 16 punti)
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">🧭 Vento — provenienza</label>';
+  html += '<div id="obsDirGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px">';
+  for(var d=0;d<16;d++){
+    var deg = d*22.5;
+    html += '<button type="button" data-deg="'+deg+'" onclick="_diariDir(this,'+deg+')" style="padding:8px 2px;font-size:11px;font-weight:700;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:7px;cursor:pointer;font-family:inherit">'+DIARI_DIRS[d]+'</button>';
+  }
+  html += '</div><input id="obsDir" type="hidden" value=""></div>';
+
+  // Barometro + tendenza
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">🌡️ Barometro (hPa) + tendenza</label>';
+  html += '<input id="obsBaro" type="number" inputmode="decimal" step="0.1" placeholder="1013" style="'+INP+'">';
+  html += '<div style="display:flex;gap:6px;margin-top:8px">';
+  html += '<button type="button" id="obsTrUp" onclick="_diariTrend(\'up\')" style="flex:1;padding:9px;font-size:13px;font-weight:700;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit">⬆️ Sale</button>';
+  html += '<button type="button" id="obsTrStable" onclick="_diariTrend(\'stable\')" style="flex:1;padding:9px;font-size:13px;font-weight:700;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit">➡️ Stabile</button>';
+  html += '<button type="button" id="obsTrDown" onclick="_diariTrend(\'down\')" style="flex:1;padding:9px;font-size:13px;font-weight:700;background:var(--bg-pill);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit">⬇️ Scende</button>';
+  html += '</div><input id="obsBaroTrend" type="hidden" value=""></div>';
+
+  // Stato del mare (Douglas)
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">🌊 Stato del mare (Douglas) <span id="obsSeaNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">0</span></label>';
+  html += '<input id="obsSea" type="range" min="0" max="9" step="1" value="0" oninput="_diariSeaLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)">';
+  html += '<div id="obsSeaLbl" style="font-size:11px;color:var(--text-muted);margin-top:4px">'+DIARI_DOUGLAS[0]+'</div></div>';
+
+  // Nuvolosità (oktas) + tipo
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">☁️ Nuvolosità (oktas) <span id="obsOktaNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">0/8</span></label>';
+  html += '<input id="obsOkta" type="range" min="0" max="8" step="1" value="0" oninput="_diariOktaLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)">';
+  html += '<div id="obsOktaLbl" style="font-size:11px;color:var(--text-muted);margin:4px 0 8px">Cielo sereno</div>';
+  html += '<select id="obsCloud" style="'+INP+'">';
+  for(var k=0;k<DIARI_CLOUDS.length;k++){ html += '<option value="'+DIARI_CLOUDS[k][0]+'">'+DIARI_CLOUDS[k][1]+'</option>'; }
+  html += '</select></div>';
+
+  // Precipitazioni
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">🌧️ Precipitazioni</label>';
+  html += '<select id="obsPrecip" style="'+INP+'">';
+  for(var p=0;p<DIARI_PRECIP.length;p++){ html += '<option value="'+_diariEsc(DIARI_PRECIP[p])+'">'+_diariEsc(DIARI_PRECIP[p])+'</option>'; }
+  html += '</select></div>';
+
+  // Visibilità
+  html += '<div style="'+FIELD+'"><label style="'+LBL+'">👁️ Visibilità <span id="obsVisNum" style="color:var(--text-secondary);font-weight:800;font-family:var(--font-data)">10 km</span></label>';
+  html += '<input id="obsVis" type="range" min="0" max="50" step="1" value="10" oninput="_diariVisLbl(this.value)" style="width:100%;accent-color:var(--accent-primary)"></div>';
+
+  // Note
+  html += '<div style="'+FIELD+';margin-bottom:16px"><label style="'+LBL+'">📝 Note</label>';
+  html += '<textarea id="obsNotes" rows="2" placeholder="Annotazioni libere…" style="'+INP+';resize:vertical;line-height:1.4"></textarea></div>';
+
+  // Salva
+  html += '<button type="button" onclick="diariSave()" style="width:100%;padding:13px;font-size:15px;font-weight:800;background:var(--accent-primary-bg-5);color:var(--accent-primary);border:1px solid var(--accent-primary-bg-7);border-radius:10px;cursor:pointer;font-family:inherit">💾 Registra osservazione</button>';
+  html += '</div>'; // fine form card
+
+  /* ---------- GRAFICO PRESSIONE ---------- */
+  html += '<div id="obsBaroChartWrap" style="margin-bottom:16px">'+renderBaroChart(obs)+'</div>';
+
+  /* ---------- REGISTRO STORICO ---------- */
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap">';
+  html += '<div style="font-size:13px;font-weight:800;color:var(--text-primary)">📚 Registro <span style="color:var(--text-muted);font-weight:600">('+obs.length+')</span></div>';
+  html += '<div style="display:flex;gap:6px">';
+  html += '<button type="button" onclick="diariExportCSV()" style="padding:7px 12px;font-size:11px;font-weight:700;background:var(--status-go-bg);color:var(--status-go-2);border:1px solid var(--status-go-border);border-radius:8px;cursor:pointer;font-family:inherit">⬇️ CSV</button>';
+  html += '<button type="button" onclick="diariClearAll()" style="padding:7px 12px;font-size:11px;font-weight:700;background:var(--status-stop-bg);color:var(--status-stop-2);border:1px solid var(--status-stop-border);border-radius:8px;cursor:pointer;font-family:inherit">🗑️ Svuota</button>';
+  html += '</div></div>';
+
+  // filtro per posizione
+  if(obs.length){
+    var locSet = {};
+    for(var f=0;f<obs.length;f++){ locSet[obs[f].loc]=true; }
+    html += '<div style="margin-bottom:12px"><select id="obsFilter" onchange="diariRenderList()" style="'+INP+'">';
+    html += '<option value="">Tutte le posizioni</option>';
+    for(var ln in locSet){ if(locSet.hasOwnProperty(ln)) html += '<option value="'+_diariEsc(ln)+'">'+_diariEsc(ln)+'</option>'; }
+    html += '</select></div>';
+  }
+
+  html += '<div id="obsList">'+renderObsList(obs,'')+'</div>';
+  // ===== Riepilogo + calibrazione (card in cima) =====
+  (function(){
+    var MINCAL=(typeof DIARI_MIN_CAL!=='undefined')?DIARI_MIN_CAL:5;
+    var b=(typeof diariModelBias==='function')?diariModelBias():null;
+    var n=obs.length;
+    var card='<div style="'+CARD+';margin-bottom:14px">';
+    card+='<div style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:10px">📓 Riepilogo diario</div>';
+    if(!n){
+      card+='<div style="font-size:12px;color:var(--text-faint)">Nessuna osservazione registrata. Compila il form qui sotto per iniziare.</div>';
+    } else {
+      var times=obs.map(function(o){return new Date(o.ts).getTime();}).filter(function(t){return !isNaN(t);});
+      var tmin=Math.min.apply(null,times), tmax=Math.max.apply(null,times);
+      function fmtD(t){var d=new Date(t);return _diariPad(d.getDate())+'/'+_diariPad(d.getMonth()+1)+'/'+d.getFullYear();}
+      var wks=obs.map(function(o){return o.windKn;}).filter(function(v){return v!=null;});
+      var wmin=wks.length?Math.min.apply(null,wks):null, wmax=wks.length?Math.max.apply(null,wks):null;
+      var wavg=wks.length?Math.round(wks.reduce(function(a,c){return a+c;},0)/wks.length):null;
+      var brs=obs.map(function(o){return o.baro;}).filter(function(v){return v!=null;});
+      var bmin=brs.length?Math.min.apply(null,brs):null, bmax=brs.length?Math.max.apply(null,brs):null;
+      card+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;font-size:11px;color:var(--text-deep)">';
+      card+='<div><div style="font-size:18px;font-weight:800;color:var(--text-primary)">'+n+'</div>osservazioni</div>';
+      card+='<div><div style="font-size:13px;font-weight:700;color:var(--text-primary)">'+fmtD(tmin)+' \u2192 '+fmtD(tmax)+'</div>periodo</div>';
+      if(wks.length) card+='<div><div style="font-size:13px;font-weight:700;color:var(--text-primary)">'+wmin+' / '+wavg+' / '+wmax+' kn</div>vento min/medio/max</div>';
+      if(brs.length) card+='<div><div style="font-size:13px;font-weight:700;color:var(--text-primary)">'+bmin+' \u2013 '+bmax+' hPa</div>pressione osservata</div>';
+      card+='</div>';
+      if(b && (b.nWind||b.nBaro||b.nCloud)){
+        card+='<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-default);font-size:12px;color:var(--text-deep);line-height:1.6">';
+        card+='<div style="font-weight:700;color:var(--accent-primary);margin-bottom:4px">Errore del modello nelle tue acque</div>';
+        if(b.nWind) card+='\u2022 Vento: '+(b.windBias>=0?'+':'')+b.windBias+' kn '+(b.windBias>=0?'(il modello sottostima)':'(il modello sovrastima)')+' \u00b7 '+b.nWind+' dati'+(b.nWind>=MINCAL?' \u00b7 <b style="color:var(--status-go-2)">attiva sul semaforo</b>':' \u00b7 servono ancora '+(MINCAL-b.nWind))+'<br>';
+        if(b.nBaro) card+='\u2022 Pressione: '+(b.baroBias>=0?'+':'')+b.baroBias+' hPa \u00b7 '+b.nBaro+' dati<br>';
+        if(b.nCloud) card+='\u2022 Nuvolosit\u00e0: '+(b.cloudBias>=0?'+':'')+b.cloudBias+'% \u00b7 '+b.nCloud+' dati';
+        card+='</div>';
+      }
+    }
+    card+='</div>';
+    html = card + html;
+  })();
+
+  el.innerHTML = html;
+}
+
+/* ----- Handler live dei controlli ----- */
+function _diariWindLbl(v){
+  document.getElementById('obsWindLbl').textContent = v+' kn';
+  try{ var b=BF(+v); document.getElementById('obsWindBf').textContent='Forza '+b.f+' — '+b.d; document.getElementById('obsWindBf').style.color=b.c; }catch(e){}
+}
+function _diariSeaLbl(v){ document.getElementById('obsSeaNum').textContent=v; document.getElementById('obsSeaLbl').textContent=DIARI_DOUGLAS[+v]; }
+function _diariOktaLbl(v){
+  document.getElementById('obsOktaNum').textContent=v+'/8';
+  var t = (+v===0)?'Cielo sereno':(+v<=2)?'Poco nuvoloso':(+v<=4)?'Parz. nuvoloso':(+v<=6)?'Nuvoloso':(+v<=7)?'Molto nuvoloso':'Coperto';
+  document.getElementById('obsOktaLbl').textContent=t;
+}
+function _diariVisLbl(v){ document.getElementById('obsVisNum').textContent = (+v>=50?'50+ km':v+' km'); }
+function _diariDir(btn,deg){
+  var grid=document.getElementById('obsDirGrid');
+  var bs=grid.querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){ bs[i].style.background='var(--bg-pill)'; bs[i].style.color='var(--text-secondary)'; bs[i].style.borderColor='var(--border-strong)'; }
+  btn.style.background='var(--accent-primary-bg-5)'; btn.style.color='var(--accent-primary)'; btn.style.borderColor='var(--accent-primary-bg-7)';
+  document.getElementById('obsDir').value=deg;
+}
+function _diariTrend(v){
+  document.getElementById('obsBaroTrend').value=v;
+  var map={up:'obsTrUp',stable:'obsTrStable',down:'obsTrDown'};
+  for(var k in map){ if(map.hasOwnProperty(k)){ var b=document.getElementById(map[k]);
+    if(k===v){ b.style.background='var(--accent-primary-bg-5)'; b.style.color='var(--accent-primary)'; b.style.borderColor='var(--accent-primary-bg-7)'; }
+    else { b.style.background='var(--bg-pill)'; b.style.color='var(--text-secondary)'; b.style.borderColor='var(--border-strong)'; }
+  }}
+}
+
+/* coordinate GPS dell'osservazione corrente (null se non rilevate) */
+var _diariGps=null;
+
+/* gestione select posizione libera */
+document.addEventListener('change',function(e){
+  if(e.target && e.target.id==='obsLoc'){
+    document.getElementById('obsLocFree').style.display = (e.target.value==='__free__')?'block':'none';
+    // l'utente ha scelto manualmente: le coordinate GPS non valgono più
+    _diariGps=null;
+  }
+});
+
+/* ----- GPS: compila la posizione dell'osservazione ----- */
+function diariUseGPS(){
+  var btn=document.getElementById('obsGpsBtn');
+  if(!navigator.geolocation){
+    if(btn){ btn.textContent='⚠️ GPS non disponibile'; setTimeout(function(){ btn.textContent='📍 GPS'; },2800); }
+    return;
+  }
+  var origText=btn?btn.textContent:'📍 GPS';
+  if(btn){ btn.textContent='⏳ …'; btn.disabled=true; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat=pos.coords.latitude, lon=pos.coords.longitude, acc=pos.coords.accuracy;
+    // porto più vicino tra Z (stessa logica di findNearestPort)
+    var nearest=null, minDist=Infinity;
+    for(var i=0;i<Z.length;i++){
+      var dst=nmDistance(lat,lon,Z[i].a,Z[i].o);
+      if(dst<minDist){ minDist=dst; nearest=Z[i]; }
+    }
+    var distStr=minDist<1?(minDist*1852).toFixed(0)+' m':minDist.toFixed(1)+' NM';
+    var str='GPS · '+toDDM(lat,true)+'  '+toDDM(lon,false)+'  ·  '+lat.toFixed(5)+'  '+lon.toFixed(5)+'  ·  ±'+Math.round(acc)+' m  ·  '+distStr+' da '+(nearest?nearest.n:'?');
+    // imposta su posizione libera (il set programmatico NON fa scattare il listener change)
+    var sel=document.getElementById('obsLoc');
+    if(sel) sel.value='__free__';
+    var free=document.getElementById('obsLocFree');
+    if(free){ free.style.display='block'; free.value=str; }
+    _diariGps={lat:lat,lon:lon,acc:acc};
+    if(btn){ btn.textContent=origText; btn.disabled=false; }
+  }, function(err){
+    if(btn){ btn.textContent=origText; btn.disabled=false; }
+    var m = (err.code===1) ? '⚠️ Permesso negato'
+          : (err.code===3) ? '⚠️ Timeout, riprova'
+          : '⚠️ Posizione non disponibile';
+    if(btn){ btn.textContent=m; setTimeout(function(){ btn.textContent='📍 GPS'; },2800); }
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
+
+/* ----- Salvataggio ----- */
+function diariSave(){
+  // GUARDIANO GPS: evita di salvare in silenzio senza coordinate.
+  if(_diariGps || !navigator.geolocation){ _diariCommit(); return; }
+  if(!confirm('Vuoi allegare la posizione GPS a questa osservazione?\n\nOK = acquisisci ora e salva\nAnnulla = salva senza coordinate')){ _diariCommit(); return; }
+  var gb=document.getElementById('obsGpsBtn');
+  if(gb){ gb.textContent='⏳ …'; gb.disabled=true; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    _diariGps={lat:pos.coords.latitude, lon:pos.coords.longitude, acc:pos.coords.accuracy};
+    if(gb){ gb.textContent='📍 GPS'; gb.disabled=false; }
+    _diariCommit();
+  }, function(err){
+    if(gb){ gb.textContent='📍 GPS'; gb.disabled=false; }
+    var motivo=(err.code===1)?'permesso negato':(err.code===3)?'timeout':'posizione non disponibile';
+    if(confirm('GPS non riuscito ('+motivo+').\n\nOK = salva comunque senza coordinate\nAnnulla = torna indietro')){ _diariCommit(); }
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
+function _diariCommit(){
+  var locSel = document.getElementById('obsLoc').value;
+  var loc = (locSel==='__free__') ? (document.getElementById('obsLocFree').value.trim()||'Posizione libera') : locSel;
+  var dirV = document.getElementById('obsDir').value;
+  var baroV = document.getElementById('obsBaro').value;
+
+  // snapshot previsione corrente (per confronto offline futuro)
+  var fc=null;
+  try{
+    if(typeof D!=='undefined' && D && D.hourly){
+      var h=D.hourly, cvi=(typeof vi==='number')?vi:0;
+      fc={
+        loc:(typeof z!=='undefined'&&z&&z.n)?z.n:null,
+        time:h.time?h.time[cvi]:null,
+        windKn:(h.wind_speed_10m&&h.wind_speed_10m[cvi]!=null)?Math.round(h.wind_speed_10m[cvi]):null,
+        windDir:(h.wind_direction_10m&&h.wind_direction_10m[cvi]!=null)?Math.round(h.wind_direction_10m[cvi]):null,
+        baro:(h.pressure_msl&&h.pressure_msl[cvi]!=null)?Math.round(h.pressure_msl[cvi]*10)/10:null,
+        cloudPct:(h.cloud_cover&&h.cloud_cover[cvi]!=null)?Math.round(h.cloud_cover[cvi]):null
+      };
+    }
+  }catch(e){ fc=null; }
+
+  var rec = {
+    id: Date.now(),
+    ts: document.getElementById('obsTime').value || _diariNowLocal(),
+    loc: loc,
+    windKn: +document.getElementById('obsWind').value,
+    windDir: dirV===''?null:+dirV,
+    baro: baroV===''?null:parseFloat(baroV),
+    baroTrend: document.getElementById('obsBaroTrend').value||null,
+    sea: +document.getElementById('obsSea').value,
+    okta: +document.getElementById('obsOkta').value,
+    cloudType: document.getElementById('obsCloud').value||'',
+    precip: document.getElementById('obsPrecip').value||'Nessuna',
+    visKm: +document.getElementById('obsVis').value,
+    notes: document.getElementById('obsNotes').value.trim(),
+    fc: fc,
+    lat: (_diariGps?_diariGps.lat:null),
+    lon: (_diariGps?_diariGps.lon:null),
+    acc: (_diariGps?_diariGps.acc:null)
+  };
+
+  var arr = getObs();
+  arr.unshift(rec);
+  saveObs(arr);
+  _diariGps=null; // consuma le coordinate: la prossima osservazione riparte pulita
+  bzDiari(); // ridisegna tutto (form pulito + lista + grafico aggiornati)
+  // piccolo feedback
+  var el=document.getElementById('pDiari');
+  var toast=document.createElement('div');
+  toast.textContent='✓ Osservazione registrata';
+  toast.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:var(--status-go-2);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;box-shadow:0 4px 20px var(--bg-overlay-strong)';
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.style.transition='opacity .4s'; toast.style.opacity='0'; setTimeout(function(){toast.remove();},400); },1400);
+}
+
+/* ----- Lista osservazioni ----- */
+function diariRenderList(){
+  var fEl=document.getElementById('obsFilter');
+  var filt = fEl?fEl.value:'';
+  document.getElementById('obsList').innerHTML = renderObsList(getObs(), filt);
+}
+function renderObsList(arr, filt){
+  if(!arr.length){
+    return '<div style="text-align:center;padding:30px 16px;color:var(--text-faint);font-size:13px;background:var(--bg-card);border:1px dashed var(--border-strong);border-radius:14px">Nessuna osservazione registrata.<br>Compila il modulo sopra per iniziare il tuo diario.</div>';
+  }
+  var html='';
+  for(var i=0;i<arr.length;i++){
+    var o=arr[i];
+    if(filt && o.loc!==filt) continue;
+    var bf={f:'',d:'',c:'var(--text-muted)'}; try{ bf=BF(o.windKn); }catch(e){}
+    var dirTxt = (o.windDir==null)?'—':DIARI_DIRS[Math.round(o.windDir/22.5)%16];
+    var trIcon = o.baroTrend==='up'?'⬆️':o.baroTrend==='down'?'⬇️':o.baroTrend==='stable'?'➡️':'';
+    var precIcon = (o.precip&&o.precip!=='Nessuna')?'🌧️ ':'';
+
+    html += '<div style="background:var(--bg-card);border:1px solid var(--border-default);border-radius:14px;padding:13px 15px;margin-bottom:10px">';
+    // header
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:9px">';
+    html += '<div><div style="font-size:13px;font-weight:800;color:var(--text-primary)">📍 '+_diariEsc(o.loc)+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-muted);font-family:var(--font-data);margin-top:2px">🕐 '+_diariFmtTs(o.ts)+'</div></div>';
+    html += '<button type="button" onclick="diariDel('+o.id+')" style="background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer;padding:2px 4px;line-height:1">✕</button>';
+    html += '</div>';
+
+    // griglia dati
+    html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;font-size:12px">';
+    html += '<div style="background:var(--bg-pill);border-radius:8px;padding:7px 10px"><span style="color:var(--text-faint);font-size:10px">💨 VENTO</span><br><b style="color:'+bf.c+';font-family:var(--font-data)">'+o.windKn+' kn '+dirTxt+'</b><div style="font-size:10px;color:var(--text-muted)">F'+bf.f+' '+bf.d+'</div></div>';
+    html += '<div style="background:var(--bg-pill);border-radius:8px;padding:7px 10px"><span style="color:var(--text-faint);font-size:10px">🌡️ BARO</span><br><b style="color:var(--text-secondary);font-family:var(--font-data)">'+(o.baro!=null?o.baro+' hPa':'—')+' '+trIcon+'</b></div>';
+    html += '<div style="background:var(--bg-pill);border-radius:8px;padding:7px 10px"><span style="color:var(--text-faint);font-size:10px">🌊 MARE</span><br><b style="color:var(--text-secondary)">Douglas '+o.sea+'</b><div style="font-size:10px;color:var(--text-muted)">'+DIARI_DOUGLAS[o.sea]+'</div></div>';
+    html += '<div style="background:var(--bg-pill);border-radius:8px;padding:7px 10px"><span style="color:var(--text-faint);font-size:10px">☁️ CIELO</span><br><b style="color:var(--text-secondary)">'+o.okta+'/8 '+(o.cloudType||'')+'</b><div style="font-size:10px;color:var(--text-muted)">'+precIcon+_diariEsc(o.precip)+'</div></div>';
+    html += '</div>';
+
+    // visibilità + note
+    html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px">👁️ Visibilità '+(o.visKm>=50?'50+ km':o.visKm+' km')+'</div>';
+    if(o.notes) html += '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px;padding:7px 10px;background:var(--border-subtle);border-radius:8px;line-height:1.4;font-style:italic">📝 '+_diariEsc(o.notes)+'</div>';
+
+    // confronto previsione vs osservazione
+    if(o.fc && o.fc.loc===o.loc){
+      var f=o.fc;
+      var dWind = (f.windKn!=null)?(o.windKn-f.windKn):null;
+      var dBaro = (f.baro!=null&&o.baro!=null)?Math.round((o.baro-f.baro)*10)/10:null;
+      html += '<div style="margin-top:9px;padding:9px 11px;background:var(--accent-primary-bg);border:1px solid var(--accent-primary-bg-3);border-radius:9px">';
+      html += '<div style="font-size:10px;font-weight:800;color:var(--accent-primary);margin-bottom:5px;letter-spacing:.3px">🔮 PREVISIONE vs REALE</div>';
+      html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;font-family:var(--font-data);color:var(--text-secondary)">';
+      html += '<div>Vento prev: <b>'+(f.windKn!=null?f.windKn+' kn':'—')+'</b>'+(dWind!=null?' <span style="color:'+(Math.abs(dWind)<=3?'var(--status-go-2)':Math.abs(dWind)<=8?'var(--wind-mod-2)':'var(--wind-gale)')+'">('+(dWind>=0?'+':'')+dWind+')</span>':'')+'</div>';
+      html += '<div>Baro prev: <b>'+(f.baro!=null?f.baro+' hPa':'—')+'</b>'+(dBaro!=null?' <span style="color:'+(Math.abs(dBaro)<=2?'var(--status-go-2)':'var(--wind-mod-2)')+'">('+(dBaro>=0?'+':'')+dBaro+')</span>':'')+'</div>';
+      html += '</div></div>';
+    } else if(o.fc===null){
+      html += '<div style="margin-top:8px;font-size:10px;color:var(--text-faint);font-style:italic">🔮 Nessuna previsione fotografata (dati API non caricati alla registrazione)</div>';
+    }
+
+    html += '</div>'; // fine card
+  }
+  if(!html) html='<div style="text-align:center;padding:20px;color:var(--text-faint);font-size:12px">Nessuna osservazione per questo filtro.</div>';
+  return html;
+}
+
+/* ----- Elimina ----- */
+function diariDel(id){
+  if(!confirm('Eliminare questa osservazione?')) return;
+  var arr=getObs().filter(function(o){return o.id!==id;});
+  saveObs(arr);
+  bzDiari();
+}
+function diariClearAll(){
+  if(!getObs().length) return;
+  if(!confirm('Eliminare TUTTE le osservazioni del diario? Operazione irreversibile.')) return;
+  saveObs([]);
+  bzDiari();
+}
+
+/* ----- Export CSV (offline) ----- */
+function diariExportCSV(){
+  var arr=getObs();
+  if(!arr.length){ alert('Diario vuoto: niente da esportare.'); return; }
+  var cols=['Data/ora','Posizione','Vento_kn','Vento_dir','Baro_hPa','Baro_tend','Mare_Douglas','Oktas','Tipo_nuvole','Precipitazioni','Visibilita_km','Note','Prev_vento_kn','Prev_baro_hPa','GPS_lat','GPS_lon'];
+  function q(v){ v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"'; }
+  var rows=[cols.join(',')];
+  // ordine cronologico crescente nel CSV
+  var sorted=arr.slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  for(var i=0;i<sorted.length;i++){
+    var o=sorted[i];
+    var dir=(o.windDir==null)?'':DIARI_DIRS[Math.round(o.windDir/22.5)%16];
+    var tr=o.baroTrend==='up'?'salita':o.baroTrend==='down'?'discesa':o.baroTrend==='stable'?'stabile':'';
+    rows.push([q(o.ts),q(o.loc),q(o.windKn),q(dir),q(o.baro),q(tr),q(o.sea),q(o.okta),q(o.cloudType),q(o.precip),q(o.visKm),q(o.notes),q(o.fc?o.fc.windKn:''),q(o.fc?o.fc.baro:''),q(o.lat),q(o.lon)].join(','));
+  }
+  var csv='\ufeff'+rows.join('\r\n'); // BOM per Excel
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  var d=new Date();
+  a.href=url; a.download='diario-bordo_'+d.getFullYear()+_diariPad(d.getMonth()+1)+_diariPad(d.getDate())+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+
+/* ----- Grafico pressione osservata (SVG sparkline) ----- */
+function renderBaroChart(arr){
+  var pts=arr.filter(function(o){return o.baro!=null;}).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  if(pts.length<2){
+    return '<div style="background:var(--bg-card);border:1px solid var(--border-default);border-radius:14px;padding:16px"><div style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:6px">📈 Tendenza barometrica</div><div style="font-size:12px;color:var(--text-faint)">Registra almeno 2 letture di pressione per vedere il grafico della tendenza.</div></div>';
+  }
+  var W=600,H=180,padL=42,padR=14,padT=18,padB=26;
+  var vals=pts.map(function(o){return o.baro;});
+  var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  if(mx-mn<4){ var mid=(mx+mn)/2; mn=mid-2; mx=mid+2; }
+  var rng=mx-mn;
+  function X(i){ return padL+(W-padL-padR)*(pts.length===1?0:i/(pts.length-1)); }
+  function Y(v){ return padT+(H-padT-padB)*(1-(v-mn)/rng); }
+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block">';
+  // griglia orizzontale (4 linee)
+  for(var g=0;g<=3;g++){
+    var gv=mn+rng*g/3;
+    var gy=Y(gv);
+    svg+='<line x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'" stroke="var(--chart-grid)" stroke-width="1"/>';
+    svg+='<text x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end" font-size="10" fill="var(--text-faint)" font-family="var(--font-data)">'+gv.toFixed(0)+'</text>';
+  }
+  // area + linea
+  var dPath='', aPath='';
+  for(var i=0;i<pts.length;i++){
+    var x=X(i), y=Y(pts[i].baro);
+    dPath+=(i===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+  }
+  aPath='M'+X(0).toFixed(1)+' '+Y(pts[0].baro).toFixed(1)+' '+dPath.replace(/^M[^L]*/,'')+'L'+X(pts.length-1).toFixed(1)+' '+(H-padB)+' L'+X(0).toFixed(1)+' '+(H-padB)+' Z';
+  svg+='<path d="'+aPath+'" fill="var(--accent-primary-bg-2)"/>';
+  svg+='<path d="'+dPath.trim()+'" fill="none" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+  // punti
+  for(var j=0;j<pts.length;j++){
+    svg+='<circle cx="'+X(j).toFixed(1)+'" cy="'+Y(pts[j].baro).toFixed(1)+'" r="3.5" fill="var(--accent-primary)" stroke="var(--bg-deep)" stroke-width="1.5"/>';
+  }
+  // etichette tempo (primo e ultimo)
+  svg+='<text x="'+padL+'" y="'+(H-8)+'" text-anchor="start" font-size="9" fill="var(--text-faint)" font-family="var(--font-data)">'+_diariFmtTs(pts[0].ts)+'</text>';
+  svg+='<text x="'+(W-padR)+'" y="'+(H-8)+'" text-anchor="end" font-size="9" fill="var(--text-faint)" font-family="var(--font-data)">'+_diariFmtTs(pts[pts.length-1].ts)+'</text>';
+  svg+='</svg>';
+
+  var delta=Math.round((pts[pts.length-1].baro-pts[0].baro)*10)/10;
+  var dColor=delta<=-2?'var(--wind-gale)':delta<-0.5?'var(--wind-mod-2)':delta>2?'var(--status-go-2)':delta>0.5?'var(--wind-light)':'var(--text-muted)';
+  var dTxt=delta<=-2?'forte calo':delta<-0.5?'in calo':delta>2?'forte rialzo':delta>0.5?'in rialzo':'stabile';
+
+  var box='<div style="background:var(--bg-card);border:1px solid var(--border-default);border-radius:14px;padding:16px">';
+  box+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><div style="font-size:13px;font-weight:800;color:var(--text-primary)">📈 Tendenza barometrica osservata</div>';
+  box+='<div style="font-size:12px;font-weight:700;color:'+dColor+';font-family:var(--font-data)">Δ '+(delta>=0?'+':'')+delta+' hPa · '+dTxt+'</div></div>';
+  box+=svg;
+  box+='<div style="font-size:10px;color:var(--text-faint);margin-top:6px;text-align:center">'+pts.length+' letture · cali &gt;2-3 hPa/3h indicano possibile peggioramento</div>';
+  box+='</div>';
+  return box;
+}
+
 </script>
 </body></html>
