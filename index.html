@@ -420,7 +420,7 @@ body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
 
 <div style="padding:12px 14px;background:var(--border-subtle);border-radius:10px;border-left:3px solid #4090d0">
 <div style="font-size:13px;font-weight:700;color:var(--accent-primary);margin-bottom:5px">📈 Previsioni 12/24/48h · 📅 7 giorni · ⚡ Temporali</div>
-<div style="font-size:11px;color:var(--text-faint);line-height:1.6">Le tab <b>12h / 24h / 48h</b> mostrano l'andamento orario di vento, raffiche, mare e pressione con grafici. <b>📅 7 giorni</b> dà la tendenza a medio termine per pianificare le uscite della settimana. <b>⚡ Temporali</b> usa il <b>CAPE</b> (energia convettiva): valori alti = atmosfera instabile, possibili celle temporalesche.</div>
+<div style="font-size:11px;color:var(--text-faint);line-height:1.6">Le tab <b>12h / 24h / 48h</b> mostrano l'andamento orario di vento, raffiche, mare e pressione con grafici. <b>📅 7 giorni</b> dà la tendenza a medio termine per pianificare le uscite della settimana. <b>⚡ Temporali</b> usa il <b>CAPE</b> (energia convettiva): valori alti = atmosfera instabile, possibili celle temporalesche. <b>🌪️ Estremi</b> calcola un indice di rischio per groppi, downburst, trombe marine e grandine (con striscia 48h), insegna a riconoscerli dal mare e collega le carte specialistiche (Supercell Composite, ECMWF) e i radar dei fulmini in tempo reale.</div>
 </div>
 
 </div>
@@ -443,7 +443,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
 <div class="st" id="ss" style="background:rgba(25,110,190,.1);border:1px solid var(--accent-primary-bg-2);color:var(--accent-primary)">⏳ Premi il pulsante per caricare i dati meteo</div>
 <div class="dn" id="mu">
 <div class="vd dn" id="vd"></div>
-<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('cape',this)">⚡ Temporali</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button><button class="t" onclick="st('diari',this)">📓 Diario</button></div>
+<div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('cape',this)">⚡ Temporali</button><button class="t" onclick="st('ext',this)">🌪️ Estremi</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button><button class="t" onclick="st('diari',this)">📓 Diario</button></div>
 <div class="cn" id="pN"></div><div class="cn" id="pM" style="height:0;overflow:hidden;padding:0">
 <div id="mapContainer" style="position:relative;width:100%;height:480px;background:var(--bg-deep-2);border-radius:12px;border:1px solid var(--border-strong);overflow:hidden"></div>
 <div id="addLocPanel" style="margin-top:10px;padding:12px 16px;background:var(--border-subtle);border:1px solid var(--border-default);border-radius:12px">
@@ -473,7 +473,7 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
   <div style="font-size:15px;font-weight:700;color:var(--text-primary)" id="mapInfoName">—</div>
   <button id="mapInfoBtn" style="padding:8px 18px;background:var(--accent-primary-bg-7);color:var(--accent-primary);border:1px solid var(--accent-primary-bg-7);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 Carica dati meteo</button>
 </div>
-</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="p7"></div><div class="cn dn" id="pCape"></div><div class="cn dn" id="pSy"></div><div class="cn dn" id="pDiari"></div></div>
+</div><div class="cn dn" id="pF"></div><div class="cn dn" id="p24"></div><div class="cn dn" id="p48"></div><div class="cn dn" id="pR"></div><div class="cn dn" id="pS"></div><div class="cn dn" id="pFav"></div><div class="cn dn" id="pC"></div><div class="cn dn" id="pRT"></div><div class="cn dn" id="pZ"></div><div class="cn dn" id="p7"></div><div class="cn dn" id="pCape"></div><div class="cn dn" id="pExt"></div><div class="cn dn" id="pSy"></div><div class="cn dn" id="pDiari"></div></div>
 <div class="ft">Dati: Open-Meteo API — Stime indicative — Consultare previsioni ufficiali<br><span style="color:var(--text-ghost)">Progetto: Ernesto Faraco &amp; Claude Sonnet 🤖 — 2025</span></div>
 <script>
 const Z=[{n:"Capo dell'Arma",a:43.8461,o:7.9367},{n:"Capo di Vado",a:44.27,o:8.44},{n:"Capo Mele",a:43.96,o:8.17},{n:"Capo Noli",a:44.1956,o:8.4253},{n:"Portofino",a:44.3039,o:9.2078},{n:"Punta Mesco (Cinque Terre)",a:44.1333,o:9.65},{n:"Cala Galera",a:42.43,o:11.12},{n:"Capel Rosso (Giglio)",a:42.3589,o:10.9211},{n:"Capo d'Argentario",a:42.3833,o:11.15},{n:"Capo d'Enfola (Elba)",a:42.8333,o:10.2667},{n:"Capo d'Orso (Elba)",a:42.45,o:10.4},{n:"Capo d'Uomo (Argentario)",a:42.4,o:11.1},{n:"Capo Linaro (Civitavecchia)",a:42.08,o:11.79},{n:"Isola di Capraia",a:43.0511,o:9.8444},{n:"Livorno (Fanale dei Pisani)",a:43.5439,o:10.2947},{n:"Porto Santo Stefano",a:42.4347,o:11.1197},{n:"Portoferraio (Elba)",a:42.8164,o:10.3342},{n:"Punta del Fenaio (Giglio)",a:42.3667,o:10.8667},{n:"Talamone",a:42.5572,o:11.1394},{n:"Viareggio",a:43.8667,o:10.2333},{n:"Nettuno",a:41.46,o:12.66},{n:"Ponza",a:40.9,o:12.97},{n:"Ventotene",a:40.8,o:13.43},{n:"Capo Miseno",a:40.7778,o:14.0894},{n:"Capo Palinuro",a:40.0264,o:15.275},{n:"Isola d'Ischia",a:40.7333,o:13.95},{n:"Isola di Capri",a:40.55,o:14.2333},{n:"Isola di Stromboli",a:38.8,o:15.2167},{n:"Isola di Ustica",a:38.7078,o:13.1775},{n:"Isole Eolie (centro)",a:38.5333,o:14.9},{n:"Punta Campanella",a:40.5694,o:14.325},{n:"Punta di Posillipo",a:40.8219,o:14.2156},{n:"Punta Licosa",a:40.25,o:14.9},{n:"Capo Colonna (Crotone)",a:39.0333,o:17.2},{n:"Capo dell'Armi",a:37.95,o:15.7},{n:"Capo Peloro (Messina)",a:38.2664,o:15.6531},{n:"Capo Rizzuto",a:38.9667,o:17.2167},{n:"Capo Spartivento (Calabria)",a:37.9167,o:16.0667},{n:"Capo Vaticano",a:38.6194,o:15.8286},{n:"Punta Pellaro",a:38.0183,o:15.6369},{n:"Scilla",a:38.2506,o:15.7189},{n:"Capo Boeo (Marsala)",a:37.8,o:12.4333},{n:"Capo Gallo (Palermo)",a:38.2233,o:13.3167},{n:"Capo Milazzo",a:38.2706,o:15.2311},{n:"Capo Passero",a:36.685,o:15.14},{n:"Capo Zafferano",a:38.1122,o:13.5375},{n:"Isola di Favignana (Egadi)",a:37.9333,o:12.3333},{n:"Isola di Lampedusa",a:35.5086,o:12.5931},{n:"Isola di Pantelleria",a:36.7875,o:11.9925},{n:"Isola di Vulcano",a:38.4,o:14.9667},{n:"San Vito lo Capo",a:38.175,o:12.7333},{n:"Capo di Leuca",a:39.7833,o:18.3667},{n:"Punta della Testa (Gargano)",a:41.95,o:15.9667},{n:"Punta Palascia (Capo d'Otranto)",a:40.1075,o:18.52},{n:"Santa Maria di Leuca",a:39.7994,o:18.355},{n:"Vieste (Gargano)",a:41.8833,o:16.1667},{n:"Cagliari",a:39.22,o:9.12},{n:"Capo Caccia",a:40.57,o:8.16},{n:"Capo Carbonara",a:39.10,o:9.52},{n:"Capo Falcone",a:40.97,o:8.20},{n:"Capo Ferro",a:41.15,o:9.52},{n:"Capo Mannu",a:40.035,o:8.3781},{n:"Capo Marrangiu",a:40.3,o:8.4},{n:"Capo Pecora",a:39.4489,o:8.3917},{n:"Capo Pertusato (Bonifacio)",a:41.3678,o:9.1844},{n:"Capo San Marco",a:39.8583,o:8.4358},{n:"Capo Spartivento",a:38.8789,o:8.8936},{n:"Capo Testa",a:41.25,o:9.14},{n:"Capo Teulada",a:38.8667,o:8.6333},{n:"Carloforte",a:39.14,o:8.28},{n:"Faro della Chiappa",a:41.595,o:9.365},{n:"Olbia",a:40.92,o:9.5},{n:"P.ta Scorno (Asinara)",a:41.12,o:8.32},{n:"Pointe Cacavento",a:41.3883,o:9.1503},{n:"Porto Vecchio (Corsica)",a:41.59,o:9.28},{n:"Punta di u Cappiciolu",a:41.4281,o:9.2647},{n:"Punta Sardegna",a:41.1914,o:9.3608},{n:"Punta Scorno (Asinara)",a:41.1194,o:8.3183},{n:"Îles Lavezzi",a:41.325,o:9.25},{n:"Bastia",a:42.6944,o:9.4539},{n:"Cap Corse",a:42.8333,o:9.4167},{n:"Capu Fenu (Ajaccio)",a:41.9622,o:8.5933},{n:"Giraglia",a:43.03,o:9.41},{n:"Solenzara",a:41.8589,o:9.3997},{n:"Formentera - Cap de Barbaria",a:38.6333,o:1.4},{n:"Ibiza - Cap des Falcó",a:38.8667,o:1.2},{n:"Mahon (Minorca)",a:39.89,o:4.27},{n:"Mallorca - Cap de Formentor",a:39.9667,o:3.2167},{n:"Mallorca - Cap de ses Salines",a:39.2667,o:3.05},{n:"Menorca - Cap de Cavalleria",a:40.0667,o:4.0833},{n:"Palma Mallorca",a:39.57,o:2.65},{n:"Corfù",a:39.62,o:19.92},{n:"Cap Couronne",a:43.3333,o:5.05},{n:"Cap Croisette (Marsiglia)",a:43.2142,o:5.3375},{n:"Cap d'Antibes (Faro Garoupe)",a:43.5583,o:7.125},{n:"Cap Ferrat",a:43.6883,o:7.3289},{n:"Pointe d'Agde",a:43.3089,o:3.4769},{n:"Îles du Frioul (Marsiglia)",a:43.275,o:5.3},{n:"Cabo de Gata",a:36.8303,o:-2.0061},{n:"Cabo de la Nao",a:38.7333,o:0.2167},{n:"Cabo de Palos",a:37.6333,o:-0.7},{n:"Cap de Creus (Costa Brava)",a:42.3167,o:3.3167},{n:"Delta dell'Ebro",a:40.72,o:0.8631},{n:"Punta de Tarifa",a:36.0042,o:-5.6103},{n:"Sitges",a:41.235,o:1.8119}];
@@ -519,7 +519,7 @@ document.getElementById("go").onclick=ld;
 function st(id,b){
   document.querySelectorAll(".t").forEach(x=>x.classList.remove("a"));
   b.classList.add("a");
-  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pCape","pSy","pDiari"].forEach(x=>document.getElementById(x).classList.add("dn"));
+  ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pCape","pExt","pSy","pDiari"].forEach(x=>document.getElementById(x).classList.add("dn"));
   if(id==="mp"){
     document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
     setTimeout(function(){
@@ -575,7 +575,7 @@ function st(id,b){
   } else {
     document.getElementById("pM").style.cssText="height:0;overflow:hidden;padding:0";
     document.getElementById("mapInfo").style.display='none';
-    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else if(id==="cape"){document.getElementById("pCape").classList.remove("dn");bzCape();}else if(id==="f7d"){document.getElementById("p7").classList.remove("dn");}else if(id==="diari"){document.getElementById("pDiari").classList.remove("dn");bzDiari();}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
+    if(id==="sm"){document.getElementById("pS").classList.remove("dn");bzS();}else if(id==="fav"){document.getElementById("pFav").classList.remove("dn");bzFavs();}else if(id==="cf"){document.getElementById("pC").classList.remove("dn");bzC();}else if(id==="rt"){document.getElementById("pRT").classList.remove("dn");bzRT();}else if(id==="sy"){document.getElementById("pSy").classList.remove("dn");bzSy();}else if(id==="cape"){document.getElementById("pCape").classList.remove("dn");bzCape();}else if(id==="ext"){document.getElementById("pExt").classList.remove("dn");bzExt();}else if(id==="f7d"){document.getElementById("p7").classList.remove("dn");}else if(id==="diari"){document.getElementById("pDiari").classList.remove("dn");bzDiari();}else{document.getElementById(id==="now"?"pN":id==="fc"?"pF":id==="f24"?"p24":id==="f48"?"p48":id==="z5"?"pZ":"pR").classList.remove("dn");if(id==="z5")bzP();}
   }
 }
 
@@ -977,7 +977,20 @@ try{
       fr += '<b style="color:var(--text-primary)">'+_sumHuman+'</b> · ~<b style="color:var(--text-primary)">'+_sumDist+' NM</b> di traiettoria stimata';
       fr += ' <span style="color:var(--text-faint);font-style:italic">(stima a '+_sumSpeed+' kn)</span>';
     }
-    fr += '</div></div></div>';
+    fr += '</div>';
+    // Perché lo dico — elenco dei segnali che hanno fatto scattare il banner
+    if(_summary.signals && _summary.signals.length){
+      fr += "<div style='margin-top:8px;padding:9px 11px;background:rgba(0,0,0,.22);border-radius:8px'>";
+      fr += "<div style='font-size:10px;color:"+_summary.color+";font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px'>Perch&eacute; lo dico &mdash; segnali rilevati"+(_summary.score?" &middot; punteggio "+_summary.score:"")+"</div>";
+      for(var _sg=0;_sg<_summary.signals.length;_sg++){
+        fr += "<div style='font-size:12.5px;color:var(--text-secondary);line-height:1.55;padding:1px 0'>"+_summary.signals[_sg]+"</div>";
+      }
+      if(_summary.atTimeStr){
+        fr += "<div style='font-size:10.5px;color:var(--text-muted);font-style:italic;margin-top:5px'>Segnali valutati a: "+_summary.atTimeStr+"</div>";
+      }
+      fr += "</div>";
+    }
+    fr += '</div></div>';
   } else {
     fr += '<div style="margin-bottom:10px;padding:10px 14px;border-radius:10px;background:rgba(74,144,96,.10);border:1px solid rgba(74,144,96,.30);display:flex;align-items:center;gap:10px">';
     fr += '<div style="font-size:22px;flex-shrink:0">🟢</div>';
@@ -1065,6 +1078,27 @@ fr+='<div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,min
   fr+='</div>';
 });
 fr+='</div></div>';
+// Legenda: come leggere questa tab
+fr += "<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:14px;padding:16px;margin-top:12px'>";
+fr += "<div style='font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:6px'>\uD83D\uDCD6 Come leggere questa tab</div>";
+fr += "<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+fr += "<div style='padding:6px 0'><b style='color:var(--text-primary)'>Il banner in alto</b> guarda le <b>prossime 48 ore</b>: \uD83D\uDFE2 nessun segnale &middot; \uD83D\uDFE1 <b>possibile</b> fronte (indizi moderati) &middot; \uD83D\uDFE0 <b>probabile</b> (indizi forti) &middot; \u26A0\uFE0F fronte conclamato in avvicinamento.</div>";
+fr += "<div style='padding:6px 0'><b style='color:var(--text-primary)'>L&rsquo;analisi frontale</b> pi&ugrave; sotto fotografa invece <b>l&rsquo;ora selezionata</b>: pu&ograve; essere verde anche con banner giallo. Non &egrave; una contraddizione &mdash; significa <i>adesso tranquillo, segnali pi&ugrave; avanti</i>. Sono due orizzonti diversi.</div>";
+fr += "<div style='padding:6px 0'><b style='color:var(--text-primary)'>L&rsquo;icona tratteggiata con il &laquo;?&raquo;</b> indica una perturbazione <b>generica</b>: i segnali ci sono, ma la firma &mdash; freddo, caldo o occlusione &mdash; non &egrave; ancora riconoscibile nei dati.</div>";
+fr += "<div style='padding:6px 0'><b style='color:var(--text-primary)'>Cosa sorveglia:</b> calo di pressione (3/6/12h), geopotenziale Z500 in quota, nuvolosit&agrave; in aumento e rotazione del vento. Ogni indizio d&agrave; punti: pi&ugrave; punti, pi&ugrave; confidenza &mdash; e il banner mostra sempre <i>quali</i> segnali hanno pesato.</div>";
+fr += "</div></div>";
+
+// Mito da banchina — box in evidenza
+fr += "<div style='background:rgba(240,160,32,.10);border:1.5px solid rgba(240,160,32,.55);border-radius:14px;padding:16px;margin-top:12px'>";
+fr += "<div style='font-size:15px;font-weight:800;color:var(--wind-strong);margin-bottom:8px'>\u2693 Mito da banchina: &laquo;se il vento gira antiorario, arriva la perturbazione&raquo;</div>";
+fr += "<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+fr += "<div style='padding:5px 0'><b style='color:var(--text-primary)'>Vero solo a met&agrave;.</b> Il vento gira antiorario (<i>backing</i>) quando il centro della bassa ti passa <b>a nord</b> &mdash; il caso pi&ugrave; comune alle nostre latitudini, ma non l&rsquo;unico.</div>";
+fr += "<div style='padding:5px 0'><b style='color:var(--text-primary)'>Se il centro passa a sud di te</b> (capita, nel Mediterraneo), la stessa perturbazione arriva col vento che gira <b>orario</b>. Chi aspetta il backing, quel giorno si fa sorprendere.</div>";
+fr += "<div style='padding:5px 0'><b style='color:var(--text-primary)'>Le brezze girano ogni giorno</b> per il ciclo termico della costa, senza nessun fronte: la rotazione da sola produce continui falsi allarmi.</div>";
+fr += "<div style='margin-top:8px;padding:10px 12px;background:rgba(0,0,0,.22);border-radius:10px;font-size:13.5px;color:var(--text-primary);font-weight:700;text-align:center'>Il vento ti dice <i>da che parte</i> &mdash; il barometro ti dice <i>se fa sul serio</i>.</div>";
+fr += "<div style='padding:6px 0 0;font-size:12px;color:var(--text-muted);font-style:italic'>Per questo la sentinella qui sopra d&agrave; alla rotazione del vento 1 punto, e ai cali di pressione fino a 6: rotazione + barometro in discesa = allarme; rotazione da sola = quasi sempre effetto locale.</div>";
+fr += "</div></div>";
+
 document.getElementById("pR").innerHTML=fr;
 // Badge CAPE ALTO nell'header
 var _cb=document.getElementById('capeBadge');
@@ -1085,6 +1119,16 @@ function bzP(){
   out+='</div>';
   out+='<a href="https://charts.ecmwf.int/products/extended-anomaly-z500?projection=opencharts_europe" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:12px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;background:linear-gradient(135deg,var(--accent-primary-bg-4),var(--accent-primary-bg-2));color:var(--accent-primary);border:1px solid var(--accent-primary-bg-4)">&#9215; Apri a tutto schermo</a>';
   out+='<div style="font-size:9px;color:var(--text-faint);text-align:center;margin-top:6px">Fonte: ECMWF Open Charts</div>';
+  out+="<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:14px;padding:16px;margin-top:12px'>";
+  out+="<div style='font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:6px'>\uD83D\uDCD6 Come leggere questa carta</div>";
+  out+="<div style='font-size:13px;color:var(--text-secondary);line-height:1.6'>La carta mostra l&rsquo;<b>anomalia di geopotenziale a 500 hPa</b>, cio&egrave; a circa <b>5.500 metri di quota</b>: confronta l&rsquo;atmosfera di questi giorni con la sua media storica. In parole da marinaio: dove l&rsquo;atmosfera &egrave; <i>pi&ugrave; bassa</i> o <i>pi&ugrave; alta</i> del normale.</div>";
+  out+="<div style='margin-top:10px;font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+  out+="<div style='padding:6px 0'><b style='color:#5b8dd0'>\u25CF Blu / viola</b> = pi&ugrave; basso del normale \u2192 <b>saccatura</b>: aria fredda in quota, instabilit&agrave;, perturbazioni e temporali pi&ugrave; probabili.</div>";
+  out+="<div style='padding:6px 0'><b style='color:#d07040'>\u25CF Rosso / arancio</b> = pi&ugrave; alto del normale \u2192 <b>promontorio</b> (anticiclone): stabilit&agrave;, tempo tranquillo.</div>";
+  out+="<div style='padding:6px 0'><b style='color:var(--text-muted)'>\u25CF Bianco / neutro</b> = nella norma.</div>";
+  out+="</div>";
+  out+="<div style='margin-top:10px;padding:10px 12px;background:rgba(64,144,208,.08);border:1px solid rgba(64,144,208,.35);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.55'><b style='color:var(--accent-primary)'>Perch&eacute; guardarla:</b> il tempo al suolo si decide in quota &mdash; le saccature guidano le perturbazioni. Se vedi il <b>blu avvicinarsi al Mediterraneo da ovest</b>, aspettati un peggioramento nei giorni indicati; se domina il rosso, &egrave; una finestra stabile per pianificare le uscite.</div>";
+  out+="</div>";
   document.getElementById("pZ").innerHTML=out;
 }
 
@@ -5045,10 +5089,200 @@ function bzCape(){
   }
   html+='</div>';
 
+
+  // === SEZ 6: Legenda CAPE (come leggerlo) ===
+  html+="<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:14px;padding:16px;margin-top:16px'>";
+  html+="<div style='font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:6px'>\uD83D\uDCD6 Come leggere il CAPE</div>";
+  html+="<div style='font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:12px'>Il CAPE (J/kg) misura il <b>carburante dei temporali</b>: quanta energia ha a disposizione l&rsquo;aria per salire con violenza. Non dice <i>se</i> il temporale scoppier&agrave;, ma <b>quanto sar&agrave; potente</b> se scoppia.</div>";
+  var _capeRows=[
+    ['0 &ndash; 500','var(--wind-calm)','Trascurabile','aria stabile, temporali improbabili'],
+    ['500 &ndash; 1000','var(--wind-mod-2)','Debole','possibili acquazzoni isolati nel pomeriggio'],
+    ['1000 &ndash; 2500','var(--wind-mod)','Marcata','temporali possibili: esci con un piano di rientro'],
+    ['2500 &ndash; 4000','var(--wind-gale)','Severa','temporali forti probabili: raffiche violente, grandine'],
+    ['&gt; 4000','var(--wind-gale)','Estrema','condizioni potenzialmente pericolose: resta in porto']
+  ];
+  for(var _cr=0;_cr<_capeRows.length;_cr++){
+    var _r=_capeRows[_cr];
+    html+="<div style='display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-soft)'>";
+    html+="<div style='min-width:100px;font-weight:800;font-size:13px;color:"+_r[1]+";font-family:var(--font-data)'>"+_r[0]+"</div>";
+    html+="<div style='font-size:13px;line-height:1.4'><b style='color:"+_r[1]+"'>"+_r[2]+"</b> <span style='color:var(--text-secondary)'>&mdash; "+_r[3]+"</span></div>";
+    html+="</div>";
+  }
+  html+="<div style='margin-top:12px;padding:12px;background:rgba(240,160,32,.10);border:1px solid rgba(240,160,32,.45);border-radius:10px'>";
+  html+="<div style='font-size:14px;font-weight:800;color:var(--wind-strong);margin-bottom:4px'>\u26A0\uFE0F La trappola del cielo sereno</div>";
+  html+="<div style='font-size:13px;color:var(--text-secondary);line-height:1.55'>Il CAPE &egrave; energia <b>accumulata</b>: con valori alti, un mattino limpido e caldo non &egrave; rassicurante &mdash; &egrave; proprio il sole che carica la molla. I cumulonembi possono montare in <b>1&ndash;2 ore</b>, e in mare non hai ripari. Con CAPE sopra <b>2000 J/kg</b> diffida del bel tempo: esci presto, rientra presto, tieni d&rsquo;occhio la tab Fronti e il cielo sopravvento.</div>";
+  html+="</div>";
+  html+="</div>";
+
   el.innerHTML=html;
 }
 
 /* Entry point quando si clicca sulla tab Sinottica */
+// ══════════ TAB ESTREMI: rischio fenomeni convettivi severi ══════════
+function extScore(h,i){
+  var cp=(h.cape&&h.cape[i]!=null)?h.cape[i]:0;
+  var li=(h.lifted_index&&h.lifted_index[i]!=null)?h.lifted_index[i]:null;
+  var cin=(h.convective_inhibition&&h.convective_inhibition[i]!=null)?h.convective_inhibition[i]:null;
+  var g=(h.wind_gusts_10m&&h.wind_gusts_10m[i]!=null)?h.wind_gusts_10m[i]:0;
+  var w=(h.wind_speed_10m&&h.wind_speed_10m[i]!=null)?h.wind_speed_10m[i]:0;
+  var rr=(h.precipitation&&h.precipitation[i]!=null)?h.precipitation[i]:0;
+  var s=0, why=[];
+  if(cp>=3000){s+=4;why.push("CAPE estremo: "+Math.round(cp)+" J/kg");}
+  else if(cp>=2000){s+=3;why.push("CAPE molto alto: "+Math.round(cp)+" J/kg");}
+  else if(cp>=1000){s+=2;why.push("CAPE alto: "+Math.round(cp)+" J/kg");}
+  else if(cp>=500){s+=1;}
+  if(li!=null){
+    if(li<=-6){s+=3;why.push("Lifted Index "+li.toFixed(0)+": atmosfera esplosiva");}
+    else if(li<=-4){s+=2;why.push("Lifted Index "+li.toFixed(0)+": molto instabile");}
+    else if(li<=-2){s+=1;why.push("Lifted Index "+li.toFixed(0)+": instabile");}
+  }
+  if(cin!=null&&Math.abs(cin)<25&&cp>=1000){s+=1;why.push("CIN debole: nessun coperchio a frenare la convezione");}
+  if(cp>=1500&&(g-w)>=15){s+=1;why.push("Raffiche +"+Math.round(g-w)+" kn sopra il vento medio: possibili downburst");}
+  if(g>=40){s+=2;why.push("Raffiche previste oltre 40 kn");}
+  else if(g>=30){s+=1;why.push("Raffiche previste oltre 30 kn");}
+  if(rr>=5){s+=1;why.push("Precipitazioni intense: "+rr.toFixed(1)+" mm/h");}
+  return {s:s,why:why};
+}
+function extLevel(s){
+  if(s>=7)return{l:"ESTREMO",c:"var(--wind-gale)",b:"rgba(208,48,48,.14)",d:"resta in porto"};
+  if(s>=5)return{l:"ALTO",c:"var(--wind-strong)",b:"rgba(240,160,32,.12)",d:"uscita sconsigliata"};
+  if(s>=3)return{l:"MODERATO",c:"var(--wind-mod)",b:"rgba(240,192,64,.10)",d:"esci solo con un piano di rientro"};
+  return{l:"BASSO",c:"var(--wind-calm)",b:"rgba(126,207,160,.10)",d:"nessun segnale particolare"};
+}
+function bzExt(){
+  var el=document.getElementById('pExt');
+  if(!el)return;
+  if(!D||!D.hourly){el.innerHTML="<div style='padding:20px;color:var(--text-muted)'>Carica i dati meteo prima di usare questa tab.</div>";return;}
+  var h=D.hourly, T=h.time||[];
+  var now=extScore(h,vi), lv=extLevel(now.s);
+  var html="";
+  html+="<div style='font-size:11px;color:var(--text-muted);margin-bottom:10px;padding:8px 12px;border-radius:8px;background:var(--border-subtle);border:1px solid var(--border-strong);font-style:italic'>Indice euristico calcolato dai dati del modello (CAPE, Lifted Index, CIN, raffiche, precipitazioni). &Egrave; un aiuto al colpo d&rsquo;occhio, non una previsione ufficiale di fenomeni severi.</div>";
+  // ── Rischio ora ──
+  html+="<div style='text-align:center;padding:20px 16px;background:"+lv.b+";border:1px solid "+lv.c+"40;border-radius:14px;margin-bottom:14px'>";
+  html+="<div style='font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:6px'>🌪️ Rischio fenomeni convettivi &mdash; ora selezionata</div>";
+  html+="<div style='font-size:40px;font-weight:900;color:"+lv.c+";line-height:1'>"+lv.l+"</div>";
+  html+="<div style='font-size:13px;color:"+lv.c+";margin-top:6px;font-weight:700'>"+lv.d+"</div>";
+  if(now.why.length){
+    html+="<div style='margin-top:12px;text-align:left;background:rgba(0,0,0,.18);border-radius:10px;padding:10px 12px'>";
+    html+="<div style='font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:"+lv.c+";margin-bottom:4px'>Perch&eacute; lo dico</div>";
+    for(var wq=0;wq<now.why.length;wq++)html+="<div style='font-size:13px;color:var(--text-secondary);line-height:1.55'>&bull; "+now.why[wq]+"</div>";
+    html+="</div>";
+  } else {
+    html+="<div style='margin-top:8px;font-size:12px;color:var(--text-muted)'>Nessun fattore di rischio rilevante nei dati di quest&rsquo;ora.</div>";
+  }
+  html+="</div>";
+  // ── Striscia 48h ──
+  var maxS=-1,maxI=vi,cells="",labels="";
+  var end=Math.min(vi+48,(h.cape||[]).length);
+  for(var k=vi;k<end;k++){
+    var sc=extScore(h,k),l2=extLevel(sc.s);
+    if(sc.s>maxS){maxS=sc.s;maxI=k;}
+    var tm=T[k]?String(T[k]).slice(11,16):"";
+    cells+="<div title='"+tm+" &mdash; "+l2.l+"' style='height:30px;border-radius:2px;background:"+l2.c+";opacity:"+(sc.s>=3?"1":".5")+"'></div>";
+    labels+="<div style='font-size:9px;color:var(--text-muted);overflow:visible;white-space:nowrap'>"+(((k-vi)%6===0)?tm:"")+"</div>";
+  }
+  var pk=extLevel(maxS);
+  var pkT=T[maxI]?new Date(T[maxI]).toLocaleString('it-IT',{weekday:'short',hour:'2-digit',minute:'2-digit'}):"";
+  html+="<div class='cd' style='margin-bottom:14px'>";
+  html+="<div class='lb' style='margin-bottom:8px'>📈 PROSSIME 48 ORE</div>";
+  html+="<div style='display:grid;grid-template-columns:repeat("+(end-vi)+",1fr);gap:1px'>"+cells+"</div>";
+  html+="<div style='display:grid;grid-template-columns:repeat("+(end-vi)+",1fr);gap:1px;margin-top:3px'>"+labels+"</div>";
+  html+="<div style='margin-top:10px;font-size:13px;color:var(--text-secondary)'>Picco del periodo: <b style='color:"+pk.c+"'>"+pk.l+"</b>"+(pkT?(" &mdash; "+pkT):"")+"</div>";
+  html+="</div>";
+  // ── Bussola rapida (tabella di orientamento) ──
+  html+="<div class='cd' style='margin-bottom:14px'><div class='lb' style='margin-bottom:8px'>📌 BUSSOLA RAPIDA — DOVE GUARDO COSA</div>";
+  html+="<table style='width:100%;border-collapse:collapse;font-size:13px;line-height:1.5'>";
+  html+="<tr><th style='text-align:left;padding:8px 10px;color:var(--text-faint);font-size:10px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border-strong)'>Cosa vuoi sapere</th><th style='text-align:left;padding:8px 10px;color:var(--text-faint);font-size:10px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border-strong)'>Dove guardare</th></tr>";
+  var BUS=[
+   ["Quanta energia c&rsquo;&egrave; oggi?","L&rsquo;indice qui sopra e la striscia 48h: cerca ALTO/ESTREMO e i blocchi arancio-rossi."],
+   ["Rischio supercelle o trombe marine?","Carta <b>1</b> (Supercell Composite): zone sopra 1 sul tuo tratto di mare."],
+   ["C&rsquo;&egrave; spinta in quota?","Carta <b>3</b> (Jetstream): un ramo del getto sopra la tua zona organizza i temporali."],
+   ["Il quadro generale?","Carta <b>2</b>: dove sono le basse pressioni e quanto sono fitte le isobare."],
+   ["Quanto possono picchiare le raffiche?","Carta <b>4</b> (vento a 850 hPa): il vento in quota che i rovesci possono trascinare in superficie."],
+   ["Temporali in atto, adesso?","Carte <b>6</b>-<b>7</b>: radar e fulmini in tempo reale."],
+   ["Quella cella viene verso di me?","Carta <b>8</b>: storm tracking con le traiettorie delle celle."],
+   ["Grandine in arrivo?","Carta <b>9</b> (allerta grandine) e la scheda 🧊 qui sotto."],
+   ["Conferma ufficiale italiana?","Carta <b>10</b>: radar e fulmini della Protezione Civile."],
+   ["Come si muove la pioggia nei prossimi giorni?","Carta <b>12</b> (Windy): l&rsquo;animazione della previsione, da scorrere sulla timeline."]
+  ];
+  for(var b2=0;b2<BUS.length;b2++){
+    var B=BUS[b2];
+    html+="<tr><td style='padding:8px 10px;color:var(--text-primary);font-weight:700;border-bottom:1px solid var(--border-soft);vertical-align:top;width:42%'>"+B[0]+"</td><td style='padding:8px 10px;color:var(--text-secondary);border-bottom:1px solid var(--border-soft)'>"+B[1]+"</td></tr>";
+  }
+  html+="</table></div>";
+  // ── Riconoscere e reagire ──
+  html+="<div class='cd' style='margin-bottom:14px'><div class='lb' style='margin-bottom:10px'>🧭 RICONOSCERE E REAGIRE</div>";
+  html+="<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px'>";
+  var FEN=[
+   ["⚡","Groppo / linea di groppi","Fronte di raffica che precede il temporale: vento a scatti violenti prima ancora della pioggia.","Muro di nubi basso e scuro sull&rsquo;orizzonte, calo improvviso della temperatura, mare che si increspa in lontananza.","Riduci tela PRIMA che arrivi, chiudi tambucci e osteriggi, motore pronto."],
+   ["💨","Downburst","Colonna d&rsquo;aria fredda che crolla dal cumulonembo e si apre a ventaglio sul mare: 30&ndash;60 kn dal nulla, anche con poca pioggia.","Virga (pioggia che evapora prima di toccare il mare), &laquo;muro bianco&raquo; di spruzzi che avanza sull&rsquo;acqua, afa che si rompe di colpo.","Tela al minimo o a secco, prua al groppo, giubbotti e life-line per tutti."],
+   ["🌪️","Tromba marina","Vortice che scende da un cumulonembo (o da nubi congeste su mare caldo). Localizzata, ma devastante.","Imbuto o &laquo;coda&raquo; sotto la base della nube, mulinello scuro di spruzzi sull&rsquo;acqua.","Rotta perpendicolare al suo movimento per allontanarti; mai attraversarla; se investiti: tutto gi&ugrave;, equipaggio sottocoperta."],
+   ["🧊","Grandine","Nei temporali pi&ugrave; energici (CAPE alto, Lifted Index molto negativo) i chicchi possono superare i 2&ndash;3 cm.","Nube dal colore verdastro-livido, tuoni continui &laquo;a rullo&raquo;.","Proteggi testa e mani, equipaggio non indispensabile sottocoperta, sprayhood su."]
+  ];
+  for(var f=0;f<FEN.length;f++){
+    var F=FEN[f];
+    html+="<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:12px;padding:14px'>";
+    html+="<div style='font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:4px'>"+F[0]+" "+F[1]+"</div>";
+    html+="<div style='font-size:12.5px;color:var(--text-secondary);line-height:1.55;margin-bottom:6px'>"+F[2]+"</div>";
+    html+="<div style='font-size:12.5px;color:var(--text-secondary);line-height:1.55'><b style='color:var(--accent-primary)'>Segni:</b> "+F[3]+"</div>";
+    html+="<div style='font-size:12.5px;color:var(--text-secondary);line-height:1.55;margin-top:4px'><b style='color:var(--wind-strong)'>A bordo:</b> "+F[4]+"</div>";
+    html+="</div>";
+  }
+  html+="</div></div>";
+  // ── Carte degli esperti ──
+  var EXT_LINKS=[
+   ["🌀","Supercell Composite &mdash; Meteologix (Swiss HD 4x4, Italia)","Indice composito per supercelle: dove supera 1, ambiente favorevole a temporali rotanti (grandine grossa, possibili trombe).","https://meteologix.com/it/model-charts/swisshd-eu/italy/supercell-composite.html"],
+   ["🗺️","ECMWF &mdash; Pressione &amp; geopotenziale (Meteociel)","Quadro sinottico del modello europeo.","https://www.meteociel.fr/modeles/ecmwf_ctrl.php?ech=6&mode=0&carte=0"],
+   ["🌬️","ECMWF &mdash; Jetstream 300 hPa (Meteociel)","La corrente a getto in quota: quando un suo ramo passa sul Mediterraneo, d&agrave; ai temporali la spinta per organizzarsi e diventare severi.","https://www.meteociel.fr/modeles/ecmwf_ctrl.php?ech=6&mode=5&carte=0"],
+   ["💨","ECMWF &mdash; Vento a 850 hPa (Meteociel)","Il vento a ~1.500 m di quota: nei temporali, le correnti discendenti possono portarlo in superficie sotto forma di raffiche violente.","https://www.meteociel.fr/modeles/ecmwf_ctrl.php?ech=6&mode=6&carte=0"],
+   ["📊","ECMWF &mdash; Anomalia Z500 (Meteociel)","La quota 500 hPa rispetto alla media climatica: blu = saccatura e instabilit&agrave;, rosso = promontorio stabile. Versione Meteociel della tab ECMWF 500hPa.","https://www.meteociel.fr/modeles/ecmwf_ctrl.php?ech=6&mode=12&carte=0"]
+  ];
+  html+="<div class='cd' style='margin-bottom:14px'><div class='lb' style='margin-bottom:4px'>🔭 CARTE DEGLI ESPERTI</div>";
+  html+="<div style='font-size:12px;color:var(--text-muted);margin-bottom:10px'>Si aprono in una nuova scheda del browser (siti esterni).</div>";
+  for(var e2=0;e2<EXT_LINKS.length;e2++){
+    var L=EXT_LINKS[e2];
+    html+="<a href='"+L[3]+"' target='_blank' rel='noopener' style='display:flex;align-items:center;gap:12px;background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:12px;padding:12px 14px;margin-bottom:8px;text-decoration:none'>";
+    html+="<div style='min-width:26px;height:26px;border-radius:50%;background:var(--accent-primary);color:#04121f;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0'>"+(e2+1)+"</div>";
+    html+="<div style='font-size:22px;flex-shrink:0'>"+L[0]+"</div>";
+    html+="<div style='flex:1'><div style='font-size:13.5px;font-weight:800;color:var(--text-primary)'>"+L[1]+"</div>";
+    html+="<div style='font-size:12px;color:var(--text-secondary);line-height:1.45'>"+L[2]+"</div></div>";
+    html+="<div style='font-size:16px;color:var(--accent-primary);flex-shrink:0'>&#8599;</div></a>";
+  }
+  html+="</div>";
+  // ── Tempo reale: radar e fulmini ──
+  var RT_LINKS=[
+   ["🌩️","Radar + Fulmini insieme (Meteologix StormRadar)","Precipitazioni radar e fulmini sulla stessa mappa: il miglior colpo d&rsquo;occhio su cosa sta succedendo adesso.","https://meteologix.com/it/stormradar"],
+   ["⚡","Analisi fulmini Italia (Meteologix)","Tutti i colpi dell&rsquo;ultima ora: il colore indica l&rsquo;et&agrave; del fulmine; clicca un simbolo per posizione e intensit&agrave; in kA.","https://meteologix.com/it/lightning"],
+   ["🎯","Storm tracking (Meteologix)","Traiettoria stimata delle celle temporalesche nei prossimi minuti.","https://meteologix.com/it/stormtracking"],
+   ["🧊","Allerta grandine (Meteologix)","Stima della dimensione dei chicchi nelle celle attive.","https://meteologix.com/it/hail"],
+   ["🇮🇹","Radar Protezione Civile (ufficiale)","La piattaforma radar nazionale: piogge in atto e fulmini aggiornati ogni 10 minuti.","https://mappe.protezionecivile.gov.it/it/mappe-e-dashboard-rischi/piattaforma-radar/"],
+   ["🌐","LightningMaps (Blitzortung)","Rete comunitaria mondiale dei fulmini, in diretta e libera.","https://www.lightningmaps.org/?lang=it"],
+   ["🎬","Windy &mdash; Previsione animata pioggia e temporali","Il ponte tra previsione e tempo reale: mappa animata di pioggia e temporali, scorri la timeline fino a 3+ giorni. Gratis, centrata sul Tirreno.","https://www.windy.com/?rain,41.5,12.5,6"]
+  ];
+  html+="<div class='cd' style='margin-bottom:14px'><div class='lb' style='margin-bottom:4px'>⚡ TEMPO REALE — RADAR E FULMINI</div>";
+  html+="<div style='font-size:12px;color:var(--text-muted);margin-bottom:10px'>Cosa sta succedendo <b>adesso</b>: da usare quando l&rsquo;indice &egrave; alto o vedi il cielo cambiare. Si aprono in una nuova scheda.</div>";
+  for(var r2=0;r2<RT_LINKS.length;r2++){
+    var R=RT_LINKS[r2];
+    html+="<a href='"+R[3]+"' target='_blank' rel='noopener' style='display:flex;align-items:center;gap:12px;background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:12px;padding:12px 14px;margin-bottom:8px;text-decoration:none'>";
+    html+="<div style='min-width:26px;height:26px;border-radius:50%;background:var(--wind-strong);color:#04121f;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0'>"+(EXT_LINKS.length+r2+1)+"</div>";
+    html+="<div style='font-size:22px;flex-shrink:0'>"+R[0]+"</div>";
+    html+="<div style='flex:1'><div style='font-size:13.5px;font-weight:800;color:var(--text-primary)'>"+R[1]+"</div>";
+    html+="<div style='font-size:12px;color:var(--text-secondary);line-height:1.45'>"+R[2]+"</div></div>";
+    html+="<div style='font-size:16px;color:var(--accent-primary);flex-shrink:0'>&#8599;</div></a>";
+  }
+  html+="</div>";
+  // ── Legenda ──
+  html+="<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:14px;padding:16px'>";
+  html+="<div style='font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:6px'>📖 Come leggere questa tab</div>";
+  html+="<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+  html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>L&rsquo;indice</b> somma i fattori che alimentano i temporali severi: <b>CAPE</b> (il carburante), <b>Lifted Index</b> (quanto &egrave; esplosiva l&rsquo;aria: pi&ugrave; &egrave; negativo, peggio &egrave;), <b>CIN</b> (il coperchio: se manca, la convezione parte libera), <b>raffiche</b> e piogge intense. Quattro livelli: <b style='color:var(--wind-calm)'>Basso</b> &middot; <b style='color:var(--wind-mod)'>Moderato</b> &middot; <b style='color:var(--wind-strong)'>Alto</b> &middot; <b style='color:var(--wind-gale)'>Estremo</b>.</div>";
+  html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>La striscia 48h</b> colora ogni ora col suo livello: cerca i blocchi arancio o rossi per capire <i>quando</i> non essere in mare.</div>";
+  html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Supercell Composite (SCP)</b> nella carta Meteologix: sopra <b>1</b> l&rsquo;ambiente favorisce le supercelle &mdash; che sul mare italiano significano anche trombe marine. E ricorda la trappola del cielo sereno (tab Temporali): questi fenomeni nascono in ore, non in giorni.</div>";
+  html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Previsione vs tempo reale:</b> le carte <b>1&ndash;5</b> dicono cosa <i>potr&agrave;</i> succedere (modelli); le carte <b>6&ndash;11</b> mostrano cosa <i>sta</i> succedendo (radar e fulmini); la carta <b>12</b> (Windy) fa da ponte, con la pioggia prevista che scorre come un filmato per i prossimi giorni. In mare si usano insieme: la previsione per decidere se uscire, il tempo reale per sorvegliare mentre sei fuori.</div>";
+  html+="</div></div>";
+  el.innerHTML=html;
+}
+
 function bzSy(){
   try{
     renderSynopticUI();
@@ -5175,6 +5409,18 @@ function renderSynopticUI(){
   // Disclaimer
   html += '<div style="margin-top:12px;padding:10px 14px;text-align:center;font-size:12px;color:var(--text-muted);background:var(--border-subtle);border-radius:8px;line-height:1.5">Carte © <b style="color:var(--text-muted)">Crown Copyright UK Met Office</b> — Solo riferimento, consultare sempre gli avvisi meteo ufficiali prima di navigare</div>';
   
+  html += "<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:14px;padding:16px;margin-top:12px'>";
+  html += "<div style='font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:6px'>\uD83D\uDCD6 Come leggere isobare e fronti</div>";
+  html += "<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+  html += "<div style='padding:6px 0'><b style='color:var(--text-primary)'>Isobare</b> &mdash; linee che uniscono i punti con la stessa pressione. Regola d&rsquo;oro del velista: isobare <b>fitte = vento forte</b>, isobare distanziate = vento debole.</div>";
+  html += "<div style='padding:6px 0'><b style='color:var(--text-primary)'>H e L</b> &mdash; <b>H</b> (alta pressione): tempo in genere stabile, il vento le gira attorno in senso <b>orario</b>. <b>L</b> (bassa pressione): tempo perturbato, vento <b>antiorario</b>. Cos&igrave;, guardando la carta, puoi stimare da dove soffier&agrave; sulla tua zona.</div>";
+  html += "<div style='padding:6px 0'><b style='color:#5b8dd0'>Fronte freddo</b> &mdash; linea con <b>triangoli</b> (blu nelle carte a colori). Al passaggio: rovesci o temporali, raffiche, rotazione brusca del vento, poi aria limpida. I triangoli puntano nella direzione in cui il fronte avanza.</div>";
+  html += "<div style='padding:6px 0'><b style='color:#d05050'>Fronte caldo</b> &mdash; linea con <b>semicerchi</b> (rossa). Annuncia pioggia estesa e visibilit&agrave; in calo, spesso preceduta da cirri in aumento.</div>";
+  html += "<div style='padding:6px 0'><b style='color:#a060d0'>Occlusione</b> &mdash; triangoli <i>e</i> semicerchi (viola): un misto dei due, spesso piogge persistenti.</div>";
+  html += "</div>";
+  html += "<div style='margin-top:10px;padding:10px 12px;background:rgba(64,144,208,.08);border:1px solid rgba(64,144,208,.35);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.55'><b style='color:var(--accent-primary)'>Colpo d&rsquo;occhio del meteorologo:</b> cerca la <b>L</b> pi&ugrave; vicina alla tua zona e guarda quanto sono fitte le isobare sopra di te alla scadenza scelta (T+24, T+48&hellip;): bastano questi due indizi per capire che aria tirer&agrave;.</div>";
+  html += "</div>";
+
   el.innerHTML = html;
   _syState.builtOnce = true;
   
