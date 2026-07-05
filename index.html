@@ -268,9 +268,11 @@ select{background:var(--bg-pill);color:var(--text-tertiary);border:1px solid var
 .t:hover{color:var(--accent-primary);background:var(--accent-primary-bg)}
 .t.a{font-weight:700;color:var(--accent-primary);background:var(--accent-primary-bg-3);border-bottom-color:var(--accent-primary-3)}
 @media(max-width:600px){
-  .tb{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:8px 8px 0}
-  .tb .t{padding:9px 5px;font-size:11px;text-align:center;border-radius:7px 7px 0 0;font-weight:600}
-  .tb .t:nth-child(n+9){grid-column:span 2}
+  .tb{display:flex;flex-wrap:nowrap;gap:6px;padding:8px 12px 6px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+  .tb::-webkit-scrollbar{display:none;width:0;height:0}
+  .tb .t{flex:0 0 auto;min-height:44px;display:inline-flex;align-items:center;padding:0 16px;font-size:13.5px;font-weight:600;white-space:nowrap;text-align:center;border-radius:22px;border-bottom:none;background:var(--accent-primary-bg)}
+  .tb .t:nth-child(n+9){grid-column:auto}
+  .tb .t.a{background:var(--accent-primary);color:var(--bg-app);font-weight:700;border-bottom:none;box-shadow:0 2px 8px var(--accent-primary-bg-3)}
 }
 .cn{padding:12px 16px}
 .gr{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}
@@ -286,6 +288,22 @@ th{padding:5px 3px;text-align:left;color:var(--text-dim);font-weight:600;font-si
 td{padding:4px 3px}
 .cr{cursor:pointer;border-bottom:1px solid var(--border-subtle)}.cr:hover{background:var(--accent-primary-bg)}
 .hi{background:var(--accent-primary-bg)}
+.fcwrap{position:relative}
+.fctbl th:first-child,.fctbl td:first-child{position:sticky;left:0;z-index:2;background:var(--bg-app);box-shadow:2px 0 4px rgba(0,0,0,.18);border-right:1px solid var(--border-default)}
+.fctbl thead th:first-child{z-index:3}
+.fctbl .cr:hover td:first-child{background:var(--accent-primary-bg)}
+.fctbl .hi td:first-child{background:var(--accent-primary-bg)}
+.fcfade{position:absolute;top:0;right:0;bottom:0;width:36px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg-app));opacity:1;transition:opacity .25s}
+.fcwrap.at-end .fcfade{opacity:0}
+.fchint-m{display:none}
+@media(min-width:601px){.fcfade{display:none}}
+@media(max-width:600px){.fchint-m{display:inline}}
+.tabscrollhint{display:none;margin:2px 12px 4px}
+@media(max-width:600px){.tabscrollhint{display:block}}
+.refline{font-size:13px;line-height:1.4;color:var(--text-primary);margin-top:5px}
+.hint{font-size:13px;font-weight:600;line-height:1.5;color:var(--text-secondary);background:var(--border-subtle);border-left:3px solid var(--accent-primary);padding:8px 12px;border-radius:8px;margin-top:8px}
+.hint::before{content:"💡 "}
+@media(max-width:600px){.hint{font-size:14px}}
 .dn{display:none}
 .rx{padding:7px;border-radius:7px;font-size:10px;line-height:1.5}
 .sg{font-size:11px;color:var(--text-muted);margin-bottom:3px;padding-left:7px;border-left:2px solid var(--border-soft)}
@@ -300,7 +318,7 @@ body.hd-collapsed .hd{padding:8px 16px 6px}
 body.hd-collapsed h1{font-size:15px}
 #hdBrand{transition:opacity .25s ease,max-height .25s ease;max-height:20px;overflow:hidden}
 body.hd-collapsed #hdBrand{opacity:0;max-height:0}
-#nf{transition:opacity .25s ease,max-height .25s ease;max-height:30px;overflow:hidden}
+#nf{transition:opacity .25s ease,max-height .25s ease;max-height:80px;overflow:hidden}
 body.hd-collapsed #nf{opacity:0;max-height:0;margin:0}
 #favsBar{transition:opacity .25s ease,max-height .25s ease;max-height:80px;overflow:hidden}
 body.hd-collapsed #favsBar{opacity:0;max-height:0;padding:0;border:none;min-height:0}
@@ -344,7 +362,7 @@ body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
 </head><body>
 <div class="hd" id="mainHd"><div class="rw"><div><div style="font-size:10px;color:var(--brand-accent);letter-spacing:2px;font-weight:700" id="hdBrand">⚓ METEO PRE-PARTENZA</div><h1>Check Navigazione <span id="hdPill"></span></h1></div>
 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select id="zS"></select><button id="geoBtn" onclick="findNearestPort()" style="background:var(--status-go-bg);color:var(--status-go-3);border:1px solid var(--status-go-border);border-radius:8px;padding:7px 10px;font-size:14px;cursor:pointer;font-weight:700" title="Trova porto più vicino alla mia posizione">📍</button><button id="favBtn" onclick="toggleFav()" style="background:var(--bg-pill);border:1px solid var(--border-strong);border-radius:8px;padding:7px 10px;font-size:16px;cursor:pointer" title="Aggiungi ai preferiti">☆</button><button class="bt" id="go">🔄 Carica Dati Live</button><button id="installBtn" onclick="installPWA()" style="display:none;align-items:center;gap:5px;background:rgba(255,200,50,.15);color:var(--wind-mod);border:1px solid rgba(255,200,50,.3);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:700">📲 Installa App</button><button onclick="toggleTheme()" id="themeBtn" style="background:var(--bg-pill);color:var(--text-tertiary);border:1px solid var(--border-strong);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;font-weight:700" title="Cambia tema chiaro/scuro">🌓</button><button onclick="toggleHelp()" style="background:var(--bg-pill);color:var(--text-tertiary);border:1px solid var(--border-strong);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;font-weight:700" title="Guida">❓</button></div></div>
-<div style="font-size:11px;color:var(--text-shadow);margin-top:5px" id="nf">Premi "Carica Dati Live"</div></div>
+<div class="refline" id="nf">Premi "Carica Dati Live"</div></div>
 <div id="favsBar" style="padding:6px 16px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:36px">
 <span style="font-size:10px;color:var(--text-ghost);white-space:nowrap">★ Preferiti:</span>
 <div id="favsList" style="display:flex;gap:6px;flex-wrap:wrap"></div>
@@ -400,7 +418,7 @@ body.hd-collapsed #frontAlertBanner{padding:6px 16px;max-height:50px}
 
 <div style="padding:12px 14px;background:var(--border-subtle);border-radius:10px;border-left:3px solid var(--route-color)">
 <div style="font-size:13px;font-weight:700;color:var(--route-color);margin-bottom:5px">🌀 Fronti &nbsp;|&nbsp; 📡 Quota 5500m</div>
-<div style="font-size:11px;color:var(--text-faint);line-height:1.6"><b>Allarme Fronte:</b> quando viene rilevato un fronte (Freddo, Caldo, Occlusione Fredda o Calda) nelle prossime 48h, appare un <b>banner colorato in alto</b> sotto i preferiti con il tipo e il tempo stimato di arrivo. È cliccabile e porta direttamente alla tab Fronti. Nella tab <b>📊 Attuale</b> trovi anche una card dettagliata con suggerimento operativo (es. "prepara i terzaroli"). I simboli usano lo <b>standard meteorologico internazionale</b>: 🔵 triangoli blu = freddo, 🔴 semicerchi rossi = caldo, 🟣 alternati = occlusione.<br><b>Tab Fronti:</b> analisi della rotazione del vento, backing/veering, firma dei fronti e grafico pressione 72h.<br><b>Grafico Pressione 72h:</b> le barre <b style="color:var(--accent-primary-3)">BLU</b> indicano l'ora attuale, le barre <b style="color:rgba(220,70,40,.85)">ROSSE</b> indicano pressione nel 30% più basso del range (zona di bassa pressione), le barre <b style="color:rgba(255,255,255,.4)">GRIGIE</b> indicano pressione nella fascia normale o alta.<br><b>Quota 5500m:</b> analisi del geopotenziale Z500 per valutare la stabilità atmosferica a lungo termine.</div>
+<div style="font-size:11px;color:var(--text-faint);line-height:1.6"><b>Allarme Fronte:</b> quando viene rilevato un fronte (Freddo, Caldo, Occlusione Fredda o Calda) nelle prossime 48h, appare un <b>banner colorato in alto</b> sotto i preferiti con il tipo e il tempo stimato di arrivo. È cliccabile e porta direttamente alla tab Fronti. Nella tab <b>📊 Attuale</b> trovi anche una card dettagliata con suggerimento operativo (es. "prepara i terzaroli"). I simboli usano lo <b>standard meteorologico internazionale</b>: 🔵 triangoli blu = freddo, 🔴 semicerchi rossi = caldo, 🟣 alternati = occlusione.<br><b>Tab Fronti:</b> analisi della rotazione del vento, backing/veering, firma dei fronti e grafico pressione 72h.<br><b>Grafico Pressione 72h:</b> la barra <b style="color:var(--text-primary)">BIANCA/NERA</b> (più larga) indica l'ora attuale, le barre <b style="color:var(--wind-strong)">AMBRA</b> indicano pressione nel 30% più basso del range (zona di bassa pressione), le barre <b style="color:var(--text-muted)">GRIGIE</b> indicano pressione nella fascia normale o alta. (Blu e rosso qui NON compaiono: restano riservati a fronte freddo/caldo.)<br><b>Quota 5500m:</b> analisi del geopotenziale Z500 per valutare la stabilità atmosferica a lungo termine.</div>
 </div>
 
 <div style="padding:12px 14px;background:var(--border-subtle);border-radius:10px;border-left:3px solid var(--wind-strong)">
@@ -444,6 +462,8 @@ Dati: Open-Meteo API — Stime indicative — Consultare sempre le previsioni uf
 <div class="dn" id="mu">
 <div class="vd dn" id="vd"></div>
 <div class="tb"><button class="t a" onclick="st('now',this)">📊 Attuale</button><button class="t" onclick="st('mp',this)">🗺️ Mappa</button><button class="t" onclick="st('sm',this)">🚦 Partenza</button><button class="t" onclick="st('fav',this)">⭐ Preferiti</button><button class="t" onclick="st('cf',this)">📊 Confronto</button><button class="t" onclick="st('rt',this)">📍 Rotta</button><button class="t" onclick="st('fc',this)">📈 12h</button><button class="t" onclick="st('f24',this)">📈 24h</button><button class="t" onclick="st('f48',this)">📈 48h</button><button class="t" onclick="st('f7d',this)">📅 7 giorni</button><button class="t" onclick="st('cape',this)">⚡ Temporali</button><button class="t" onclick="st('ext',this)">🌪️ Estremi</button><button class="t" onclick="st('fr',this)">🌀 Fronti</button><button class="t" onclick="st('z5',this)">📊 ECMWF 500hPa</button><button class="t" onclick="st('sy',this)">🗺️ Sinottica</button><button class="t" onclick="st('diari',this)">📓 Diario</button></div>
+<div class="hint tabscrollhint" id="tabScrollHint">Scorri ➡ per altre schede</div>
+<script>(function(){try{localStorage.removeItem('tabScrollHintSeen');}catch(e){}var tb=document.querySelector('.tb'),hint=document.getElementById('tabScrollHint');if(!tb||!hint)return;var seen=false;var onScroll=function(){if(!seen&&tb.scrollLeft>4){seen=true;hint.style.display='none';tb.removeEventListener('scroll',onScroll);}};tb.addEventListener('scroll',onScroll,{passive:true});})();</script>
 <div class="cn" id="pN"></div><div class="cn" id="pM" style="height:0;overflow:hidden;padding:0">
 <div id="mapContainer" style="position:relative;width:100%;height:480px;background:var(--bg-deep-2);border-radius:12px;border:1px solid var(--border-strong);overflow:hidden"></div>
 <div id="addLocPanel" style="margin-top:10px;padding:12px 16px;background:var(--border-subtle);border:1px solid var(--border-default);border-radius:12px">
@@ -519,6 +539,7 @@ document.getElementById("go").onclick=ld;
 function st(id,b){
   document.querySelectorAll(".t").forEach(x=>x.classList.remove("a"));
   b.classList.add("a");
+  if(window.matchMedia&&window.matchMedia("(max-width:600px)").matches&&b.scrollIntoView){try{b.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});}catch(e){}}
   ["pN","pF","p24","p48","pR","pZ","pS","pFav","pC","pRT","p7","pCape","pExt","pSy","pDiari"].forEach(x=>document.getElementById(x).classList.add("dn"));
   if(id==="mp"){
     document.getElementById("pM").style.cssText="height:auto;overflow:visible;padding:0 0 12px 0";
@@ -804,7 +825,7 @@ b.disabled=false;b.textContent="🔄 Carica Dati Live"}
 function rn(){try{if(!D)return;let h=D.hourly,m=Mr?.hourly,wk=h.wind_speed_10m[vi]??0,wd=h.wind_direction_10m[vi],wg=h.wind_gusts_10m[vi]??0,tp=h.temperature_2m[vi]??0,hm=h.relative_humidity_2m[vi]??0,dw=h.dew_point_2m?.[vi],pr=h.pressure_msl[vi]??1013,cl=h.cloud_cover[vi]??0,rr=h.precipitation?.[vi]??0,cp=h.cape?.[vi]??0,wh=m?.wave_height?.[vi],wdr=m?.wave_direction?.[vi],wp=m?.wave_period?.[vi],swh=m?.swell_wave_height?.[vi],swd=m?.swell_wave_direction?.[vi],wwh=m?.wind_wave_height?.[vi];
 let bf=BF(wk),se=SE(wh),vs=VI(hm,rr,cl),ct=CT(cl,cp),pt=PT(h.pressure_msl,vi),rt=WR(h.wind_direction_10m,vi),fa=AF(h,vi),o8=Math.round(cl/12.5);
 let ts=new Date(h.time[vi]).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-document.getElementById("nf").textContent=ts+" — "+z.n;
+document.getElementById("nf").innerHTML='<span style="font-size:14px;font-weight:700">🕐 '+ts+' — <b>'+z.n+'</b></span>';
 let g=GG(wk,wh??0,cp,vs,rr),ve=document.getElementById("vd");
 // Update map marker color for current location
 if(!window._meteoColors)window._meteoColors={};
@@ -867,7 +888,7 @@ document.getElementById("pN").innerHTML='<div class="gr">'+
 '<div class="cd"><div class="lb">👁️ Visibilità</div><div class="vl" style="color:'+vs.c+'">'+vs.t+'</div><div class="sb">'+vs.s+' — Precip: '+N(rr,1)+' mm/h</div></div>'+
 '<div class="cd"><div class="lb">🌊 Mare</div><div class="rw"><span class="vl" style="color:'+se.c+'">'+(wh!=null?wh.toFixed(1):"—")+' m</span><span style="font-size:12px;color:var(--text-faint)">'+se.d+'</span></div><div class="sb">Per: '+(wp!=null?wp.toFixed(0):"—")+'s Dir: '+WN(wdr)+'</div>'+(swh!=null?'<div class="sb">Swell: '+swh.toFixed(1)+'m '+WN(swd)+'</div>':"")+'</div></div>'+_extra;
 // FC table builder
-function bFc(from,hours){let fc='<div style="overflow-x:auto"><table style="min-width:780px"><thead><tr>';
+function bFc(from,hours){let fc='<div class="fcwrap"><div style="overflow-x:auto" onscroll="this.parentNode.classList.toggle(\'at-end\',this.scrollLeft+this.clientWidth>=this.scrollWidth-2)"><table class="fctbl" style="min-width:780px"><thead><tr>';
 [
   {h:"Ora",   t:""},
   {h:"Vn",    t:"Vento (kn)"},
@@ -889,7 +910,7 @@ fc+="</tr></thead><tbody>";
 let step=hours>24?2:1;
 for(let i=from;i<Math.min(from+hours+1,h.time.length);i+=step){let t=new Date(h.time[i]),w=h.wind_speed_10m[i],b=BF(w),c8=Math.round((h.cloud_cover[i]??0)/12.5),p=PT(h.pressure_msl,i),ca=h.cape?.[i]??0,ra=h.precipitation?.[i]??0,v=VI(h.relative_humidity_2m[i],ra,h.cloud_cover[i]),wi=m?.wave_height?.[i],s=SE(wi),ct=CT(h.cloud_cover[i]??0,ca),ctQ=ct.replace(/'/g,"&#39;");
 fc+='<tr class="cr'+(i===vi?" hi":"")+'" onclick="sv('+i+')"><td style="white-space:nowrap"><b>'+t.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})+'</b><br><span style="font-size:8px;color:var(--text-shadow)">'+t.toLocaleDateString("it-IT",{weekday:"short",day:"numeric"})+'</span></td><td style="color:'+b.c+';font-weight:700">'+N(w,0)+'</td><td>'+WN(h.wind_direction_10m[i])+'</td><td>'+N(h.wind_gusts_10m[i],0)+'</td><td>'+N(h.pressure_msl[i],1)+'</td><td style="color:'+p.c+'">'+p.i+'</td><td>'+N(h.temperature_2m[i],1)+'</td><td>'+(h.relative_humidity_2m[i]??"—")+'</td><td>'+c8+'/8</td><td onclick="event.stopPropagation();showCloudTip(this,\''+ctQ+'\')" style="font-size:8px;cursor:pointer;text-decoration:underline dotted;color:#88c0d8">'+ct+'</td><td style="color:'+(ca>=1500?"var(--status-stop-3)":ca>=500?"var(--wind-strong)":"var(--wind-calm)")+'">'+ca+'</td><td>'+(ra>0?ra.toFixed(1):"—")+'</td><td style="color:'+v.c+';font-size:8px">'+v.t+'</td><td style="color:'+s.c+'">'+(wi!=null?wi.toFixed(1):"—")+'</td><td style="font-size:8px">'+s.d+'</td></tr>'}
-fc+='</tbody></table></div><div style="font-size:10px;color:var(--text-shadow-2);margin-top:6px">💡 Tocca riga per dettaglio'+(step>1?' — Dati ogni 2h':'')+'</div>';
+fc+='</tbody></table></div><div class="fcfade"></div></div><div class="hint">Tocca riga per dettaglio'+(step>1?' — Dati ogni 2h':'')+'<span class="fchint-m"> · scorri ➡ per altri dati</span></div>';
 return fc}
 // 7-day daily forecast cards
 function b7d(){
@@ -928,7 +949,7 @@ function b7d(){
     out+='<div style="margin-top:4px;font-size:12px;color:var(--text-secondary)">🌊 '+(wvmax!=null?wvmax.toFixed(1)+' m':'—')+' &nbsp; 🌧️ '+(psum!=null?psum.toFixed(1)+' mm':'—')+(pprob!=null?' ('+pprob+'%)':'')+'</div>';
     out+=spk+'</div>';
   }
-  out+='</div><div style="font-size:10px;color:var(--text-shadow-2);margin-top:10px">💡 Mini-grafico: vento (linea scura) e raffiche (linea chiara) ora per ora. Semaforo = peggior ora del giorno.</div>';
+  out+='</div><div class="hint">Mini-grafico: vento (linea scura) e raffiche (linea chiara) ora per ora. Semaforo = peggior ora del giorno.</div>';
   return out;
 }
 document.getElementById("pF").innerHTML=bFc(vi,12);
@@ -1055,8 +1076,8 @@ fr+='</div><div style="margin-top:8px;font-size:9px;color:var(--text-shadow-2)">
 // Pressure
 let ps=h.pressure_msl.slice(0,72).filter((_,i)=>i%2===0),mn=Math.min(...ps),mx=Math.max(...ps),rg=mx-mn||1;
 fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:4px">📈 PRESSIONE 72h</div><div style="display:flex;align-items:flex-end;gap:1px;height:50px">';
-ps.forEach((p,i)=>{let pc=((p-mn)/rg)*100;fr+='<div style="flex:1;max-width:5px;height:'+Math.max(2,pc*.5)+'px;background:'+(Math.abs(i*2-vi)<=1?"var(--accent-primary-3)":p<mn+rg*.3?"rgba(220,70,40,.45)":"var(--border-strong)")+';border-radius:1px"></div>'});
-fr+='</div><div style="display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:var(--text-shadow-2)"><span>Min:'+mn.toFixed(1)+'</span><span>Max:'+mx.toFixed(1)+'</span></div></div>';
+ps.forEach((p,i)=>{let pc=((p-mn)/rg)*100,isNow=Math.abs(i*2-vi)<=1;fr+='<div style="flex:1;max-width:'+(isNow?7:5)+'px;height:'+Math.max(2,pc*.5)+'px;background:'+(isNow?"var(--text-primary)":p<mn+rg*.3?"var(--wind-strong)":"var(--border-strong)")+';border-radius:1px"></div>'});
+fr+='</div><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:3px;font-size:8px;color:var(--text-shadow-2)"><span>Min:'+mn.toFixed(1)+'</span><span style="font-size:12px;color:var(--text-secondary)"><span style="color:var(--text-primary)">▮</span> <b>ora</b> · <span style="color:var(--wind-strong)">▮</span> bassa pressione</span><span>Max:'+mx.toFixed(1)+'</span></div></div>';
 // Reference - LEGENDA TIPI DI FRONTE con simboli SVG
 fr+='<div class="cd" style="margin-top:8px"><div class="lb" style="margin-bottom:10px">📚 TIPI DI FRONTE — RICONOSCIMENTO</div>';
 fr+='<div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">';
@@ -1463,8 +1484,8 @@ function renderCfUI(){
   if(loaded.length >= 2){
     html += renderCfTable(loaded);
   } else if(sel.length > 0){
-    html += '<div style="text-align:center;padding:20px;color:var(--text-shadow);font-size:12px">'+
-      (loaded.length === 0 ? 'Premi "Carica tutti" per caricare i dati dei porti selezionati' : 
+    html += '<div class="hint">'+
+      (loaded.length === 0 ? 'Premi "Carica tutti" per caricare i dati dei porti selezionati' :
        'Carica i dati di almeno 2 porti per confrontarli')+'</div>';
   } else {
     html += '<div style="text-align:center;padding:30px;color:var(--text-ghost);font-size:12px">Aggiungi 2-4 porti per confrontare le condizioni meteo attuali</div>';
@@ -3418,7 +3439,7 @@ function updateFavsList(){
   window._favChips = {};
   el.innerHTML = favs.map(function(name, i){
     window._favChips[i] = name;
-    return '<button onclick="selectFav(window._favChips['+i+'])" style="padding:5px 10px;background:rgba(255,200,50,.08);color:var(--wind-mod);border:1px solid rgba(255,200,50,.2);border-radius:16px;font-size:11px;cursor:pointer;white-space:nowrap">★ '+name+'</button>';
+    return '<span onclick="selectFav(window._favChips['+i+'])" style="display:inline-flex;align-items:center;gap:2px;padding:0 2px 0 10px;background:rgba(255,200,50,.08);color:var(--wind-mod);border:1px solid rgba(255,200,50,.2);border-radius:16px;font-size:11px;cursor:pointer;white-space:nowrap">★ '+name+'<span onclick="event.stopPropagation();removeFav(window._favChips['+i+'])" title="Rimuovi dai preferiti" style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;min-height:28px;margin-left:2px;color:var(--wind-mod);opacity:.6;font-size:13px;line-height:1;cursor:pointer">✕</span></span>';
   }).join('');
 }
 
@@ -3966,7 +3987,7 @@ function renderFavsDashboard(){
   
   var html = '<div style="margin-bottom:12px">';
   html += '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">⭐ Dashboard Preferiti</div>';
-  html += '<div style="font-size:11px;color:var(--text-shadow)">Tutti i tuoi porti preferiti a colpo d\'occhio. Trascina le card per riordinare.</div>';
+  html += '<div class="hint">Tutti i tuoi porti preferiti a colpo d\'occhio. Trascina le card per riordinare.</div>';
   html += '</div>';
   
   if(favs.length === 0){
@@ -4022,7 +4043,7 @@ function renderFavCard(name, idx){
   }
   
   if(!data || !data.D){
-    html += '<div style="font-size:11px;color:var(--text-shadow);padding:14px 0;text-align:center">⏳ Premi "Aggiorna tutti" per caricare i dati</div>';
+    html += '<div class="hint">Premi "Aggiorna tutti" per caricare i dati</div>';
     html += '<div style="display:flex;gap:6px;margin-top:6px">';
     html += '<button data-action="open" data-name="'+nameAttr+'" style="flex:1;padding:6px 10px;background:var(--accent-primary-bg-2);color:var(--accent-primary);border:1px solid var(--accent-primary-bg-4);border-radius:6px;font-size:11px;cursor:pointer;font-weight:700">📊 Apri</button>';
     html += '<button data-action="remove" data-name="'+nameAttr+'" style="padding:6px 10px;background:var(--status-stop-bg);color:var(--status-stop-2);border:1px solid rgba(183,28,28,.25);border-radius:6px;font-size:11px;cursor:pointer">✕</button>';
