@@ -1425,6 +1425,16 @@ function bzS(){
     html+='</div>';
   }
 
+  // Pillola da banchina
+html+="<div style='background:rgba(240,160,32,.10);border:1.5px solid rgba(240,160,32,.55);border-radius:14px;padding:16px;margin-top:12px'>";
+html+="<div style='font-size:15px;font-weight:800;color:var(--wind-strong);margin-bottom:8px'>\u2693 Mito da banchina: &laquo;se il cielo &egrave; pulito, non pu&ograve; peggiorare&raquo;</div>";
+html+="<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Il cielo racconta solo l&rsquo;adesso.</b> Il blu e la visibilit&agrave; ottima dicono com&rsquo;&egrave; in questo momento: un fronte freddo pu&ograve; avanzare con poca nuvolosit&agrave; davanti a s&eacute;, e i cumuli nati sulla terraferma possono esplodere in temporali dopo ore di sereno.</div>";
+html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Cosa guardare:</b> isobare fitte (tab Sinottica), vento in rinforzo e barometro in calo anche con poche nuvole = peggioramento in arrivo.</div>";
+html+="<div style='margin-top:8px;padding:10px 12px;background:rgba(0,0,0,.22);border-radius:10px;font-size:13.5px;color:var(--text-primary);font-weight:700;text-align:center'>Il cielo ti mostra le nuvole che ci sono &mdash; il barometro ti avverte di quelle che stanno arrivando.</div>";
+html+="<div style='padding:6px 0 0;font-size:12px;color:var(--text-muted);font-style:italic'>La versione &laquo;energetica&raquo; di questa trappola &egrave; nella tab \u26A1 Temporali: CAPE alto con cielo sereno.</div>";
+html+="</div></div>";
+
   document.getElementById("pS").innerHTML=html;
 }
 
@@ -5134,6 +5144,15 @@ function bzCape(){
   html+="<div style='font-size:13px;color:var(--text-secondary);line-height:1.55'>Il CAPE &egrave; energia <b>accumulata</b>: con valori alti, un mattino limpido e caldo non &egrave; rassicurante &mdash; &egrave; proprio il sole che carica la molla. I cumulonembi possono montare in <b>1&ndash;2 ore</b>, e in mare non hai ripari. Con CAPE sopra <b>2000 J/kg</b> diffida del bel tempo: esci presto, rientra presto, tieni d&rsquo;occhio la tab Fronti e il cielo sopravvento.</div>";
   html+="</div>";
   html+="</div>";
+  // Pillola da banchina
+html+="<div style='background:rgba(240,160,32,.10);border:1.5px solid rgba(240,160,32,.55);border-radius:14px;padding:16px;margin-top:12px'>";
+html+="<div style='font-size:15px;font-weight:800;color:var(--wind-strong);margin-bottom:8px'>\u2693 Mito da banchina: &laquo;il temporale d&rsquo;agosto &egrave; roba di terra&raquo;</div>";
+html+="<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>La cella nasce sulla terraferma</b> col riscaldamento del pomeriggio, ma non &egrave; detto che ci resti: se sul mare trova aria umida e instabile &mdash; e il mare caldo d&rsquo;estate &egrave; un serbatoio di CAPE &mdash; pu&ograve; propagarsi o ricostituirsi al largo, con colpi di vento e trombe marine fino a chilometri dalla costa.</div>";
+html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Cosa guardare:</b> linee di cumulonembi lungo la costa, cluster di fulmini in movimento verso il mare (tab \uD83C\uDF2A\uFE0F Estremi, carte 6-7) e CAPE alto anche sui punti mare.</div>";
+html+="<div style='margin-top:8px;padding:10px 12px;background:rgba(0,0,0,.22);border-radius:10px;font-size:13.5px;color:var(--text-primary);font-weight:700;text-align:center'>Il temporale nasce sulla terra, ma l&rsquo;energia se la porta dietro: con mare caldo e aria umida, non sei fuori partita.</div>";
+html+="</div></div>";
+
 
   el.innerHTML=html;
 }
@@ -5292,6 +5311,14 @@ function bzExt(){
     html+="<div style='font-size:16px;color:var(--accent-primary);flex-shrink:0'>&#8599;</div></a>";
   }
   html+="</div>";
+  // Pillola da banchina
+html+="<div style='background:rgba(240,160,32,.10);border:1.5px solid rgba(240,160,32,.55);border-radius:14px;padding:16px;margin-top:12px'>";
+html+="<div style='font-size:15px;font-weight:800;color:var(--wind-strong);margin-bottom:8px'>\u2693 Pillola radar: &laquo;pochi fulmini = poco rischio&raquo;</div>";
+html+="<div style='font-size:13px;line-height:1.7;color:var(--text-secondary)'>";
+html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Anche pochi colpi isolati</b> firmano una colonna convettiva <b>attiva</b>: con CAPE alto la cella pu&ograve; intensificarsi in fretta. Una mappa quasi vuota non &egrave; un via libera.</div>";
+html+="<div style='padding:5px 0'><b style='color:var(--text-primary)'>Cosa guardare:</b> il <b>trend</b> (i fulmini aumentano di minuto in minuto?), l&rsquo;estensione del cluster e la direzione in cui si muove (carte <b>7</b> e <b>8</b> qui sopra).</div>";
+html+="<div style='margin-top:8px;padding:10px 12px;background:rgba(0,0,0,.22);border-radius:10px;font-size:13.5px;color:var(--text-primary);font-weight:700;text-align:center'>Un fulmine &egrave; una firma: se il cielo sta firmando, la colonna &egrave; viva. Non contare i pallini &mdash; guarda come si muovono.</div>";
+html+="</div></div>";
   // ── Legenda ──
   html+="<div style='background:var(--border-subtle);border:1px solid var(--border-strong);border-radius:14px;padding:16px'>";
   html+="<div style='font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:6px'>📖 Come leggere questa tab</div>";
